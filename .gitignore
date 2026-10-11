@@ -69,6 +69,7 @@ storage/
 .qdrant-initialized
 verification_results.json
 backend/verification_results.json
+test_torch.py
 
 # IDE and Editor configs
 .idea/
