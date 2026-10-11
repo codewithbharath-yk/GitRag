@@ -31,6 +31,8 @@ class StoredRepositoryRecord(BaseModel):
     language: Optional[str] = None
     total_files: int = 0
     total_chunks: int = 0
+    manifest: Optional[Dict[str, Any]] = None
+    latest_commit_sha: Optional[str] = None
     indexed_at: Optional[datetime] = None
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
@@ -95,6 +97,8 @@ class RepositoryDataStore:
                 language=data.get("language"),
                 total_files=data.get("total_files", 0),
                 total_chunks=data.get("total_chunks", 0),
+                manifest=data.get("manifest"),
+                latest_commit_sha=data.get("latest_commit_sha"),
                 indexed_at=data.get("indexed_at", now),
                 created_at=now,
                 updated_at=now,

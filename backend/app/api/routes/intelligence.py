@@ -40,7 +40,9 @@ async def get_repository_symbols(
     symbol_type: Optional[SymbolType] = Query(default=None, description="Filter by symbol type (class, function, method)"),
 ) -> List[CodeSymbol]:
     intel_service = get_intelligence_service()
-    intel = intel_service.get_repository_intelligence(repository_id, branch=branch or "main")
+    intel = intel_service.ensure_repository_intelligence(
+        repository_id, branch=branch or "main", specific_file=file_path
+    )
 
     if not intel:
         # Repository not indexed or has no intelligence
@@ -82,7 +84,9 @@ async def get_file_intelligence(
     branch: Optional[str] = Query(default="main", description="Branch name"),
 ) -> ParsedFileIntelligence:
     intel_service = get_intelligence_service()
-    intel = intel_service.get_repository_intelligence(repository_id, branch=branch or "main")
+    intel = intel_service.ensure_repository_intelligence(
+        repository_id, branch=branch or "main", specific_file=file_path
+    )
 
     if not intel:
         raise HTTPException(
@@ -114,7 +118,9 @@ async def get_code_relationships(
     branch: Optional[str] = Query(default="main", description="Branch name"),
 ) -> Dict[str, Any]:
     intel_service = get_intelligence_service()
-    intel = intel_service.get_repository_intelligence(repository_id, branch=branch or "main")
+    intel = intel_service.ensure_repository_intelligence(
+        repository_id, branch=branch or "main", specific_file=file_path
+    )
 
     if not intel:
         return {

@@ -21,11 +21,15 @@ import type {
   StoredRepoMetadata,
   SearchRequest,
   SearchResponse,
+  FeedbackCreateRequest,
+  FeedbackStatsResponse,
 } from '../types/api';
 
-// In development, default to direct backend URL (http://127.0.0.1:8000) or env override
+// Support VITE_API_BASE_URL or VITE_BACKEND_URL, defaulting to http://127.0.0.1:8000 in dev
 const BACKEND_BASE_URL = (
-  import.meta.env.VITE_BACKEND_URL || (import.meta.env.DEV ? 'http://127.0.0.1:8000' : '')
+  import.meta.env.VITE_API_BASE_URL ||
+  import.meta.env.VITE_BACKEND_URL ||
+  (import.meta.env.DEV ? 'http://127.0.0.1:8000' : '')
 ).replace(/\/$/, '');
 
 let currentAuthToken: string | null = typeof localStorage !== 'undefined'
@@ -49,13 +53,26 @@ export function getAuthToken(): string | null {
 
 export class ApiError extends Error {
   status: number;
+  code?: string;
+  recoverable?: boolean;
   data: unknown;
+  details?: Record<string, unknown>;
 
-  constructor(message: string, status: number, data?: unknown) {
+  constructor(
+    message: string,
+    status: number,
+    data?: unknown,
+    code?: string,
+    recoverable?: boolean,
+    details?: Record<string, unknown>
+  ) {
     super(message);
     this.name = 'ApiError';
     this.status = status;
     this.data = data;
+    this.code = code;
+    this.recoverable = recoverable;
+    this.details = details;
   }
 }
 
@@ -80,22 +97,46 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
   } catch (err) {
     throw new ApiError(
       `Unable to reach CodeRAG backend at ${BACKEND_BASE_URL}. Ensure the server is running. (${(err as Error).message})`,
-      0
+      0,
+      null,
+      'NETWORK_ERROR',
+      true
     );
   }
 
   if (!response.ok) {
     let errorDetail = `HTTP ${response.status} ${response.statusText}`;
+    let errorCode: string | undefined = undefined;
+    let recoverable: boolean | undefined = undefined;
+    let details: Record<string, unknown> | undefined = undefined;
     let bodyData: unknown = null;
+
     try {
       bodyData = await response.json();
       if (bodyData && typeof bodyData === 'object' && 'detail' in bodyData) {
-        errorDetail = String((bodyData as { detail: unknown }).detail);
+        const d = (bodyData as { detail: unknown }).detail;
+        if (typeof d === 'string') {
+          errorDetail = d;
+        } else if (d && typeof d === 'object') {
+          const detailObj = d as Record<string, unknown>;
+          if ('message' in detailObj && typeof detailObj.message === 'string') {
+            errorDetail = detailObj.message;
+          }
+          if ('code' in detailObj && typeof detailObj.code === 'string') {
+            errorCode = detailObj.code;
+          }
+          if ('recoverable' in detailObj && typeof detailObj.recoverable === 'boolean') {
+            recoverable = detailObj.recoverable;
+          }
+          if ('details' in detailObj && typeof detailObj.details === 'object' && detailObj.details !== null) {
+            details = detailObj.details as Record<string, unknown>;
+          }
+        }
       }
     } catch {
       // Non-JSON response
     }
-    throw new ApiError(errorDetail, response.status, bodyData);
+    throw new ApiError(errorDetail, response.status, bodyData, errorCode, recoverable, details);
   }
 
   return response.json() as Promise<T>;
@@ -161,6 +202,23 @@ export const api = {
       method: 'POST',
       body: JSON.stringify(payload),
     });
+  },
+
+  /**
+   * Submit answer feedback for retrieval optimization (Phase 9).
+   */
+  async submitChatFeedback(payload: FeedbackCreateRequest): Promise<{ status: string; feedback_id: string; message: string }> {
+    return request<{ status: string; feedback_id: string; message: string }>('/api/v1/chat/feedback', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
+  },
+
+  /**
+   * Retrieve feedback statistics and data-driven retrieval tuning metrics.
+   */
+  async getFeedbackStats(repositoryId: string): Promise<FeedbackStatsResponse> {
+    return request<FeedbackStatsResponse>(`/api/v1/chat/feedback/stats?repository_id=${encodeURIComponent(repositoryId)}`);
   },
 
   /**
@@ -352,6 +410,13 @@ export const api = {
       method: 'POST',
       body: JSON.stringify(payload),
     });
+  },
+
+  /**
+   * Semantic code search alias
+   */
+  async searchCode(payload: SearchRequest): Promise<SearchResponse> {
+    return this.search(payload);
   },
 
   /**

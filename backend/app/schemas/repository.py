@@ -27,7 +27,9 @@ class RepoValidateResponse(BaseModel):
     stars_count: int = Field(default=0, description="GitHub stargazer count")
     forks_count: int = Field(default=0, description="GitHub fork count")
     language: Optional[str] = Field(default=None, description="Primary programming language")
+    total_files: int = Field(default=0, description="Total eligible files in repository manifest")
     error: Optional[str] = Field(default=None, description="Error explanation if invalid")
+    error_code: Optional[str] = Field(default=None, description="Structured error code if invalid")
 
 
 class RepoIndexRequest(BaseModel):
@@ -56,6 +58,7 @@ class RepoStatusResponse(BaseModel):
     chunks_indexed: int = Field(default=0, description="Total code chunks embedded and stored in Qdrant")
     duration_ms: Optional[float] = Field(default=None, description="Indexing time in milliseconds")
     error: Optional[str] = Field(default=None, description="Error message if indexing failed")
+    error_code: Optional[str] = Field(default=None, description="Structured error code if indexing failed")
 
 
 class RepoFileItem(BaseModel):
@@ -71,3 +74,25 @@ class RepoFilesResponse(BaseModel):
     repository_id: str = Field(..., description="Repository identifier")
     total_files: int = Field(..., description="Total indexed files")
     files: List[RepoFileItem] = Field(default_factory=list, description="List of indexed files")
+
+
+class RepoFileManifestItem(BaseModel):
+    """Represents a lightweight file entry in a repository manifest."""
+    path: str = Field(..., description="Relative file path in repository")
+    language: str = Field(default="text", description="Detected programming language")
+    size_bytes: int = Field(default=0, description="File size in bytes")
+    sha: Optional[str] = Field(default=None, description="Git blob SHA")
+
+
+class RepoManifest(BaseModel):
+    """Lightweight repository file tree manifest stored on connection."""
+    repository_id: str = Field(..., description="Repository identifier")
+    owner: str = Field(..., description="Repository owner")
+    name: str = Field(..., description="Repository name")
+    branch: str = Field(..., description="Target branch")
+    commit_sha: Optional[str] = Field(default=None, description="Latest commit SHA")
+    total_files: int = Field(default=0, description="Total eligible source files in manifest")
+    files: List[RepoFileManifestItem] = Field(default_factory=list, description="List of manifest files")
+    directories: List[str] = Field(default_factory=list, description="List of distinct directory paths")
+    languages: dict = Field(default_factory=dict, description="Language distribution")
+    created_at: Optional[str] = Field(default=None, description="Manifest creation timestamp")

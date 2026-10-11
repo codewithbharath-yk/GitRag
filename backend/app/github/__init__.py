@@ -6,9 +6,17 @@ from app.github.url_parser import parse_github_url, GitHubRepoIdentity, InvalidG
 from app.github.client import (
     GitHubClient,
     GitHubError,
+    EmptyRepositoryError,
+    BranchNotFoundError,
+    NoSupportedSourceFilesError,
     RepositoryNotFoundError,
     RepositoryAccessDeniedError,
+    GitHubAuthError,
     RateLimitExceededError,
+    GitHubConflictError,
+    GitHubInvalidRequestError,
+    GitHubServerError,
+    GitHubTimeoutError,
 )
 
 __all__ = [
@@ -17,7 +25,15 @@ __all__ = [
     "InvalidGitHubURLError",
     "GitHubClient",
     "GitHubError",
+    "EmptyRepositoryError",
+    "BranchNotFoundError",
+    "NoSupportedSourceFilesError",
     "RepositoryNotFoundError",
     "RepositoryAccessDeniedError",
+    "GitHubAuthError",
     "RateLimitExceededError",
+    "GitHubConflictError",
+    "GitHubInvalidRequestError",
+    "GitHubServerError",
+    "GitHubTimeoutError",
 ]

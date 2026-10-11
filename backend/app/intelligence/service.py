@@ -88,6 +88,84 @@ class IntelligenceService:
                 return intel
         return None
 
+    def ensure_repository_intelligence(
+        self,
+        repository_id: str,
+        branch: str = "main",
+        specific_file: Optional[str] = None,
+    ) -> Optional[RepositoryIntelligenceData]:
+        """
+        Ensure code intelligence is available for repository.
+        If cache is empty (e.g. after lazy connection or server restart),
+        fetches and analyzes files on-demand without full repository downloading.
+        """
+        intel = self.get_repository_intelligence(repository_id, branch)
+        if intel:
+            if specific_file:
+                norm_p = specific_file.replace("\\", "/")
+                if any(p == norm_p or p.endswith(norm_p) for p in intel.files):
+                    return intel
+            else:
+                return intel
+
+        from pathlib import Path
+        from app.services.repository_service import get_repository_service
+
+        repo_service = get_repository_service()
+        # 1. Check local directory fallback
+        root_dir = Path(__file__).resolve().parent.parent.parent.parent
+        possible_local = [
+            root_dir / "sample_code" / repository_id,
+            root_dir / "sample_code" / "sample_repo",
+            root_dir / repository_id,
+        ]
+        local_dir = next((p for p in possible_local if p.is_dir()), None)
+        if local_dir:
+            from app.rag.file_scanner import FileScanner
+            scanner = FileScanner()
+            discovered = scanner.scan_directory(local_dir)
+            if discovered:
+                return self.analyze_repository_files(repository_id, branch, discovered)
+
+        # 2. Check GitHub repository manifest
+        rec = repo_service.data_store.get_repository("default_user", repository_id)
+        meta = repo_service._repo_metadata.get(repository_id)
+        manifest = (rec.manifest if rec else None) or (meta.get("manifest") if meta else None)
+
+        if manifest and manifest.get("files"):
+            try:
+                owner, name = repo_service._resolve_owner_name(repository_id)
+                target_branch = branch or (rec.selected_branch if rec else "main") or "main"
+                files_list = manifest["files"]
+                
+                paths_to_fetch = []
+                if specific_file:
+                    norm = specific_file.replace("\\", "/")
+                    match = next((f["path"] for f in files_list if f["path"] == norm or f["path"].endswith(norm)), None)
+                    if match:
+                        paths_to_fetch.append(match)
+
+                for f in files_list:
+                    p = f["path"]
+                    if p not in paths_to_fetch and not p.lower().endswith((".md", ".txt", ".json", ".lock")):
+                        paths_to_fetch.append(p)
+                    if len(paths_to_fetch) >= 12:
+                        break
+
+                if paths_to_fetch:
+                    discovered = repo_service.github_client.fetch_files_by_paths(
+                        owner=owner,
+                        repo=name,
+                        file_paths=paths_to_fetch,
+                        ref=target_branch,
+                    )
+                    if discovered:
+                        return self.analyze_repository_files(repository_id, branch, discovered)
+            except Exception as e:
+                logger.warning(f"On-demand intelligence analysis note for {repository_id}: {e}")
+
+        return self.get_repository_intelligence(repository_id, branch)
+
     def lookup_symbol(
         self,
         repository_id: str,

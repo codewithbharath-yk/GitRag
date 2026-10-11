@@ -83,22 +83,84 @@ DEFAULT_IGNORED_DIRS: Set[str] = {
     ".next",
     ".nuxt",
     "qdrant_storage",
+    "snapshots",
+    "storage",
 }
 
 # Files or patterns that should be ignored
 DEFAULT_IGNORED_FILES: Set[str] = {
-    ".env",
-    ".env.local",
-    ".env.development",
-    ".env.production",
     "package-lock.json",
     "yarn.lock",
     "pnpm-lock.yaml",
     "poetry.lock",
     "Pipfile.lock",
+    "Cargo.lock",
+    "go.sum",
+    "composer.lock",
+    ".DS_Store",
+    "thumbs.db",
 }
 
-DEFAULT_MAX_FILE_SIZE = 512 * 1024  # 500 KB limit per file
+# Sensitive / Secret file extensions that must NEVER be indexed
+SECRET_FILE_EXTENSIONS: Set[str] = {
+    ".pem",
+    ".key",
+    ".pkcs12",
+    ".p12",
+    ".pfx",
+    ".crt",
+    ".der",
+    ".cer",
+    ".keystore",
+    ".jks",
+    ".token",
+    ".secret",
+    ".p8",
+}
+
+# Sensitive / Secret filename substrings/patterns (lowercase)
+SECRET_FILENAME_PATTERNS: Set[str] = {
+    ".env",
+    "id_rsa",
+    "id_ed25519",
+    "id_dsa",
+    "id_ecdsa",
+    "credentials.json",
+    "service_account.json",
+    "service-account",
+    "client_secret",
+    "google-services.json",
+    "auth.json",
+    "secret_key",
+    "private_key",
+}
+
+DEFAULT_MAX_FILE_SIZE = 512 * 1024  # 512 KB limit per file
+
+
+def is_secret_or_sensitive_filename(file_name_or_path: str) -> bool:
+    """
+    Check if a filename or path represents an environment variable file,
+    private key, TLS certificate, or secret credential file.
+    """
+    clean = file_name_or_path.replace("\\", "/").lower().strip()
+    name = clean.split("/")[-1]
+
+    # Check .env variants
+    if name.startswith(".env") or name == ".env" or ".env." in name:
+        return True
+
+    # Check sensitive extensions
+    for ext in SECRET_FILE_EXTENSIONS:
+        if name.endswith(ext):
+            return True
+
+    # Check secret filename patterns
+    for pat in SECRET_FILENAME_PATTERNS:
+        if pat in name:
+            return True
+
+    return False
 
 
 @dataclass
@@ -139,12 +201,14 @@ class FileScanner:
 
     def is_file_ignored(self, file_path: Path) -> bool:
         """
-        Check if file name or extension should be ignored.
+        Check if file name, secret patterns, or extension should be ignored.
         """
         file_name = file_path.name
+        if is_secret_or_sensitive_filename(file_name):
+            return True
         if file_name in self.ignored_files:
             return True
-        if file_name.startswith(".env"):
+        if file_name.lower().endswith((".min.js", ".min.css", ".bundle.js", ".map")):
             return True
         if file_name.lower() in DEFAULT_EXACT_FILENAME_MAP:
             return False

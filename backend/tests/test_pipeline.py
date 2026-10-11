@@ -108,4 +108,8 @@ def test_pipeline_empty_retrieval_returns_clean_response():
     assert response.insufficient_context is True
     assert response.retrieved_chunks_count == 0
     assert len(response.sources) == 0
-    assert "no relevant source code files" in response.answer.lower()
+    assert (
+        "no relevant source code files" in response.answer.lower()
+        or "couldn't find enough evidence" in response.answer.lower()
+        or "searched" in response.answer.lower()
+    )

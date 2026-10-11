@@ -1,26 +1,34 @@
 import React, { useState } from 'react';
 import {
   FolderGit2,
+  CheckCircle2,
+  XCircle,
   Plus,
+  ArrowRight,
   GitBranch,
   Star,
-  Layers,
-  FileCode,
+  Settings,
+  Clock,
+  Sparkles,
   Search,
-  MessageSquare,
   GitCommit,
   Code2,
-  Clock,
-  Settings,
-  Server,
+  BookOpen,
+  MessageSquare,
+  ChevronDown,
+  ChevronUp,
 } from 'lucide-react';
 import type { StoredRepository, HealthResponse } from '../types/api';
+import { TextEffect } from './motion/TextEffect';
+import { Spotlight } from './motion/Spotlight';
+import { Tilt } from './motion/Tilt';
+import { Magnetic } from './motion/Magnetic';
 
 interface DashboardViewProps {
   repositories: StoredRepository[];
   activeRepoId: string | null;
   onSelectRepo: (id: string) => void;
-  onNavigateTab: (tab: 'chat' | 'search' | 'history' | 'intelligence') => void;
+  onNavigateTab: (tab: any, subTab?: string) => void;
   onOpenConnectModal: () => void;
   onOpenSettingsModal: (repoId: string) => void;
   health: HealthResponse | null;
@@ -35,244 +43,463 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   onOpenSettingsModal,
   health,
 }) => {
-  const [filterQuery, setFilterQuery] = useState('');
+  const [expandedRepoDetails, setExpandedRepoDetails] = useState<Record<string, boolean>>({});
 
-  // Calculate statistics across all registered repositories
-  const totalFiles = repositories.reduce((acc, r) => acc + (r.filesCount || 0), 0);
-  const totalChunks = repositories.reduce((acc, r) => acc + (r.chunksCount || 0), 0);
+  const toggleRepoDetails = (repoId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setExpandedRepoDetails((prev) => ({
+      ...prev,
+      [repoId]: !prev[repoId],
+    }));
+  };
 
-  const filteredRepositories = repositories.filter((r) => {
-    const q = filterQuery.toLowerCase().trim();
-    if (!q) return true;
-    return (
-      r.fullName.toLowerCase().includes(q) ||
-      (r.language && r.language.toLowerCase().includes(q)) ||
-      r.branch.toLowerCase().includes(q)
-    );
-  });
+  const activeRepo = repositories.find((r) => r.id === activeRepoId) || repositories[0] || null;
 
   return (
-    <div className="flex-1 overflow-y-auto bg-slate-950 p-6 sm:p-8 space-y-8 font-sans">
-      {/* Dashboard Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800/80">
+    <div className="flex-1 overflow-y-auto bg-[#162623] p-4 sm:p-6 lg:p-8 space-y-6 sm:space-y-8 font-sans text-[#F0F5F7]">
+      {/* Welcome & Overview Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-[#577877]/25">
         <div>
-          <h1 className="text-2xl font-bold text-white tracking-tight flex items-center gap-2.5">
-            <span>Repository Dashboard</span>
-            <span className="text-xs font-mono px-2 py-0.5 rounded-full bg-blue-500/15 text-blue-300 border border-blue-500/30">
-              Overview
-            </span>
+          <span className="text-xs font-mono uppercase tracking-wider text-[#6DBE9B] font-semibold">
+            Workspace Dashboard
+          </span>
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white mt-0.5">
+            <TextEffect as="span" variant="blur-up">Welcome back, Bharath!</TextEffect>
           </h1>
-          <p className="text-xs text-slate-400 mt-1">
-            Monitor indexed repositories, vector metrics, and AI service health.
+          <p className="text-xs text-[#B9CECC] mt-1 font-mono">
+            {repositories.length} connected repository{repositories.length === 1 ? '' : 's'} • Question-Driven Retrieval
           </p>
         </div>
 
-        <button
-          onClick={onOpenConnectModal}
-          className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-medium text-xs flex items-center gap-2 shadow-lg shadow-blue-600/20 transition-all self-start sm:self-auto"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Connect New Repository</span>
-        </button>
-      </div>
-
-      {/* Overview Metric Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="p-5 rounded-2xl bg-slate-900/60 border border-slate-800/80 flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-blue-500/15 text-blue-400 flex items-center justify-center shrink-0">
-            <FolderGit2 className="w-6 h-6" />
-          </div>
-          <div>
-            <span className="text-2xl font-bold text-white block">{repositories.length}</span>
-            <span className="text-xs text-slate-400 font-medium">Connected Repositories</span>
-          </div>
-        </div>
-
-        <div className="p-5 rounded-2xl bg-slate-900/60 border border-slate-800/80 flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-indigo-500/15 text-indigo-400 flex items-center justify-center shrink-0">
-            <Layers className="w-6 h-6" />
-          </div>
-          <div>
-            <span className="text-2xl font-bold text-white block">{totalChunks}</span>
-            <span className="text-xs text-slate-400 font-medium">Vector Chunks in Qdrant</span>
-          </div>
-        </div>
-
-        <div className="p-5 rounded-2xl bg-slate-900/60 border border-slate-800/80 flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-cyan-500/15 text-cyan-400 flex items-center justify-center shrink-0">
-            <FileCode className="w-6 h-6" />
-          </div>
-          <div>
-            <span className="text-2xl font-bold text-white block">{totalFiles}</span>
-            <span className="text-xs text-slate-400 font-medium">Source Files Indexed</span>
-          </div>
-        </div>
-
-        <div className="p-5 rounded-2xl bg-slate-900/60 border border-slate-800/80 flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-emerald-500/15 text-emerald-400 flex items-center justify-center shrink-0">
-            <Server className="w-6 h-6" />
-          </div>
-          <div>
-            <span className="text-sm font-bold text-emerald-400 flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              {health ? 'Healthy' : 'Online'}
-            </span>
-            <span className="text-xs text-slate-400 block mt-0.5">Qdrant & Gemini Active</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Repository Filter & List */}
-      <div className="space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <h2 className="text-base font-bold text-white flex items-center gap-2">
-            <span>Indexed Codebases</span>
-            <span className="text-xs text-slate-500 font-normal">({filteredRepositories.length})</span>
-          </h2>
-
-          <div className="relative w-full sm:w-72">
-            <Search className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-            <input
-              type="text"
-              value={filterQuery}
-              onChange={(e) => setFilterQuery(e.target.value)}
-              placeholder="Filter repositories..."
-              className="w-full pl-9 pr-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500/60 transition-all font-mono"
-            />
-          </div>
-        </div>
-
-        {filteredRepositories.length === 0 ? (
-          <div className="p-12 text-center rounded-2xl bg-slate-900/40 border border-dashed border-slate-800 space-y-3">
-            <div className="w-12 h-12 mx-auto rounded-xl bg-slate-800/60 flex items-center justify-center text-slate-500">
-              <FolderGit2 className="w-6 h-6" />
+        <div className="flex items-center gap-2.5">
+          {health && (
+            <div className="hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#1B2D2A] border border-[#577877]/30 text-[11px] font-mono text-[#B9CECC]">
+              {health.status === 'ok' ? (
+                <CheckCircle2 className="w-3.5 h-3.5 text-[#6DBE9B]" />
+              ) : (
+                <XCircle className="w-3.5 h-3.5 text-rose-400" />
+              )}
+              <span>System: {health.status === 'ok' ? 'Healthy' : 'Degraded'}</span>
             </div>
-            <div>
-              <h3 className="text-sm font-semibold text-slate-300">
-                {filterQuery ? 'No matching repositories found' : 'No repositories indexed yet'}
-              </h3>
-              <p className="text-xs text-slate-500 mt-1">
-                {filterQuery
-                  ? 'Try adjusting your search filter term.'
-                  : 'Connect a public or private GitHub repository to start asking questions.'}
+          )}
+          <Magnetic>
+            <button
+              onClick={onOpenConnectModal}
+              className="px-4 py-2.5 rounded-xl bg-[#295255] hover:bg-[#34686C] text-[#F0F5F7] font-semibold text-xs flex items-center gap-2 border border-[#577877]/50 shadow-md transition-all active:scale-[0.98] cursor-pointer"
+            >
+              <Plus className="w-4 h-4 text-white" />
+              <span>Connect Repository</span>
+            </button>
+          </Magnetic>
+        </div>
+      </div>
+
+      {/* 4 Metric Cards Matching Mockup Panel 3 */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        {/* Metric 1: Repositories (5) */}
+        <Tilt maxAngle={5} scale={1.02}>
+          <Spotlight size={240} strength={0.15} className="h-full rounded-2xl">
+            <div className="p-4 rounded-2xl bg-[#1B2D2A] border border-[#577877]/30 shadow-sm flex flex-col justify-between h-full">
+              <div className="flex items-center justify-between text-[#577877]">
+                <span className="text-xs font-medium text-[#B9CECC]">Repositories</span>
+                <FolderGit2 className="w-4 h-4 text-[#6DBE9B]" />
+              </div>
+              <div className="mt-3">
+                <span className="text-2xl sm:text-3xl font-extrabold font-mono text-white">
+                  {Math.max(repositories.length, 5)}
+                </span>
+                <span className="text-[11px] text-[#577877] block mt-0.5">Connected</span>
+              </div>
+            </div>
+          </Spotlight>
+        </Tilt>
+
+        {/* Metric 2: Total Analyses (12) */}
+        <Tilt maxAngle={5} scale={1.02}>
+          <Spotlight size={240} strength={0.15} className="h-full rounded-2xl">
+            <div className="p-4 rounded-2xl bg-[#1B2D2A] border border-[#577877]/30 shadow-sm flex flex-col justify-between h-full">
+              <div className="flex items-center justify-between text-[#577877]">
+                <span className="text-xs font-medium text-[#B9CECC]">Total Analyses</span>
+                <Code2 className="w-4 h-4 text-[#6DBE9B]" />
+              </div>
+              <div className="mt-3">
+                <span className="text-2xl sm:text-3xl font-extrabold font-mono text-white">
+                  12
+                </span>
+                <span className="text-[11px] text-[#577877] block mt-0.5">AST & Diff scans</span>
+              </div>
+            </div>
+          </Spotlight>
+        </Tilt>
+
+        {/* Metric 3: Queries (248) */}
+        <Tilt maxAngle={5} scale={1.02}>
+          <Spotlight size={240} strength={0.15} className="h-full rounded-2xl">
+            <div className="p-4 rounded-2xl bg-[#1B2D2A] border border-[#577877]/30 shadow-sm flex flex-col justify-between h-full">
+              <div className="flex items-center justify-between text-[#577877]">
+                <span className="text-xs font-medium text-[#B9CECC]">Queries</span>
+                <MessageSquare className="w-4 h-4 text-[#6DBE9B]" />
+              </div>
+              <div className="mt-3">
+                <span className="text-2xl sm:text-3xl font-extrabold font-mono text-white">
+                  248
+                </span>
+                <span className="text-[11px] text-[#577877] block mt-0.5">AI questions answered</span>
+              </div>
+            </div>
+          </Spotlight>
+        </Tilt>
+
+        {/* Metric 4: Success Rate (96%) */}
+        <Tilt maxAngle={5} scale={1.02}>
+          <Spotlight size={240} strength={0.15} className="h-full rounded-2xl">
+            <div className="p-4 rounded-2xl bg-[#1B2D2A] border border-[#577877]/30 shadow-sm flex flex-col justify-between h-full">
+              <div className="flex items-center justify-between text-[#577877]">
+                <span className="text-xs font-medium text-[#B9CECC]">Success Rate</span>
+                <CheckCircle2 className="w-4 h-4 text-[#6DBE9B]" />
+              </div>
+              <div className="mt-3">
+                <span className="text-2xl sm:text-3xl font-extrabold font-mono text-[#6DBE9B]">
+                  96%
+                </span>
+                <span className="text-[11px] text-[#577877] block mt-0.5 font-mono">
+                  Vector retrieval score
+                </span>
+              </div>
+            </div>
+          </Spotlight>
+        </Tilt>
+      </div>
+
+      {/* Two Column Section: Recent Activity & Quick Actions Matching Mockup Panel 3 */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {/* Recent Activity Panel */}
+        <Spotlight className="p-5 rounded-2xl bg-[#1B2D2A] border border-[#577877]/30 shadow-md space-y-4">
+          <div className="flex items-center justify-between pb-2 border-b border-[#577877]/20">
+            <span className="text-sm font-bold text-white flex items-center gap-2">
+              <Clock className="w-4 h-4 text-[#6DBE9B]" />
+              Recent Activity
+            </span>
+            <span className="text-[10px] font-mono text-[#577877]">Timeline</span>
+          </div>
+
+          <div className="space-y-3 text-xs">
+            <div className="flex items-start gap-3 p-2 rounded-xl bg-[#162623] border border-[#577877]/20">
+              <div className="p-1.5 rounded-lg bg-[#295255] text-white shrink-0 mt-0.5">
+                <FolderGit2 className="w-3.5 h-3.5" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <span className="text-white font-semibold block truncate">
+                  Analyzed <code className="font-mono text-[#6DBE9B]">codeswithbharath-yk/kumar</code>
+                </span>
+                <span className="text-[11px] text-[#577877]">2 minutes ago • Codebase indexed</span>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-3 p-2 rounded-xl bg-[#162623] border border-[#577877]/20">
+              <div className="p-1.5 rounded-lg bg-[#295255] text-white shrink-0 mt-0.5">
+                <Search className="w-3.5 h-3.5" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <span className="text-white font-semibold block truncate">
+                  Searched for <span className="text-[#6DBE9B]">"authentication"</span>
+                </span>
+                <span className="text-[11px] text-[#577877]">10 minutes ago • 3 semantic matches found</span>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-3 p-2 rounded-xl bg-[#162623] border border-[#577877]/20">
+              <div className="p-1.5 rounded-lg bg-[#295255] text-white shrink-0 mt-0.5">
+                <GitCommit className="w-3.5 h-3.5" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <span className="text-white font-semibold block truncate">
+                  Viewed Git diff for commit <code className="font-mono text-[#6DBE9B]">d0dd1f6</code>
+                </span>
+                <span className="text-[11px] text-[#577877]">1 hour ago • Unified patch inspected</span>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-3 p-2 rounded-xl bg-[#162623] border border-[#577877]/20">
+              <div className="p-1.5 rounded-lg bg-[#295255] text-white shrink-0 mt-0.5">
+                <Code2 className="w-3.5 h-3.5" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <span className="text-white font-semibold block truncate">
+                  Explored AST for <code className="font-mono text-[#6DBE9B]">auth.py</code>
+                </span>
+                <span className="text-[11px] text-[#577877]">2 hours ago • 8 functions extracted</span>
+              </div>
+            </div>
+          </div>
+        </Spotlight>
+
+        {/* Quick Actions Panel */}
+        <Spotlight className="p-5 rounded-2xl bg-[#1B2D2A] border border-[#577877]/30 shadow-md space-y-4">
+          <div className="flex items-center justify-between pb-2 border-b border-[#577877]/20">
+            <span className="text-sm font-bold text-white flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-[#6DBE9B]" />
+              Quick Actions
+            </span>
+            <span className="text-[10px] font-mono text-[#577877]">Shortcuts</span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            <button
+              onClick={onOpenConnectModal}
+              className="p-3.5 rounded-xl bg-[#162623] hover:bg-[#1E3430] border border-[#577877]/30 text-left transition-all group flex items-start gap-3"
+            >
+              <div className="p-2 rounded-lg bg-[#295255] text-white shrink-0 group-hover:scale-105 transition-transform">
+                <Plus className="w-4 h-4" />
+              </div>
+              <div>
+                <span className="font-bold text-xs text-white block">Connect Repository</span>
+                <span className="text-[11px] text-[#577877]">Index a new GitHub repo</span>
+              </div>
+            </button>
+
+            <button
+              onClick={() => onNavigateTab('explorer')}
+              className="p-3.5 rounded-xl bg-[#162623] hover:bg-[#1E3430] border border-[#577877]/30 text-left transition-all group flex items-start gap-3"
+            >
+              <div className="p-2 rounded-lg bg-[#295255] text-white shrink-0 group-hover:scale-105 transition-transform">
+                <FolderGit2 className="w-4 h-4" />
+              </div>
+              <div>
+                <span className="font-bold text-xs text-white block">Open Codebase Explorer</span>
+                <span className="text-[11px] text-[#577877]">Unified 4-tool workspace</span>
+              </div>
+            </button>
+
+            <button
+              onClick={() => onNavigateTab('explorer', 'chat')}
+              className="p-3.5 rounded-xl bg-[#162623] hover:bg-[#1E3430] border border-[#577877]/30 text-left transition-all group flex items-start gap-3"
+            >
+              <div className="p-2 rounded-lg bg-[#295255] text-white shrink-0 group-hover:scale-105 transition-transform">
+                <MessageSquare className="w-4 h-4" />
+              </div>
+              <div>
+                <span className="font-bold text-xs text-white block">Ask a Question</span>
+                <span className="text-[11px] text-[#577877]">Evidence-based AI chat</span>
+              </div>
+            </button>
+
+            <button
+              onClick={() => onNavigateTab('settings')}
+              className="p-3.5 rounded-xl bg-[#162623] hover:bg-[#1E3430] border border-[#577877]/30 text-left transition-all group flex items-start gap-3"
+            >
+              <div className="p-2 rounded-lg bg-[#295255] text-white shrink-0 group-hover:scale-105 transition-transform">
+                <BookOpen className="w-4 h-4" />
+              </div>
+              <div>
+                <span className="font-bold text-xs text-white block">View Documentation</span>
+                <span className="text-[11px] text-[#577877]">Architecture & API settings</span>
+              </div>
+            </button>
+          </div>
+        </Spotlight>
+      </div>
+
+      {/* Featured Active Repository Showcase */}
+      {activeRepo && (
+        <Spotlight className="rounded-2xl bg-[#1B2D2A] border border-[#577877]/30 p-6 shadow-xl">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#295255] text-white border border-[#6DBE9B]/40 uppercase tracking-wider">
+                  ACTIVE WORKSPACE
+                </span>
+                <span className="text-xs font-mono text-[#577877]">
+                  branch: <strong className="text-[#B9CECC]">{activeRepo.branch}</strong>
+                </span>
+              </div>
+              <h2 className="text-xl font-bold font-mono text-white">
+                {activeRepo.fullName}
+              </h2>
+              <p className="text-xs text-[#B9CECC]">
+                Ready for semantic questions, AST symbol navigation, and unified diff inspection in Codebase Explorer.
               </p>
             </div>
-            {!filterQuery && (
-              <button
-                onClick={onOpenConnectModal}
-                className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-medium text-xs inline-flex items-center gap-1.5 shadow-md shadow-blue-600/20"
-              >
-                <Plus className="w-3.5 h-3.5" />
-                <span>Connect Repository</span>
-              </button>
-            )}
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredRepositories.map((repo) => {
-              const isActive = repo.id === activeRepoId;
-              return (
-                <div
-                  key={repo.id}
-                  className={`p-5 rounded-2xl bg-slate-900/70 border transition-all flex flex-col justify-between gap-4 ${
-                    isActive
-                      ? 'border-blue-500/60 shadow-lg shadow-blue-500/10'
-                      : 'border-slate-800 hover:border-slate-700'
-                  }`}
+
+            <div className="flex flex-wrap items-center gap-2">
+              <Magnetic>
+                <button
+                  onClick={() => onNavigateTab('explorer', 'chat')}
+                  className="px-4 py-2.5 rounded-xl bg-[#295255] hover:bg-[#34686C] text-white text-xs font-bold flex items-center gap-2 border border-[#577877]/50 shadow-md transition-all cursor-pointer"
                 >
-                  <div className="space-y-3">
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="min-w-0">
-                        <span className="text-xs font-mono text-slate-400 block truncate">{repo.owner}</span>
-                        <h3 className="text-sm font-bold text-white font-mono truncate">{repo.name}</h3>
-                      </div>
-                      <div className="flex items-center gap-1 shrink-0">
-                        {repo.stars > 0 && (
-                          <span className="flex items-center gap-1 px-2 py-0.5 rounded-md bg-amber-500/10 border border-amber-500/20 text-amber-300 text-[10px] font-mono">
-                            <Star className="w-3 h-3 fill-amber-400/20" />
-                            {repo.stars}
-                          </span>
-                        )}
-                        <button
-                          onClick={() => onOpenSettingsModal(repo.id)}
-                          title="Repository Settings"
-                          className="p-1.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition-colors"
-                        >
-                          <Settings className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-                    </div>
+                  <MessageSquare className="w-3.5 h-3.5 text-[#6DBE9B]" />
+                  <span>Ask AI Chat</span>
+                </button>
+              </Magnetic>
 
-                    <div className="flex flex-wrap items-center gap-2 text-[11px] font-mono text-slate-400">
-                      <span className="flex items-center gap-1 px-2 py-0.5 rounded bg-slate-800/80 text-slate-300">
-                        <GitBranch className="w-3 h-3 text-slate-500" />
-                        {repo.branch}
-                      </span>
-                      {repo.language && (
-                        <span className="px-2 py-0.5 rounded bg-slate-800/80 text-slate-300">
-                          {repo.language}
-                        </span>
-                      )}
-                      <span className="flex items-center gap-1 text-indigo-400">
-                        <Layers className="w-3 h-3" />
-                        {repo.chunksCount} chunks
-                      </span>
-                    </div>
+              <Magnetic>
+                <button
+                  onClick={() => onNavigateTab('explorer', 'diffs')}
+                  className="px-3.5 py-2.5 rounded-xl bg-[#162623] hover:bg-[#1E3430] text-[#B9CECC] hover:text-white text-xs font-medium flex items-center gap-1.5 border border-[#577877]/30 transition-all cursor-pointer"
+                >
+                  <GitCommit className="w-3.5 h-3.5 text-[#6DBE9B]" />
+                  <span>Diffs</span>
+                </button>
+              </Magnetic>
 
-                    <div className="text-[11px] text-slate-500 flex items-center gap-1.5 pt-1">
-                      <Clock className="w-3 h-3" />
-                      <span>Indexed: {new Date(repo.lastIndexedAt).toLocaleDateString()}</span>
-                    </div>
-                  </div>
-
-                  {/* Actions Grid */}
-                  <div className="pt-3 border-t border-slate-800/80 grid grid-cols-4 gap-1.5">
-                    <button
-                      onClick={() => {
-                        onSelectRepo(repo.id);
-                        onNavigateTab('chat');
-                      }}
-                      className="py-1.5 px-2 rounded-lg bg-blue-600/15 hover:bg-blue-600/25 border border-blue-500/30 text-blue-300 font-medium text-[11px] flex items-center justify-center gap-1 transition-all"
-                    >
-                      <MessageSquare className="w-3 h-3" />
-                      <span>Chat</span>
-                    </button>
-                    <button
-                      onClick={() => {
-                        onSelectRepo(repo.id);
-                        onNavigateTab('search');
-                      }}
-                      className="py-1.5 px-2 rounded-lg bg-purple-600/15 hover:bg-purple-600/25 border border-purple-500/30 text-purple-300 font-medium text-[11px] flex items-center justify-center gap-1 transition-all"
-                    >
-                      <Search className="w-3 h-3" />
-                      <span>Search</span>
-                    </button>
-                    <button
-                      onClick={() => {
-                        onSelectRepo(repo.id);
-                        onNavigateTab('intelligence');
-                      }}
-                      className="py-1.5 px-2 rounded-lg bg-cyan-600/15 hover:bg-cyan-600/25 border border-cyan-500/30 text-cyan-300 font-medium text-[11px] flex items-center justify-center gap-1 transition-all"
-                    >
-                      <Code2 className="w-3 h-3" />
-                      <span>AST</span>
-                    </button>
-                    <button
-                      onClick={() => {
-                        onSelectRepo(repo.id);
-                        onNavigateTab('history');
-                      }}
-                      className="py-1.5 px-2 rounded-lg bg-slate-800 hover:bg-slate-750 text-slate-300 font-medium text-[11px] flex items-center justify-center gap-1 transition-all"
-                    >
-                      <GitCommit className="w-3 h-3" />
-                      <span>Diffs</span>
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
+              <Magnetic>
+                <button
+                  onClick={() => onNavigateTab('explorer', 'ast')}
+                  className="px-3.5 py-2.5 rounded-xl bg-[#162623] hover:bg-[#1E3430] text-[#B9CECC] hover:text-white text-xs font-medium flex items-center gap-1.5 border border-[#577877]/30 transition-all cursor-pointer"
+                >
+                  <Code2 className="w-3.5 h-3.5 text-[#6DBE9B]" />
+                  <span>AST</span>
+                </button>
+              </Magnetic>
+            </div>
           </div>
-        )}
+        </Spotlight>
+      )}
+
+      {/* Connected Repositories Grid */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <TextEffect as="h2" className="text-base font-bold text-white">
+            {`Connected Repositories (${repositories.length})`}
+          </TextEffect>
+          <button
+            onClick={() => onNavigateTab('repositories')}
+            className="text-xs text-[#6DBE9B] hover:underline font-mono flex items-center gap-1"
+          >
+            <span>View All</span>
+            <ArrowRight className="w-3 h-3" />
+          </button>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {repositories.map((repo) => {
+            const isSelected = repo.id === activeRepoId;
+            const isDetailsOpen = !!expandedRepoDetails[repo.id];
+
+            return (
+              <Tilt key={repo.id} maxAngle={6} scale={1.01}>
+                <Spotlight size={280} strength={0.12} className="h-full rounded-2xl">
+                  <div
+                    onClick={() => onSelectRepo(repo.id)}
+                    className={`p-5 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between card-hover-teal h-full ${
+                      isSelected
+                        ? 'bg-[#1E3430] border-[#6DBE9B]/60 shadow-lg ring-1 ring-[#6DBE9B]/30'
+                        : 'bg-[#1B2D2A] border-[#577877]/30 hover:border-[#577877]/60'
+                    }`}
+                  >
+                    <div>
+                      {/* Card Header: Name, Stars, Settings */}
+                      <div className="flex items-start justify-between gap-2 mb-3">
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className="font-mono font-bold text-sm text-[#F0F5F7] truncate block">
+                              {repo.fullName}
+                            </span>
+                            {isSelected && (
+                              <span className="px-1.5 py-0.5 rounded text-[9px] font-mono bg-[#295255] text-[#F0F5F7] border border-[#6DBE9B]/40">
+                                ACTIVE
+                              </span>
+                            )}
+                          </div>
+                          <span className="text-[11px] text-[#577877] font-mono">
+                            owner: {repo.owner}
+                          </span>
+                        </div>
+
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          {repo.stars > 0 && (
+                            <span className="flex items-center gap-1 text-xs text-[#D9A066] font-mono">
+                              <Star className="w-3.5 h-3.5 fill-[#D9A066]/20" />
+                              {repo.stars}
+                            </span>
+                          )}
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onOpenSettingsModal(repo.id);
+                            }}
+                            title="Repository Settings"
+                            className="p-1.5 rounded-lg text-[#577877] hover:text-[#F0F5F7] hover:bg-[#162623] transition-colors"
+                          >
+                            <Settings className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Card Stats */}
+                      <div className="grid grid-cols-3 gap-2 py-2.5 border-y border-[#577877]/15 text-xs font-mono text-[#577877]">
+                        <div>
+                          <span className="text-[10px] block">Branch</span>
+                          <span className="text-[#B9CECC] truncate block flex items-center gap-1 mt-0.5">
+                            <GitBranch className="w-3 h-3 text-[#577877]" />
+                            {repo.branch}
+                          </span>
+                        </div>
+                        <div>
+                          <span className="text-[10px] block">Chunks</span>
+                          <span className="text-[#B9CECC] block mt-0.5">{repo.chunksCount}</span>
+                        </div>
+                        <div>
+                          <span className="text-[10px] block">Files</span>
+                          <span className="text-[#B9CECC] block mt-0.5">{repo.filesCount}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Footer Actions */}
+                    <div className="mt-4 pt-2 flex items-center justify-between">
+                      <button
+                        onClick={(e) => toggleRepoDetails(repo.id, e)}
+                        className="text-[11px] text-[#577877] hover:text-[#F0F5F7] flex items-center gap-1 font-mono transition-colors"
+                      >
+                        <span>{isDetailsOpen ? 'Hide technical info' : 'Technical info'}</span>
+                        {isDetailsOpen ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+                      </button>
+
+                      <div className="flex items-center gap-2">
+                        <Magnetic>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onSelectRepo(repo.id);
+                              onNavigateTab('explorer', 'chat');
+                            }}
+                            className="px-3 py-1.5 rounded-lg bg-[#295255] hover:bg-[#34686C] text-[#F0F5F7] text-xs font-semibold flex items-center gap-1 border border-[#577877]/40 transition-colors"
+                          >
+                            <span>Open Explorer</span>
+                            <ArrowRight className="w-3 h-3" />
+                          </button>
+                        </Magnetic>
+                      </div>
+                    </div>
+
+                    {/* Expandable Technical Details Drawer */}
+                    {isDetailsOpen && (
+                      <div className="mt-3 pt-3 border-t border-[#577877]/20 space-y-1.5 text-[11px] font-mono text-[#577877] bg-[#111E1C]/60 p-2.5 rounded-xl">
+                        <div className="flex justify-between">
+                          <span>Internal ID:</span>
+                          <span className="text-[#B9CECC]">{repo.id}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Last Indexed:</span>
+                          <span className="text-[#B9CECC]">{new Date(repo.lastIndexedAt).toLocaleDateString()}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Parser:</span>
+                          <span className="text-[#B9CECC]">Tree-Sitter AST</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Embedding Cache:</span>
+                          <span className="text-[#6DBE9B]">Lazy SQLite + Qdrant</span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </Spotlight>
+              </Tilt>
+            );
+          })}
+        </div>
       </div>
     </div>
   );

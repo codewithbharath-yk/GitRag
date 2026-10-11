@@ -10,6 +10,8 @@ export interface HealthResponse {
   gemini_configured: boolean;
   qdrant_configured?: boolean;
   supabase_configured?: boolean;
+  llm_provider?: string;
+  embedding_provider?: string;
 }
 
 export interface RepoValidateRequest {
@@ -31,7 +33,9 @@ export interface RepoValidateResponse {
   stars_count: number;
   forks_count: number;
   language?: string | null;
+  total_files?: number;
   error?: string | null;
+  error_code?: string | null;
 }
 
 export interface RepoIndexRequest {
@@ -57,6 +61,7 @@ export interface RepoStatusResponse {
   chunks_indexed: number;
   duration_ms?: number | null;
   error?: string | null;
+  error_code?: string | null;
 }
 
 export interface RepoFileItem {
@@ -92,6 +97,7 @@ export interface ChatResponse {
   repository_id: string;
   answer: string;
   sources: SourceCitation[];
+  files_analyzed?: string[];
   insufficient_context: boolean;
   retrieved_chunks_count: number;
   latency_ms: number;
@@ -114,8 +120,10 @@ export interface ChatMessageItem {
   id: string;
   role: 'user' | 'assistant';
   content: string;
+  question?: string;
   timestamp: string;
   sources?: SourceCitation[];
+  files_analyzed?: string[];
   insufficientContext?: boolean;
   retrievedChunksCount?: number;
   latencyMs?: number;
@@ -348,5 +356,46 @@ export interface SearchResponse {
   latency_ms: number;
 }
 
+export type FeedbackType =
+  | 'thumbs_up'
+  | 'thumbs_down'
+  | 'flag_citation'
+  | 'flag_incomplete'
+  | 'flag_irrelevant';
 
+export interface FeedbackCreateRequest {
+  repository_id: string;
+  question: string;
+  retrieved_chunks?: string[];
+  model_name?: string;
+  retrieval_config?: Record<string, any>;
+  feedback_type: FeedbackType;
+  comment?: string | null;
+  is_positive: boolean;
+}
 
+export interface RetrievalTuningRecommendation {
+  recommended_candidate_count: number;
+  recommended_min_similarity: number;
+  recommended_chunk_size: number;
+  confidence: number;
+  notes: string[];
+}
+
+export interface FeedbackStatsResponse {
+  repository_id: string;
+  total_feedback: number;
+  positive_count: number;
+  negative_count: number;
+  flag_breakdown: Record<string, number>;
+  tuning: RetrievalTuningRecommendation;
+}
+
+export interface UserProfile {
+  name: string;
+  email?: string;
+  role: string;
+  githubUsername?: string;
+  primaryLanguage?: string;
+  primaryGoal?: string;
+}

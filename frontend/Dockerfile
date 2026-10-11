@@ -8,6 +8,10 @@ RUN npm ci
 
 COPY . .
 
+# Build argument for backend URL
+ARG VITE_API_BASE_URL=""
+ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
+
 # Build Vite React SPA
 RUN npm run build
 

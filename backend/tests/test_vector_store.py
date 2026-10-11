@@ -78,3 +78,34 @@ def test_qdrant_in_memory_upsert_and_search():
     assert store.count_repository_chunks("repo_a") == 0
     # repo_b should remain untouched
     assert store.count_repository_chunks("repo_b") == 1
+
+
+def test_qdrant_dimension_validation():
+    """
+    Verify that passing vectors with mismatched dimensions raises ValueError.
+    """
+    import pytest
+    store = QdrantVectorStore(
+        collection_name="test_dim_validation",
+        vector_size=384,
+        location=":memory:",
+    )
+
+    chunk = CodeChunk(
+        chunk_id="chk_1",
+        repository_id="repo_1",
+        file_path="main.py",
+        language="python",
+        start_line=1,
+        end_line=5,
+        content="x = 1",
+    )
+
+    # Attempt upsert with 768-dim vector when 384 is expected
+    invalid_emb = [0.1] * 768
+    with pytest.raises(ValueError, match="Vector dimension mismatch"):
+        store.upsert_chunks([chunk], [invalid_emb])
+
+    # Attempt search with 768-dim vector when 384 is expected
+    with pytest.raises(ValueError, match="Query vector dimension mismatch"):
+        store.search(query_embedding=invalid_emb)

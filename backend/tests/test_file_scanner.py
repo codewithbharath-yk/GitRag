@@ -90,3 +90,50 @@ def test_scanner_handles_nonexistent_directory():
     scanner = FileScanner()
     with pytest.raises(ValueError):
         scanner.scan_directory(Path("/nonexistent_directory_abc123"))
+
+
+def test_is_secret_or_sensitive_filename():
+    """
+    Verify is_secret_or_sensitive_filename correctly flags all secret patterns.
+    """
+    from app.rag.file_scanner import is_secret_or_sensitive_filename
+
+    assert is_secret_or_sensitive_filename(".env") is True
+    assert is_secret_or_sensitive_filename(".env.production") is True
+    assert is_secret_or_sensitive_filename("config/.env.local") is True
+    assert is_secret_or_sensitive_filename("id_rsa") is True
+    assert is_secret_or_sensitive_filename("id_ed25519") is True
+    assert is_secret_or_sensitive_filename("server.key") is True
+    assert is_secret_or_sensitive_filename("cert.pem") is True
+    assert is_secret_or_sensitive_filename("credentials.json") is True
+    assert is_secret_or_sensitive_filename("service_account.json") is True
+    assert is_secret_or_sensitive_filename("client_secret_123.json") is True
+    assert is_secret_or_sensitive_filename("api_token.secret") is True
+
+    # Valid source files must NOT be flagged
+    assert is_secret_or_sensitive_filename("main.py") is False
+    assert is_secret_or_sensitive_filename("auth_service.py") is False
+    assert is_secret_or_sensitive_filename("user_controller.ts") is False
+    assert is_secret_or_sensitive_filename("index.html") is False
+
+
+def test_scanner_excludes_secrets_and_lockfiles():
+    """
+    Verify scanner completely ignores private keys, certs, lockfiles and minified bundles.
+    """
+    with tempfile.TemporaryDirectory() as tmpdir:
+        base = Path(tmpdir)
+
+        (base / "app.py").write_text("print('app')", encoding="utf-8")
+        (base / "server.key").write_text("PRIVATE KEY", encoding="utf-8")
+        (base / "cert.pem").write_text("CERTIFICATE", encoding="utf-8")
+        (base / "id_rsa").write_text("SSH KEY", encoding="utf-8")
+        (base / "credentials.json").write_text("{}", encoding="utf-8")
+        (base / "package-lock.json").write_text("{}", encoding="utf-8")
+        (base / "bundle.min.js").write_text("var a=1;", encoding="utf-8")
+
+        scanner = FileScanner()
+        discovered = scanner.scan_directory(base)
+        discovered_paths = [f.path for f in discovered]
+
+        assert discovered_paths == ["app.py"]

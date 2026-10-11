@@ -6,7 +6,7 @@ Google Gemini text-embedding-004 (or configured embedding models).
 """
 
 from abc import ABC, abstractmethod
-from typing import List, Optional
+from typing import List, Optional, Any
 import time
 
 from app.config.settings import Settings, get_settings
@@ -41,6 +41,10 @@ class BaseEmbeddingProvider(ABC):
     def embed_text(self, text: str) -> List[float]:
         """Generate vector embedding for a single text string."""
         pass
+
+    def embed_query(self, query: str) -> List[float]:
+        """Generate vector embedding for a query string."""
+        return self.embed_text(query)
 
     @abstractmethod
     def embed_batch(self, texts: List[str]) -> List[List[float]]:
@@ -283,6 +287,172 @@ class OpenRouterEmbeddingProvider(BaseEmbeddingProvider):
 
         return all_embeddings
 
+import os
+import threading
+
+class LocalEmbeddingProvider(BaseEmbeddingProvider):
+    """
+    Local Sentence Transformers Embedding Provider using 'BAAI/bge-small-en-v1.5'.
+    Produces 384-dimensional dense embeddings.
+    Runs on CPU by default (or CUDA when available).
+    Thread-safe singleton model loaded once and reused across all requests.
+    Supports persistent model cache directories via settings or environment variables.
+    """
+    _cached_model: Optional[Any] = None
+    _cached_device: Optional[str] = None
+    _cached_model_name: Optional[str] = None
+    _cached_cache_dir: Optional[str] = None
+    _lock = threading.Lock()
+
+    def __init__(
+        self,
+        model_name: str = "BAAI/bge-small-en-v1.5",
+        batch_size: int = DEFAULT_BATCH_SIZE,
+        device: Optional[str] = None,
+        cache_dir: Optional[str] = None,
+    ):
+        settings = get_settings()
+        self._model_name = model_name or getattr(settings, "embedding_model", "BAAI/bge-small-en-v1.5")
+        self.batch_size = max(1, batch_size or getattr(settings, "embedding_batch_size", DEFAULT_BATCH_SIZE))
+        self._cache_dir = (
+            cache_dir
+            or getattr(settings, "embedding_cache_dir", None)
+            or os.environ.get("SENTENCE_TRANSFORMERS_HOME")
+            or os.environ.get("HF_HOME")
+            or os.environ.get("MODEL_CACHE_DIR")
+        )
+
+        # Detect hardware safely - prefer CPU by default unless cuda is explicitly configured and available
+        if device:
+            self._device = device
+        else:
+            configured_device = getattr(settings, "embedding_device", "cpu")
+            if configured_device == "cuda":
+                try:
+                    import torch
+                    self._device = "cuda" if torch.cuda.is_available() else "cpu"
+                except ImportError:
+                    self._device = "cpu"
+            else:
+                self._device = "cpu"
+
+        self._dimension = 384
+        self._model = None
+        # Eagerly load model only if explicitly requested or device is configured
+        if getattr(settings, "app_env", "") == "production":
+            self._ensure_model_loaded()
+
+    def _ensure_model_loaded(self):
+        """
+        Thread-safely initialize and cache the SentenceTransformer model once.
+        """
+        with LocalEmbeddingProvider._lock:
+            if (
+                LocalEmbeddingProvider._cached_model is None
+                or LocalEmbeddingProvider._cached_device != self._device
+                or LocalEmbeddingProvider._cached_model_name != self._model_name
+                or LocalEmbeddingProvider._cached_cache_dir != self._cache_dir
+            ):
+                logger.info(
+                    f"Initializing local embedding model '{self._model_name}' on device '{self._device}' "
+                    f"(cache_dir={self._cache_dir or 'default'})..."
+                )
+                try:
+                    import torch
+                    if hasattr(torch, "set_num_threads"):
+                        torch.set_num_threads(min(4, os.cpu_count() or 4))
+                    from sentence_transformers import SentenceTransformer
+                    try:
+                        # Attempt instant local load from cache first to avoid remote network check delay
+                        LocalEmbeddingProvider._cached_model = SentenceTransformer(
+                            self._model_name,
+                            device=self._device,
+                            cache_folder=self._cache_dir,
+                            local_files_only=True,
+                        )
+                    except Exception:
+                        LocalEmbeddingProvider._cached_model = SentenceTransformer(
+                            self._model_name,
+                            device=self._device,
+                            cache_folder=self._cache_dir,
+                        )
+                    LocalEmbeddingProvider._cached_device = self._device
+                    LocalEmbeddingProvider._cached_model_name = self._model_name
+                    LocalEmbeddingProvider._cached_cache_dir = self._cache_dir
+
+                    dim_func = getattr(LocalEmbeddingProvider._cached_model, "get_embedding_dimension", None) or getattr(LocalEmbeddingProvider._cached_model, "get_sentence_embedding_dimension")
+                    logger.info(
+                        f"Local embedding model '{self._model_name}' loaded successfully "
+                        f"({dim_func()} dims on {self._device})."
+                    )
+                except Exception as e:
+                    logger.error(f"Failed to load local embedding model '{self._model_name}': {e}", exc_info=True)
+                    raise LLMProviderError(
+                        f"Failed to load local embedding model '{self._model_name}'. "
+                        f"Ensure 'sentence-transformers' and 'torch' are installed, and that Hugging Face model weights can be downloaded or are present in cache. ({e})"
+                    ) from e
+
+            self._model = LocalEmbeddingProvider._cached_model
+
+    @property
+    def dimension(self) -> int:
+        return self._dimension
+
+    def get_dimension(self) -> int:
+        return self._dimension
+
+    @property
+    def model_name(self) -> str:
+        return self._model_name
+
+    @property
+    def device(self) -> str:
+        return self._device
+
+    def embed_text(self, text: str) -> List[float]:
+        """Generate vector embedding for a single text string."""
+        if not text or not text.strip():
+            return [0.0] * self.dimension
+        embeddings = self.embed_batch([text])
+        if not embeddings:
+            return [0.0] * self.dimension
+        return embeddings[0]
+
+    def embed_query(self, query: str) -> List[float]:
+        """
+        Generate vector embedding for a search or chat query.
+        Uses identical preprocessing and normalization as document embeddings.
+        """
+        return self.embed_text(query)
+
+    def embed_texts(self, texts: List[str]) -> List[List[float]]:
+        """Alias for embed_batch for compatibility with common embedding interfaces."""
+        return self.embed_batch(texts)
+
+    def embed_batch(self, texts: List[str]) -> List[List[float]]:
+        """Generate vector embeddings for a list of strings in batches."""
+        if not texts:
+            return []
+
+        self._ensure_model_loaded()
+        sanitized_texts = [t if t and t.strip() else " " for t in texts]
+
+        try:
+            embeddings = self._model.encode(
+                sanitized_texts,
+                batch_size=self.batch_size,
+                normalize_embeddings=True,
+                show_progress_bar=False,
+            )
+            return [emb.tolist() for emb in embeddings]
+        except Exception as e:
+            logger.error(f"Error generating local embeddings with {self._model_name}: {e}")
+            raise LLMProviderError(f"Failed to generate local embeddings: {e}") from e
+
+
+# Reusable service alias
+LocalEmbeddingService = LocalEmbeddingProvider
+
 
 def get_embedding_provider(
     provider_name: Optional[str] = None,
@@ -290,13 +460,25 @@ def get_embedding_provider(
 ) -> BaseEmbeddingProvider:
     """
     Factory function returning the configured embedding provider.
-    Supports 'gemini' and 'openrouter'.
+    Supports 'local' (default BGE model), 'bge', 'gemini', and 'openrouter'.
     """
     cfg = settings or get_settings()
-    selected = (provider_name or cfg.embedding_provider or "openrouter").lower()
+    selected = (provider_name or getattr(cfg, "embedding_provider", "local") or "local").lower()
+
+    if selected in ("local", "bge", "sentence-transformers", "sentence_transformers"):
+        model = getattr(cfg, "embedding_model", "BAAI/bge-small-en-v1.5")
+        device = getattr(cfg, "embedding_device", "cpu")
+        batch_size = getattr(cfg, "embedding_batch_size", 32)
+        cache_dir = getattr(cfg, "embedding_cache_dir", None)
+        return LocalEmbeddingProvider(
+            model_name=model,
+            device=device,
+            batch_size=batch_size,
+            cache_dir=cache_dir,
+        )
 
     if selected == "openrouter":
-        model = getattr(cfg, "embedding_model", None) or cfg.openrouter_embedding_model
+        model = getattr(cfg, "openrouter_embedding_model", None) or getattr(cfg, "embedding_model", None)
         return OpenRouterEmbeddingProvider(
             api_key=cfg.openrouter_api_key,
             base_url=cfg.openrouter_base_url,

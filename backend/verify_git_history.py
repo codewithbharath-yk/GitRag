@@ -5,7 +5,7 @@ End-to-end verification script for Git History Intelligence APIs.
 import httpx
 import json
 
-client = httpx.Client(base_url="http://127.0.0.1:8000", timeout=60.0)
+client = httpx.Client(base_url="http://127.0.0.1:8000", timeout=120.0)
 
 print("=== 1. Health Check ===")
 res = client.get("/api/v1/health")

@@ -35,6 +35,7 @@ async def lifespan(app: FastAPI):
     logger.info(f"Starting {settings.app_name} v{settings.app_version} in [{settings.app_env}] mode...")
     logger.info(f"Gemini LLM model configured: {settings.gemini_model}")
     logger.info(f"Gemini API key configured: {settings.is_gemini_configured}")
+    logger.info(f"Embedding provider: {settings.embedding_provider} ({settings.embedding_model})")
     logger.info(f"Qdrant configured at: {settings.qdrant_url}")
     logger.info(f"Authentication enabled: {settings.auth_enabled}")
     if not settings.is_gemini_configured:
@@ -63,13 +64,18 @@ def create_app() -> FastAPI:
     )
 
     # 1. CORS Middleware
+    configured_origins = [o.strip() for o in getattr(settings, "cors_origins", "").split(",") if o.strip()]
     allowed_origins = [
         "http://localhost:5173",
         "http://127.0.0.1:5173",
         "http://localhost:3000",
         "http://127.0.0.1:3000",
     ]
-    if settings.app_env != "production":
+    for o in configured_origins:
+        if o not in allowed_origins:
+            allowed_origins.append(o)
+
+    if settings.app_env != "production" and "*" not in allowed_origins:
         allowed_origins.append("*")
 
     app.add_middleware(

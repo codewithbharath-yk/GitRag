@@ -66,6 +66,9 @@ qdrant_bin/
 data/
 storage/
 *.zip
+.qdrant-initialized
+verification_results.json
+backend/verification_results.json
 
 # IDE and Editor configs
 .idea/

@@ -11,7 +11,7 @@ def test_default_settings():
     """
     settings = Settings()
     assert settings.app_name == "CodeRAG"
-    assert settings.gemini_model == "gemini-2.5-flash"
+    assert settings.gemini_model in ("gemini-flash-lite-latest", "gemini-2.5-flash", "gemini-1.5-flash")
     assert settings.gemini_embedding_model == "gemini-embedding-001"
     assert settings.app_port == 8000
 

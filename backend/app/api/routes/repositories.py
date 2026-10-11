@@ -13,10 +13,18 @@ from fastapi import APIRouter, HTTPException, BackgroundTasks, status, Query, De
 from app.auth.models import User
 from app.auth.dependencies import get_current_user, get_optional_user
 from app.github.client import (
+    GitHubError,
+    EmptyRepositoryError,
+    BranchNotFoundError,
+    NoSupportedSourceFilesError,
     RepositoryNotFoundError,
     RepositoryAccessDeniedError,
+    GitHubAuthError,
     RateLimitExceededError,
-    GitHubError,
+    GitHubConflictError,
+    GitHubInvalidRequestError,
+    GitHubServerError,
+    GitHubTimeoutError,
 )
 from app.github.url_parser import InvalidGitHubURLError
 from app.schemas.repository import (
@@ -114,27 +122,25 @@ async def validate_repository(
     except InvalidGitHubURLError as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Invalid repository URL: {str(e)}",
-        )
-    except RepositoryNotFoundError as e:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=str(e),
-        )
-    except RepositoryAccessDeniedError as e:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail=str(e),
-        )
-    except RateLimitExceededError as e:
-        raise HTTPException(
-            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-            detail=str(e),
+            detail={
+                "code": "INVALID_URL",
+                "message": f"Invalid repository URL: {str(e)}",
+                "recoverable": True,
+            },
         )
     except GitHubError as e:
         raise HTTPException(
-            status_code=status.HTTP_502_BAD_GATEWAY,
-            detail=f"GitHub integration error: {str(e)}",
+            status_code=e.status_code,
+            detail=e.to_dict(),
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail={
+                "code": "INTERNAL_ERROR",
+                "message": f"Unexpected error validating repository: {str(e)}",
+                "recoverable": False,
+            },
         )
 
 
@@ -163,12 +169,25 @@ async def index_repository(
     except InvalidGitHubURLError as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Invalid repository URL: {str(e)}",
+            detail={
+                "code": "INVALID_URL",
+                "message": f"Invalid repository URL: {str(e)}",
+                "recoverable": True,
+            },
+        )
+    except GitHubError as e:
+        raise HTTPException(
+            status_code=e.status_code,
+            detail=e.to_dict(),
         )
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to initiate indexing job: {str(e)}",
+            detail={
+                "code": "INTERNAL_ERROR",
+                "message": f"Failed to initiate indexing job: {str(e)}",
+                "recoverable": False,
+            },
         )
 
 

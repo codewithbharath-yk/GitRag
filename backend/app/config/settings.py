@@ -33,26 +33,35 @@ class Settings(BaseSettings):
 
     # --- Google Gemini Configuration ---
     gemini_api_key: str = Field(default="", description="Google Gemini API key for LLM and embeddings")
-    gemini_model: str = Field(default="gemini-2.5-flash", description="Gemini model name for chat and explanations")
+    gemini_model: str = Field(default="gemini-flash-lite-latest", description="Gemini model name for chat and explanations")
     gemini_embedding_model: str = Field(default="gemini-embedding-001", description="Gemini model name for generating embeddings")
 
     # --- OpenRouter API Configuration ---
-    openrouter_api_key: Optional[str] = Field(default=None, description="OpenRouter API key for LLMs and embeddings")
+    openrouter_api_key: Optional[str] = Field(default=None, description="OpenRouter API key for LLMs")
     openrouter_base_url: str = Field(default="https://openrouter.ai/api/v1", description="OpenRouter API base URL")
-    openrouter_embedding_model: str = Field(default="nvidia/nemotron-3-embed-1b:free", description="OpenRouter embedding model")
+    openrouter_embedding_model: str = Field(default="nvidia/nemotron-3-embed-1b:free", description="Deprecated OpenRouter embedding model")
     openrouter_model: str = Field(default="nvidia/nemotron-3.5-lightning:free", description="OpenRouter LLM model for chat and code analysis")
-    embedding_model: str = Field(default="nvidia/nemotron-3-embed-1b:free", description="Configured embedding model (OpenRouter Nemotron 3 Embed 1B)")
+
+    # --- Local Embedding Model (BAAI/bge-small-en-v1.5) ---
+    embedding_model: str = Field(default="BAAI/bge-small-en-v1.5", description="Configured embedding model (Local BAAI/bge-small-en-v1.5)")
+    embedding_device: str = Field(default="cpu", description="Device for local embeddings: 'cpu' or 'cuda'")
+    embedding_batch_size: int = Field(default=32, description="Batch size for embedding generation")
+    embedding_cache_dir: Optional[str] = Field(default=None, description="Custom persistent directory for caching embedding model weights")
 
     # --- Provider Selection ---
-    embedding_provider: str = Field(default="openrouter", description="Selected embedding provider: 'openrouter' or 'gemini'")
+    embedding_provider: str = Field(default="local", description="Selected embedding provider: 'local' (BGE), 'gemini', or 'openrouter'")
     llm_provider: str = Field(default="gemini", description="Selected LLM provider: 'gemini' or 'openrouter'")
 
-    # --- Vector Database Configuration (Future Phases) ---
-    qdrant_url: str = Field(default="http://localhost:6333", description="Qdrant vector database URL")
-    qdrant_api_key: Optional[str] = Field(default=None, description="Optional Qdrant API key")
+    # --- Vector Database Configuration (Qdrant) ---
+    qdrant_url: str = Field(default="http://localhost:6333", description="Qdrant vector database URL (or cloud cluster URL)")
+    qdrant_api_key: Optional[str] = Field(default=None, description="Optional Qdrant API key for Qdrant Cloud or protected instances")
+    qdrant_collection: str = Field(default="coderag_code_chunks", description="Qdrant collection name for vector chunks")
+    qdrant_timeout_seconds: float = Field(default=15.0, description="Qdrant client connection timeout in seconds")
 
-    # --- GitHub Configuration (Future Phases) ---
-    github_token: Optional[str] = Field(default=None, description="Optional GitHub Personal Access Token")
+    # --- GitHub Configuration ---
+    github_token: Optional[str] = Field(default=None, description="Optional GitHub Personal Access Token for 5,000 req/hr and private repos")
+    github_api_base_url: str = Field(default="https://api.github.com", description="GitHub REST API base URL")
+    github_request_timeout_seconds: float = Field(default=30.0, description="GitHub API request timeout in seconds")
 
     # --- Authentication & JWT Configuration ---
     auth_enabled: bool = Field(default=True, description="Enforce authentication on protected endpoints")
@@ -60,6 +69,10 @@ class Settings(BaseSettings):
     jwt_secret: str = Field(default="coderag-default-development-jwt-signing-secret-key-32bytes", description="Secret key for signing and verifying JWT tokens")
     jwt_algorithm: str = Field(default="HS256", description="JWT signing algorithm")
     jwt_expiration_minutes: int = Field(default=1440, description="JWT token validity in minutes (default: 24h)")
+    cors_origins: str = Field(
+        default="http://localhost:5173,http://127.0.0.1:5173,http://localhost:3000,http://127.0.0.1:3000",
+        description="Comma-separated list of allowed CORS origins"
+    )
 
     # --- Supabase Configuration (Optional Managed DB & Auth) ---
     supabase_url: Optional[str] = Field(default=None, description="Supabase project URL")
@@ -125,6 +138,9 @@ class Settings(BaseSettings):
             "log_level": self.log_level,
             "embedding_provider": self.embedding_provider,
             "embedding_model": self.embedding_model,
+            "embedding_device": self.embedding_device,
+            "embedding_batch_size": self.embedding_batch_size,
+            "embedding_cache_dir": self.embedding_cache_dir,
             "llm_provider": self.llm_provider,
             "openrouter_configured": self.is_openrouter_configured,
             "openrouter_model": self.openrouter_model,
@@ -133,6 +149,8 @@ class Settings(BaseSettings):
             "gemini_embedding_model": self.gemini_embedding_model,
             "gemini_configured": self.is_gemini_configured,
             "qdrant_url": self.qdrant_url,
+            "qdrant_collection": self.qdrant_collection,
+            "github_token_configured": bool(self.github_token),
             "enable_auth": self.enable_auth,
             "supabase_configured": self.is_supabase_configured,
             "max_repo_size_mb": self.max_repo_size_mb,

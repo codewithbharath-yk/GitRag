@@ -17,7 +17,7 @@ from app.rag.chunker import CodeChunk
 
 class DummyEmbeddingService:
     """Mock embeddings for predictable vector store testing without API quota."""
-    def __init__(self, dimension: int = 2048):
+    def __init__(self, dimension: int = 384):
         self.dimension = dimension
 
     def embed_text(self, text: str) -> list[float]:
@@ -154,7 +154,7 @@ def test_user_and_repository_vector_isolation():
         content="def alice_secret(): return 'AliceSecretKey'",
         metadata={"branch": "main", "user_id": user_a},
     )
-    store.upsert_chunks([chunk_a], [[0.1] * 2048], user_id=user_a)
+    store.upsert_chunks([chunk_a], [[0.1] * 384], user_id=user_a)
 
     # Insert chunk for User B
     chunk_b = CodeChunk(
@@ -167,16 +167,16 @@ def test_user_and_repository_vector_isolation():
         content="def bob_secret(): return 'BobSecretKey'",
         metadata={"branch": "main", "user_id": user_b},
     )
-    store.upsert_chunks([chunk_b], [[0.1] * 2048], user_id=user_b)
+    store.upsert_chunks([chunk_b], [[0.1] * 384], user_id=user_b)
 
     # 1. User A queries: must only get Alice's document
-    res_a = store.search([0.1] * 2048, top_k=10, repository_id=repo_id, user_id=user_a)
+    res_a = store.search([0.1] * 384, top_k=10, repository_id=repo_id, user_id=user_a)
     assert len(res_a) == 1
     assert res_a[0]["file_path"] == "secret_alice.py"
     assert "AliceSecretKey" in res_a[0]["content"]
 
     # 2. User B queries: must only get Bob's document
-    res_b = store.search([0.1] * 2048, top_k=10, repository_id=repo_id, user_id=user_b)
+    res_b = store.search([0.1] * 384, top_k=10, repository_id=repo_id, user_id=user_b)
     assert len(res_b) == 1
     assert res_b[0]["file_path"] == "secret_bob.py"
     assert "BobSecretKey" in res_b[0]["content"]

@@ -14,9 +14,17 @@ import uuid
 from app.github.client import (
     GitHubClient,
     GitHubError,
+    EmptyRepositoryError,
+    BranchNotFoundError,
+    NoSupportedSourceFilesError,
     RepositoryNotFoundError,
     RepositoryAccessDeniedError,
+    GitHubAuthError,
     RateLimitExceededError,
+    GitHubConflictError,
+    GitHubInvalidRequestError,
+    GitHubServerError,
+    GitHubTimeoutError,
 )
 from app.github.url_parser import parse_github_url, InvalidGitHubURLError
 from app.rag.pipeline import RAGPipeline
@@ -91,10 +99,22 @@ class RepositoryService:
         user_id: Optional[str] = None,
     ) -> RepoValidateResponse:
         """
-        Validate repository URL syntax and verify existence on GitHub.
+        Validate repository URL syntax, verify existence on GitHub, check commits,
+        and fetch lightweight manifest before initiating any indexing.
         """
         try:
             meta = self.github_client.validate_url(url, branch=branch)
+            target_branch = meta["selected_branch"]
+
+            # Fetch lightweight file manifest tree to verify commits and source files exist
+            manifest = self.github_client.fetch_repository_manifest(
+                owner=meta["owner"],
+                repo=meta["name"],
+                branch=target_branch,
+            )
+            meta["manifest"] = manifest
+            meta["total_files"] = manifest.get("total_files", 0)
+
             self._repo_metadata[meta["repository_id"]] = meta
             resolved_user = user_id or "default_user"
             self.data_store.save_repository(resolved_user, meta["repository_id"], meta)
@@ -113,12 +133,13 @@ class RepositoryService:
                 stars_count=meta["stars_count"],
                 forks_count=meta["forks_count"],
                 language=meta["language"],
+                total_files=meta["total_files"],
             )
         except InvalidGitHubURLError as e:
             logger.warning(f"URL validation error for '{url}': {e}")
             raise
-        except (RepositoryNotFoundError, RepositoryAccessDeniedError, RateLimitExceededError, GitHubError) as e:
-            logger.warning(f"GitHub access error for '{url}': {e}")
+        except GitHubError as e:
+            logger.warning(f"GitHub validation error for '{url}' [{e.code}]: {e.message}")
             raise
 
     def execute_indexing(
@@ -127,11 +148,14 @@ class RepositoryService:
         url: str,
         user_id: Optional[str] = None,
         branch: Optional[str] = None,
-        clean_existing: bool = True,
+        clean_existing: bool = False,
     ) -> None:
         """
-        Worker function to download source files and index them into Qdrant.
+        Lightweight repository registration worker.
+        Fetches repository file tree manifest and marks repository ready for AI question answering.
+        Does NOT download or embed the whole repository up front.
         """
+        start_time = time.perf_counter()
         job = self._jobs.get(job_id)
         if not job:
             return
@@ -140,77 +164,74 @@ class RepositoryService:
         job.status = "indexing"
         job.updated_at = datetime.now(timezone.utc)
         self.data_store.update_indexing_job(job_id, status="indexing")
-        logger.info(f"Starting indexing execution for job '{job_id}' (repo={job.repository_id}, user={resolved_user})...")
+        logger.info(f"Connecting repository manifest for job '{job_id}' (repo={job.repository_id}, user={resolved_user})...")
 
         try:
             identity = parse_github_url(url)
             meta = self.github_client.get_repository_metadata(identity.owner, identity.name)
             meta["repository_id"] = identity.repository_id
-            self._repo_metadata[identity.repository_id] = meta
             target_branch = branch or meta["default_branch"]
             job.branch = target_branch
 
-            # 1. Fetch source files from GitHub
-            discovered_files = self.github_client.fetch_repository_source_files(
+            # 1. Fetch lightweight repository manifest tree
+            manifest = self.github_client.fetch_repository_manifest(
                 owner=identity.owner,
                 repo=identity.name,
                 branch=target_branch,
             )
 
-            job.files_discovered = len(discovered_files)
+            meta["manifest"] = manifest
+            meta["total_files"] = manifest.get("total_files", 0)
+            self._repo_metadata[identity.repository_id] = meta
 
-            # 2. Index files via RAG Pipeline with user_id scoping
-            idx_result = self.rag_pipeline.index_files(
-                files=discovered_files,
-                repository_id=identity.repository_id,
-                user_id=resolved_user,
-                branch=target_branch,
-                target_name=identity.full_name,
-                clean_existing=clean_existing,
-            )
-
-            if idx_result.error:
-                job.status = "failed"
-                job.error = idx_result.error
-                job.duration_ms = idx_result.duration_ms
-                self.data_store.update_indexing_job(
-                    job_id,
-                    status="failed",
-                    files_discovered=job.files_discovered,
-                    error=idx_result.error,
-                    duration_ms=idx_result.duration_ms,
-                )
+            if clean_existing:
+                self.rag_pipeline.vector_store.delete_repository(identity.repository_id, user_id=resolved_user)
+                meta["total_chunks"] = 0
             else:
-                job.status = "completed"
-                job.files_indexed = idx_result.files_indexed
-                job.chunks_indexed = idx_result.chunks_indexed
-                job.duration_ms = idx_result.duration_ms
-                self.data_store.update_indexing_job(
-                    job_id,
-                    status="completed",
-                    files_discovered=job.files_discovered,
-                    files_indexed=idx_result.files_indexed,
-                    chunks_indexed=idx_result.chunks_indexed,
-                    duration_ms=idx_result.duration_ms,
-                )
-                # Update stored repository record
-                meta["total_files"] = idx_result.files_indexed
-                meta["total_chunks"] = idx_result.chunks_indexed
-                meta["indexed_at"] = datetime.utcnow()
-                self.data_store.save_repository(resolved_user, identity.repository_id, meta)
+                meta["total_chunks"] = self.rag_pipeline.vector_store.count_repository_chunks(identity.repository_id, user_id=resolved_user)
 
+            elapsed_ms = round((time.perf_counter() - start_time) * 1000, 2)
+
+            job.status = "completed"
+            job.files_discovered = manifest.get("total_files", 0)
+            job.files_indexed = 0
+            job.chunks_indexed = meta["total_chunks"]
+            job.duration_ms = elapsed_ms
             job.updated_at = datetime.now(timezone.utc)
-            logger.info(
-                f"Indexing finished for job '{job_id}': status={job.status}, "
-                f"files={job.files_indexed}, chunks={job.chunks_indexed}, duration={job.duration_ms}ms"
+
+            self.data_store.update_indexing_job(
+                job_id,
+                status="completed",
+                files_discovered=job.files_discovered,
+                files_indexed=0,
+                chunks_indexed=meta["total_chunks"],
+                duration_ms=elapsed_ms,
             )
 
+            meta["indexed_at"] = datetime.utcnow()
+            self.data_store.save_repository(resolved_user, identity.repository_id, meta)
+
+            logger.info(
+                f"Repository '{identity.full_name}' connected and ready for AI search "
+                f"({job.files_discovered} files in manifest, duration={elapsed_ms}ms)."
+            )
+
+        except GitHubError as e:
+            elapsed_ms = round((time.perf_counter() - start_time) * 1000, 2)
+            job.status = "failed"
+            job.error = e.message
+            job.duration_ms = elapsed_ms
+            job.updated_at = datetime.now(timezone.utc)
+            self.data_store.update_indexing_job(job_id, status="failed", error=e.message, duration_ms=elapsed_ms)
+            logger.warning(f"GitHub error during repository connection job '{job_id}' [{e.code}]: {e.message}")
         except Exception as e:
+            elapsed_ms = round((time.perf_counter() - start_time) * 1000, 2)
             job.status = "failed"
             job.error = str(e)
+            job.duration_ms = elapsed_ms
             job.updated_at = datetime.now(timezone.utc)
-            self.data_store.update_indexing_job(job_id, status="failed", error=str(e))
-            logger.error(f"Fatal error during indexing job '{job_id}': {e}", exc_info=True)
+            self.data_store.update_indexing_job(job_id, status="failed", error=str(e), duration_ms=elapsed_ms)
+            logger.error(f"Fatal error during repository connection job '{job_id}': {e}", exc_info=True)
 
     def start_indexing_job(
         self,
@@ -222,11 +243,28 @@ class RepositoryService:
     ) -> RepoIndexResponse:
         """
         Initiate a repository indexing job (either background or synchronous).
+        Protects against duplicate concurrent indexing jobs for the same repository.
         """
         identity = parse_github_url(url)
-        job_id = f"job_{uuid.uuid4().hex[:12]}"
         target_branch = branch or "default"
         resolved_user = user_id or "default_user"
+
+        # Check for active indexing job
+        active_key = f"{resolved_user}:{identity.repository_id}"
+        existing_job_id = self._repo_latest_job.get(active_key) or self._repo_latest_job.get(identity.repository_id)
+        if existing_job_id and existing_job_id in self._jobs:
+            existing_job = self._jobs[existing_job_id]
+            if existing_job.status in ("queued", "indexing"):
+                logger.info(f"Returning active indexing job '{existing_job_id}' for repo '{identity.full_name}'")
+                return RepoIndexResponse(
+                    job_id=existing_job_id,
+                    repository_id=identity.repository_id,
+                    branch=existing_job.branch,
+                    status=existing_job.status,
+                    message=f"Indexing job {existing_job_id} is already {existing_job.status} for repository '{identity.full_name}'.",
+                )
+
+        job_id = f"job_{uuid.uuid4().hex[:12]}"
 
         job = JobRecord(
             job_id=job_id,
@@ -236,7 +274,7 @@ class RepositoryService:
             status="queued",
         )
         self._jobs[job_id] = job
-        self._repo_latest_job[f"{resolved_user}:{identity.repository_id}"] = job_id
+        self._repo_latest_job[active_key] = job_id
         self._repo_latest_job[identity.repository_id] = job_id
         self.data_store.create_indexing_job(resolved_user, identity.repository_id, target_branch)
 
@@ -357,12 +395,39 @@ class RepositoryService:
         user_id: Optional[str] = None,
     ) -> RepoFilesResponse:
         """
-        Return list of all distinct source files indexed for the repository and user.
+        Return list of source files for the repository from the lightweight manifest,
+        enriched with any existing chunk counts from Qdrant.
         """
-        raw_files = self.rag_pipeline.vector_store.list_repository_files(repository_id, user_id=user_id)
-        if not raw_files and not user_id:
-            raw_files = self.rag_pipeline.vector_store.list_repository_files(repository_id)
+        resolved_user = user_id or "default_user"
+        record = self.data_store.get_repository(resolved_user, repository_id)
+        manifest = (record.manifest if record else None) or self._repo_metadata.get(repository_id, {}).get("manifest")
 
+        # Get existing indexed chunks summary from Qdrant
+        raw_indexed = self.rag_pipeline.vector_store.list_repository_files(repository_id, user_id=resolved_user)
+        indexed_map = {f["path"]: f for f in raw_indexed}
+
+        if manifest and manifest.get("files"):
+            file_items = []
+            for item in manifest["files"]:
+                p = item["path"]
+                idx_info = indexed_map.get(p)
+                chunks_count = idx_info["chunks_count"] if idx_info else 0
+                line_count = idx_info["line_count"] if idx_info else max(1, item.get("size_bytes", 100) // 40)
+                file_items.append(
+                    RepoFileItem(
+                        path=p,
+                        language=item.get("language", "text"),
+                        chunks_count=chunks_count,
+                        line_count=line_count,
+                    )
+                )
+            return RepoFilesResponse(
+                repository_id=repository_id,
+                total_files=len(file_items),
+                files=file_items,
+            )
+
+        # Fallback to vectors present in Qdrant
         file_items = [
             RepoFileItem(
                 path=f["path"],
@@ -370,7 +435,7 @@ class RepositoryService:
                 chunks_count=f["chunks_count"],
                 line_count=f["line_count"],
             )
-            for f in raw_files
+            for f in raw_indexed
         ]
 
         return RepoFilesResponse(
@@ -394,6 +459,8 @@ class RepositoryService:
             del self._repo_latest_job[f"{resolved_user}:{repository_id}"]
         if repository_id in self._repo_latest_job:
             del self._repo_latest_job[repository_id]
+        if repository_id in self._repo_metadata:
+            del self._repo_metadata[repository_id]
         logger.info(f"Deleted repository '{repository_id}' for user '{resolved_user}'.")
         return True
 
@@ -403,14 +470,56 @@ class RepositoryService:
         user_id: Optional[str] = None,
     ) -> ChatResponse:
         """
-        Answer a question scoped to a specific indexed repository and user.
+        Answer a question scoped to a specific repository using Question-Driven / Lazy RAG.
+        Selectively fetches and embeds only files relevant to the query.
         """
+        resolved_user = user_id or "default_user"
+        record = self.data_store.get_repository(resolved_user, request.repository_id)
+        manifest = (record.manifest if record else None) or self._repo_metadata.get(request.repository_id, {}).get("manifest")
+
+        target_branch = request.branch or (record.selected_branch if record else "main") or "main"
+
+        # If manifest is not cached yet, try to load it from GitHub
+        owner = record.owner if record else None
+        name = record.name if record else None
+        if not owner or not name:
+            try:
+                owner, name = self._resolve_owner_name(request.repository_id)
+            except Exception:
+                owner, name = None, None
+
+        if (not manifest or not manifest.get("files")) and owner and name:
+            try:
+                manifest = self.github_client.fetch_repository_manifest(
+                    owner=owner,
+                    repo=name,
+                    branch=target_branch,
+                )
+                if record:
+                    record.manifest = manifest
+            except Exception as m_err:
+                logger.warning(f"Could not load GitHub manifest for lazy retrieval: {m_err}")
+                manifest = None
+
+        # Create candidate content fetch callback
+        def fetch_candidate_contents(paths: List[str]):
+            if not owner or not name:
+                return []
+            return self.github_client.fetch_files_by_paths(
+                owner=owner,
+                repo=name,
+                file_paths=paths,
+                ref=target_branch,
+            )
+
         rag_res = self.rag_pipeline.answer_question(
             question=request.question,
             repository_id=request.repository_id,
-            user_id=user_id,
-            branch=request.branch,
+            user_id=resolved_user,
+            branch=target_branch,
             top_k=request.top_k or 5,
+            manifest_files=manifest.get("files") if manifest else None,
+            fetch_file_content_fn=fetch_candidate_contents,
         )
 
         sources = [
@@ -429,6 +538,7 @@ class RepositoryService:
             repository_id=rag_res.repository_id,
             answer=rag_res.answer,
             sources=sources,
+            files_analyzed=rag_res.files_analyzed,
             insufficient_context=rag_res.insufficient_context,
             retrieved_chunks_count=rag_res.retrieved_chunks_count,
             latency_ms=rag_res.latency_ms,
@@ -441,6 +551,16 @@ class RepositoryService:
         if repository_id in self._repo_metadata:
             meta = self._repo_metadata[repository_id]
             return meta["owner"], meta["name"]
+
+        # Check persistent data store
+        rec = self.data_store.get_repository("default_user", repository_id)
+        if rec and rec.owner and rec.name:
+            return rec.owner, rec.name
+
+        # Check across any user in data store
+        for (u, r_id), r in getattr(self.data_store, "_repositories", {}).items():
+            if r_id == repository_id and r.owner and r.name:
+                return r.owner, r.name
 
         # Parse double underscore slug (e.g. 'octocat__spoon-knife')
         if "__" in repository_id:

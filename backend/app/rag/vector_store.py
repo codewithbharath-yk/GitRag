@@ -18,7 +18,7 @@ from app.utils.logger import get_logger
 logger = get_logger(__name__)
 
 DEFAULT_COLLECTION_NAME = "coderag_code_chunks"
-DEFAULT_VECTOR_SIZE = 2048
+DEFAULT_VECTOR_SIZE = 384
 # Deterministic namespace for generating stable UUIDs from chunk IDs
 CHUNK_NAMESPACE_UUID = uuid.UUID("12345678-1234-5678-1234-567812345678")
 
@@ -30,7 +30,7 @@ class QdrantVectorStore:
 
     def __init__(
         self,
-        collection_name: str = DEFAULT_COLLECTION_NAME,
+        collection_name: Optional[str] = None,
         vector_size: int = DEFAULT_VECTOR_SIZE,
         location: Optional[str] = None,
         url: Optional[str] = None,
@@ -38,16 +38,30 @@ class QdrantVectorStore:
         client: Optional[QdrantClient] = None,
     ):
         settings = get_settings()
-        self.collection_name = collection_name
-        self.vector_size = vector_size
+        self.collection_name = collection_name or getattr(settings, "qdrant_collection", DEFAULT_COLLECTION_NAME) or DEFAULT_COLLECTION_NAME
+        self.vector_size = vector_size or DEFAULT_VECTOR_SIZE
 
         if client is not None:
             self.client = client
         elif location:
             # e.g., location=":memory:" or local directory path
             self.client = QdrantClient(location=location)
-        elif url:
-            self.client = QdrantClient(url=url, api_key=api_key)
+        elif url and url != ":memory:":
+            try:
+                candidate = QdrantClient(
+                    url=url,
+                    api_key=api_key,
+                    timeout=getattr(settings, "qdrant_timeout_seconds", 5.0),
+                    check_compatibility=False,
+                )
+                candidate.get_collections()
+                self.client = candidate
+            except Exception as conn_err:
+                logger.info(
+                    f"Qdrant server at '{url}' is not reachable ({conn_err}). "
+                    "Falling back to local in-memory vector store (:memory:)."
+                )
+                self.client = QdrantClient(location=":memory:")
         else:
             # Check if remote Qdrant server is configured and reachable
             target_url = settings.qdrant_url
@@ -149,6 +163,13 @@ class QdrantVectorStore:
                 f"Mismatch: received {len(chunks)} chunks but {len(embeddings)} embeddings."
             )
 
+        # Validate vector dimensions
+        if embeddings and len(embeddings[0]) != self.vector_size:
+            raise ValueError(
+                f"Vector dimension mismatch: received embeddings with dimension {len(embeddings[0])}, "
+                f"but collection '{self.collection_name}' expects {self.vector_size}."
+            )
+
         points: List[models.PointStruct] = []
 
         for chunk, embedding in zip(chunks, embeddings):
@@ -196,6 +217,12 @@ class QdrantVectorStore:
         """
         Perform vector similarity search, scoped by repository ID, user ID, and branch.
         """
+        if query_embedding and len(query_embedding) != self.vector_size:
+            raise ValueError(
+                f"Query vector dimension mismatch: received query with dimension {len(query_embedding)}, "
+                f"but collection '{self.collection_name}' expects {self.vector_size}."
+            )
+
         must_conditions = []
         if repository_id:
             must_conditions.append(

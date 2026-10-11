@@ -125,8 +125,20 @@ def test_mocked_openrouter_embed_batch():
 
 def test_get_embedding_provider_factory():
     """
-    Verify factory function uses settings properly for Gemini and OpenRouter.
+    Verify factory function uses settings properly for Local, Gemini and OpenRouter.
     """
+    # Local provider selection (default)
+    local_settings = Settings(
+        embedding_provider="local",
+        embedding_model="BAAI/bge-small-en-v1.5",
+        embedding_device="cpu",
+    )
+    from app.rag.embeddings import LocalEmbeddingProvider
+    local_provider = get_embedding_provider(settings=local_settings)
+    assert isinstance(local_provider, LocalEmbeddingProvider)
+    assert local_provider.dimension == 384
+    assert local_provider.model_name == "BAAI/bge-small-en-v1.5"
+
     settings = Settings(
         gemini_api_key="AIzaSyFactoryKey",
         gemini_embedding_model="text-embedding-004",
@@ -146,4 +158,56 @@ def test_get_embedding_provider_factory():
     assert isinstance(or_provider, OpenRouterEmbeddingProvider)
     assert or_provider.api_key == "sk-or-mock-key"
     assert or_provider.model_name == "nvidia/nemotron-3-embed-1b:free"
+
+
+def test_local_embedding_provider_live_execution():
+    """
+    Verify LocalEmbeddingProvider generates 384-dim normalized embeddings on CPU.
+    """
+    import math
+    from app.rag.embeddings import LocalEmbeddingProvider, LocalEmbeddingService
+    provider = LocalEmbeddingProvider(model_name="BAAI/bge-small-en-v1.5", device="cpu")
+    assert provider.dimension == 384
+    assert provider.get_dimension() == 384
+    assert provider.device == "cpu"
+
+    # Test empty string returns zero vector
+    zero_vec = provider.embed_text("   ")
+    assert len(zero_vec) == 384
+    assert all(v == 0.0 for v in zero_vec)
+
+    # Test embed_query
+    query_vec = provider.embed_query("Where is authentication handled?")
+    assert len(query_vec) == 384
+    assert any(v != 0.0 for v in query_vec)
+
+    # Verify L2 normalization (norm should be ~1.0)
+    norm = math.sqrt(sum(x * x for x in query_vec))
+    assert abs(norm - 1.0) < 1e-4, f"Expected unit norm, got {norm}"
+
+    # Test embed_batch
+    batch_vecs = provider.embed_batch(["def login(): pass", "def logout(): pass"])
+    assert len(batch_vecs) == 2
+    assert len(batch_vecs[0]) == 384
+    assert len(batch_vecs[1]) == 384
+
+    # Test alias LocalEmbeddingService
+    assert LocalEmbeddingService is LocalEmbeddingProvider
+
+
+def test_local_embedding_singleton_and_consistency():
+    """
+    Verify that subsequent initializations of LocalEmbeddingProvider reuse the cached model instance.
+    """
+    from app.rag.embeddings import LocalEmbeddingProvider
+    provider1 = LocalEmbeddingProvider(model_name="BAAI/bge-small-en-v1.5", device="cpu")
+    provider2 = LocalEmbeddingProvider(model_name="BAAI/bge-small-en-v1.5", device="cpu")
+
+    assert provider1._model is provider2._model
+
+    # Verify embedding consistency across calls
+    v1 = provider1.embed_text("def process_payment(amount): return True")
+    v2 = provider2.embed_text("def process_payment(amount): return True")
+    assert v1 == v2
+    assert len(v1) == 384
 

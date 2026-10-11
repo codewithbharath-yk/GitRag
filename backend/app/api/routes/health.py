@@ -56,6 +56,12 @@ async def get_integrations_health():
     return {
         "status": "healthy",
         "services": {
+            "embeddings": {
+                "provider": settings.embedding_provider,
+                "model": settings.embedding_model,
+                "device": getattr(settings, "embedding_device", "cpu"),
+                "dimension": 384 if settings.embedding_provider in ("local", "bge") else (2048 if settings.embedding_provider == "openrouter" else 768),
+            },
             "openrouter": {
                 "configured": settings.is_openrouter_configured,
                 "model": settings.openrouter_model,

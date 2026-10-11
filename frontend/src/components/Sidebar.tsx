@@ -1,12 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   FolderGit2,
   Plus,
   GitBranch,
   Star,
   Layers,
-  Sparkles,
-  Server,
   CheckCircle2,
   XCircle,
   MessageSquare,
@@ -15,265 +13,314 @@ import {
   Search,
   LayoutDashboard,
   Home,
+  FolderTree,
   Settings,
+  ChevronDown,
+  ChevronUp,
+  X,
+  Compass,
+  Sparkles,
 } from 'lucide-react';
-import type { StoredRepository, HealthResponse } from '../types/api';
+import type { StoredRepository, HealthResponse, UserProfile } from '../types/api';
+import { Magnetic, TextEffect } from './motion';
+import { ThemeToggle } from './ThemeToggle';
+import type { ExplorerSubTab } from './CodebaseExplorer';
 
-export type WorkspaceTab = 'landing' | 'dashboard' | 'chat' | 'search' | 'history' | 'intelligence';
+export type WorkspaceTab =
+  | 'dashboard'
+  | 'repositories'
+  | 'explorer'
+  | 'settings';
 
 interface SidebarProps {
   repositories: StoredRepository[];
   activeRepoId: string | null;
   activeTab: WorkspaceTab;
+  explorerSubTab?: ExplorerSubTab;
   onSelectRepo: (id: string) => void;
-  onSelectTab: (tab: WorkspaceTab) => void;
+  onSelectTab: (tab: WorkspaceTab, explorerSubTab?: ExplorerSubTab) => void;
   onOpenConnectModal: () => void;
   onOpenSettingsModal: (repoId: string) => void;
+  onOpenLogoSplash?: () => void;
   health: HealthResponse | null;
   backendError: string | null;
+  isOpenMobile?: boolean;
+  onCloseMobile?: () => void;
+  userProfile?: UserProfile;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
   repositories,
   activeRepoId,
   activeTab,
+  explorerSubTab = 'chat',
   onSelectRepo,
   onSelectTab,
   onOpenConnectModal,
   onOpenSettingsModal,
+  onOpenLogoSplash,
   health,
   backendError,
+  isOpenMobile = false,
+  onCloseMobile,
+  userProfile,
 }) => {
+  const [isExplorerExpanded, setIsExplorerExpanded] = useState(true);
+
   return (
-    <aside className="w-72 bg-slate-950 border-r border-slate-800/80 flex flex-col h-screen shrink-0 select-none">
-      {/* Brand Header */}
-      <div className="p-4 border-b border-slate-800/80 flex items-center justify-between">
+    <>
+      {/* Mobile Backdrop */}
+      {isOpenMobile && (
         <div
-          onClick={() => onSelectTab('landing')}
-          className="flex items-center gap-2.5 cursor-pointer hover:opacity-90 transition-opacity"
-        >
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-blue-500/20">
-            <Sparkles className="w-4 h-4" />
+          onClick={onCloseMobile}
+          className="fixed inset-0 bg-black/60 z-40 md:hidden backdrop-blur-xs"
+          aria-hidden="true"
+        />
+      )}
+
+      <aside
+        className={`fixed md:static inset-y-0 left-0 z-50 w-72 bg-[#162623] border-r border-[#577877]/25 flex flex-col h-screen shrink-0 select-none text-[#F0F5F7] transition-transform duration-300 md:translate-x-0 font-sans ${
+          isOpenMobile ? 'translate-x-0 shadow-2xl' : '-translate-x-full md:translate-x-0'
+        }`}
+      >
+        {/* Brand Header */}
+        <div className="p-4 border-b border-[#577877]/25 flex items-center justify-between bg-[#1B2D2A]">
+          <div className="flex items-center gap-2.5 text-left">
+            <div className="w-9 h-9 rounded-xl bg-[#111E1C] border border-white/30 flex items-center justify-center p-1.5 shadow-md">
+              <img
+                src="/coderag_logo.svg"
+                alt="CodeRAG"
+                className="w-full h-full object-contain"
+              />
+            </div>
+            <div>
+              <h1 className="font-extrabold text-sm text-white tracking-tight flex items-center gap-1.5">
+                <TextEffect as="span" variant="word">CodeRAG</TextEffect>
+                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-white/10 text-[#6DBE9B] border border-white/20">
+                  AI
+                </span>
+              </h1>
+              <p className="text-[11px] text-[#B9CECC]">GitHub Code Assistant</p>
+            </div>
           </div>
-          <div>
-            <h1 className="font-bold text-sm text-slate-100 tracking-tight flex items-center gap-1.5">
-              CodeRAG
-              <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-blue-500/20 text-blue-300 border border-blue-500/30">
-                v1.0
-              </span>
-            </h1>
-            <p className="text-[11px] text-slate-400">AI GitHub Code Assistant</p>
-          </div>
-        </div>
-      </div>
 
-      {/* Main Pages: Landing & Dashboard */}
-      <div className="px-3 pt-3 pb-2 space-y-1">
-        <button
-          onClick={() => onSelectTab('landing')}
-          className={`w-full py-1.5 px-3 rounded-xl text-xs font-medium flex items-center gap-2 transition-all ${
-            activeTab === 'landing'
-              ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20'
-              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
-          }`}
-        >
-          <Home className="w-4 h-4" />
-          <span>Home & Overview</span>
-        </button>
-
-        <button
-          onClick={() => onSelectTab('dashboard')}
-          className={`w-full py-1.5 px-3 rounded-xl text-xs font-medium flex items-center gap-2 transition-all ${
-            activeTab === 'dashboard'
-              ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20'
-              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
-          }`}
-        >
-          <LayoutDashboard className="w-4 h-4" />
-          <span>Dashboard</span>
-        </button>
-      </div>
-
-      {/* Connect New Repository Action */}
-      <div className="px-3 pb-2">
-        <button
-          onClick={onOpenConnectModal}
-          className="w-full py-2 px-3 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-medium text-xs flex items-center justify-center gap-2 shadow-lg shadow-blue-600/20 transition-all active:scale-[0.99]"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Connect Repository</span>
-        </button>
-      </div>
-
-      {/* Repository Workspace Navigation Tabs */}
-      <div className="px-3 pb-2">
-        <div className="px-1 pb-1 text-[10px] font-semibold text-slate-500 uppercase tracking-wider">
-          Repository Tools
-        </div>
-        <div className="grid grid-cols-2 gap-1 p-1 rounded-xl bg-slate-900 border border-slate-800">
+          {/* Close button on mobile */}
           <button
-            onClick={() => onSelectTab('chat')}
-            className={`py-1.5 px-2 rounded-lg text-[11px] font-medium flex items-center justify-center gap-1.5 transition-all ${
-              activeTab === 'chat'
-                ? 'bg-blue-600 text-white shadow-sm shadow-blue-500/30'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
-            }`}
+            onClick={onCloseMobile}
+            className="md:hidden p-1.5 rounded-lg text-[#B9CECC] hover:text-[#F0F5F7] hover:bg-[#1E3430]"
+            aria-label="Close sidebar"
           >
-            <MessageSquare className="w-3.5 h-3.5" />
-            <span>Chat</span>
-          </button>
-
-          <button
-            onClick={() => onSelectTab('search')}
-            className={`py-1.5 px-2 rounded-lg text-[11px] font-medium flex items-center justify-center gap-1.5 transition-all ${
-              activeTab === 'search'
-                ? 'bg-purple-600 text-white shadow-sm shadow-purple-500/30'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
-            }`}
-          >
-            <Search className="w-3.5 h-3.5" />
-            <span>Search</span>
-          </button>
-
-          <button
-            onClick={() => onSelectTab('history')}
-            className={`py-1.5 px-2 rounded-lg text-[11px] font-medium flex items-center justify-center gap-1.5 transition-all ${
-              activeTab === 'history'
-                ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-500/30'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
-            }`}
-          >
-            <GitCommit className="w-3.5 h-3.5" />
-            <span>Diffs</span>
-          </button>
-
-          <button
-            onClick={() => onSelectTab('intelligence')}
-            className={`py-1.5 px-2 rounded-lg text-[11px] font-medium flex items-center justify-center gap-1.5 transition-all ${
-              activeTab === 'intelligence'
-                ? 'bg-cyan-600 text-white shadow-sm shadow-cyan-500/30'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
-            }`}
-          >
-            <Code2 className="w-3.5 h-3.5" />
-            <span>AST</span>
+            <X className="w-4 h-4" />
           </button>
         </div>
-      </div>
 
-      {/* Repositories Navigation List */}
-      <div className="flex-1 overflow-y-auto px-3 py-2 space-y-1">
-        <div className="px-2 py-1 text-[10px] font-semibold text-slate-400 uppercase tracking-wider flex items-center justify-between">
-          <span>Repositories ({repositories.length})</span>
-        </div>
+        {/* Primary Navigation: Dashboard, Repositories, Codebase Explorer, Settings */}
+        <div className="px-3 pt-3 pb-2 space-y-1">
+          {/* 1. Dashboard */}
+          <button
+            onClick={() => {
+              onSelectTab('dashboard');
+              onCloseMobile?.();
+            }}
+            className={`w-full py-2 px-3 nav-tab-btn gap-2.5 ${
+              activeTab === 'dashboard' ? 'active' : ''
+            }`}
+          >
+            <LayoutDashboard className="w-4 h-4 text-[#6DBE9B]" />
+            <span>Dashboard</span>
+          </button>
 
-        {repositories.length === 0 ? (
-          <div className="p-4 text-center rounded-xl border border-dashed border-slate-800 text-slate-500 text-xs">
-            <FolderGit2 className="w-6 h-6 mx-auto mb-2 text-slate-600" />
-            <p className="font-medium text-slate-400">No repositories yet</p>
-            <p className="text-[11px] mt-1 text-slate-500">
-              Click &quot;Connect Repository&quot; to index source code.
-            </p>
-          </div>
-        ) : (
-          repositories.map((repo) => {
-            const isActive = repo.id === activeRepoId;
-            return (
-              <div
-                key={repo.id}
-                onClick={() => {
-                  onSelectRepo(repo.id);
-                  if (activeTab === 'landing' || activeTab === 'dashboard') {
-                    onSelectTab('chat');
-                  }
-                }}
-                className={`group relative w-full text-left p-2.5 rounded-xl transition-all border cursor-pointer ${
-                  isActive
-                    ? 'bg-slate-900 border-blue-500/50 shadow-sm shadow-blue-500/10'
-                    : 'bg-transparent border-transparent hover:bg-slate-900/60 hover:border-slate-800'
-                }`}
-              >
-                <div className="flex items-center justify-between gap-1 mb-1">
-                  <span
-                    className={`font-mono text-xs font-semibold truncate ${
-                      isActive ? 'text-blue-300' : 'text-slate-200'
-                    }`}
-                  >
-                    {repo.fullName}
-                  </span>
-                  <div className="flex items-center gap-1 shrink-0">
-                    {repo.stars > 0 && (
-                      <span className="flex items-center gap-0.5 text-[10px] text-amber-400/80">
-                        <Star className="w-3 h-3 fill-amber-400/20" />
-                        {repo.stars}
-                      </span>
-                    )}
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onOpenSettingsModal(repo.id);
-                      }}
-                      title="Repository Settings"
-                      className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-slate-800 text-slate-400 hover:text-white transition-opacity"
-                    >
-                      <Settings className="w-3 h-3" />
-                    </button>
-                  </div>
-                </div>
+          {/* 2. Repositories */}
+          <button
+            onClick={() => {
+              onSelectTab('repositories');
+              onCloseMobile?.();
+            }}
+            className={`w-full py-2 px-3 nav-tab-btn gap-2.5 ${
+              activeTab === 'repositories' ? 'active' : ''
+            }`}
+          >
+            <FolderGit2 className="w-4 h-4 text-[#6DBE9B]" />
+            <span>Repositories</span>
+          </button>
 
-                <div className="flex items-center gap-2 text-[10px] text-slate-400 font-mono">
-                  <span className="flex items-center gap-1 truncate">
-                    <GitBranch className="w-2.5 h-2.5 text-slate-500 shrink-0" />
-                    {repo.branch}
-                  </span>
-                  <span>•</span>
-                  <span className="flex items-center gap-1 text-indigo-400 shrink-0">
-                    <Layers className="w-2.5 h-2.5" />
-                    {repo.chunksCount} chunks
-                  </span>
-                </div>
+          {/* 3. Codebase Explorer (The Unified Hub) */}
+          <div className="space-y-0.5">
+            <button
+              onClick={() => {
+                onSelectTab('explorer');
+                setIsExplorerExpanded(true);
+                onCloseMobile?.();
+              }}
+              className={`w-full py-2 px-3 nav-tab-btn justify-between ${
+                activeTab === 'explorer' ? 'active' : ''
+              }`}
+            >
+              <div className="flex items-center gap-2.5">
+                <Compass className="w-4 h-4 text-[#6DBE9B]" />
+                <span>Codebase Explorer</span>
               </div>
-            );
-          })
-        )}
-      </div>
+              <span
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsExplorerExpanded((prev) => !prev);
+                }}
+                className="p-0.5 hover:text-white"
+              >
+                {isExplorerExpanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+              </span>
+            </button>
 
-      {/* Backend & Model Health Footer */}
-      <div className="p-3 border-t border-slate-800/80 bg-slate-950/80 space-y-2 text-[11px]">
-        <div className="flex items-center justify-between px-1">
-          <span className="text-slate-400 flex items-center gap-1.5 font-medium">
-            <Server className="w-3.5 h-3.5 text-slate-400" />
-            Backend API
-          </span>
-          {health ? (
-            <span className="flex items-center gap-1 text-emerald-400 font-mono text-[10px]">
-              <CheckCircle2 className="w-3 h-3" />
-              Connected
-            </span>
-          ) : (
-            <span className="flex items-center gap-1 text-red-400 font-mono text-[10px]">
-              <XCircle className="w-3 h-3" />
-              Offline
-            </span>
-          )}
-        </div>
+            {/* Sub-tools of Codebase Explorer */}
+            {isExplorerExpanded && (
+              <div className="pl-6 pr-1 py-1 space-y-0.5 border-l border-[#577877]/25 ml-4">
+                <button
+                  onClick={() => {
+                    onSelectTab('explorer', 'chat');
+                    onCloseMobile?.();
+                  }}
+                  className={`w-full py-1.5 px-2.5 subnav-tab-btn gap-2 ${
+                    activeTab === 'explorer' && explorerSubTab === 'chat' ? 'active' : ''
+                  }`}
+                >
+                  <MessageSquare className="w-3 h-3 text-[#6DBE9B]" />
+                  <span>Chat & Search</span>
+                </button>
 
-        <div className="flex items-center justify-between px-1 text-slate-400 font-mono text-[10px]">
-          <span>LLM Provider</span>
-          <span className="text-slate-300">Gemini 2.5 Flash</span>
-        </div>
+                <button
+                  onClick={() => {
+                    onSelectTab('explorer', 'diffs');
+                    onCloseMobile?.();
+                  }}
+                  className={`w-full py-1.5 px-2.5 subnav-tab-btn gap-2 ${
+                    activeTab === 'explorer' && explorerSubTab === 'diffs' ? 'active' : ''
+                  }`}
+                >
+                  <GitCommit className="w-3 h-3 text-[#6DBE9B]" />
+                  <span>Git History & Diffs</span>
+                </button>
 
-        <div className="flex items-center justify-between px-1 text-slate-400 font-mono text-[10px]">
-          <span>Vector Store</span>
-          <span className="text-slate-300">Qdrant</span>
-        </div>
+                <button
+                  onClick={() => {
+                    onSelectTab('explorer', 'ast');
+                    onCloseMobile?.();
+                  }}
+                  className={`w-full py-1.5 px-2.5 subnav-tab-btn gap-2 ${
+                    activeTab === 'explorer' && explorerSubTab === 'ast' ? 'active' : ''
+                  }`}
+                >
+                  <Code2 className="w-3 h-3 text-[#6DBE9B]" />
+                  <span>AST Explorer</span>
+                </button>
 
-        {backendError && (
-          <div className="p-2 rounded bg-red-500/10 border border-red-500/20 text-red-400 text-[10px] truncate">
-            {backendError}
+                <button
+                  onClick={() => {
+                    onSelectTab('explorer', 'files');
+                    onCloseMobile?.();
+                  }}
+                  className={`w-full py-1.5 px-2.5 subnav-tab-btn gap-2 ${
+                    activeTab === 'explorer' && explorerSubTab === 'files' ? 'active' : ''
+                  }`}
+                >
+                  <FolderTree className="w-3 h-3 text-[#6DBE9B]" />
+                  <span>Files & Architecture</span>
+                </button>
+              </div>
+            )}
           </div>
-        )}
-      </div>
-    </aside>
+
+          {/* 4. Settings */}
+          <button
+            onClick={() => {
+              onSelectTab('settings');
+              onCloseMobile?.();
+            }}
+            className={`w-full py-2 px-3 nav-tab-btn gap-2.5 ${
+              activeTab === 'settings' ? 'active' : ''
+            }`}
+          >
+            <Settings className="w-4 h-4 text-[#6DBE9B]" />
+            <span>Settings</span>
+          </button>
+        </div>
+
+        {/* Connect Repository Action Button */}
+        <div className="px-3 pb-2 pt-1">
+          <Magnetic className="w-full">
+            <button
+              onClick={() => {
+                onOpenConnectModal();
+                onCloseMobile?.();
+              }}
+              className="w-full py-2 px-3 rounded-xl bg-[#295255] hover:bg-[#34686C] text-white font-semibold text-xs flex items-center justify-center gap-2 border border-[#577877]/50 shadow-md transition-all active:scale-[0.98] cursor-pointer"
+            >
+              <Plus className="w-4 h-4 text-white" />
+              <span>Connect Repository</span>
+            </button>
+          </Magnetic>
+        </div>
+
+        {/* Recent Repositories Section Matching Mockup Panel 3 & 4 */}
+        <div className="flex-1 overflow-y-auto px-3 py-2 space-y-1">
+          <div className="px-2 py-1 text-[10px] font-semibold text-[#577877] uppercase tracking-wider flex items-center justify-between">
+            <span>Recent Repositories</span>
+            <span className="font-mono text-[9px] text-[#B9CECC]">{repositories.length}</span>
+          </div>
+
+          <div className="space-y-1">
+            {repositories.map((repo) => {
+              const isSelected = repo.id === activeRepoId;
+              return (
+                <div
+                  key={repo.id}
+                  onClick={() => {
+                    onSelectRepo(repo.id);
+                    onSelectTab('explorer');
+                    onCloseMobile?.();
+                  }}
+                  className={`sidebar-repo-card ${isSelected ? 'active' : ''}`}
+                >
+                  <div className="min-w-0 flex items-center gap-2 truncate">
+                    <FolderGit2 className="w-3.5 h-3.5 text-[#6DBE9B] shrink-0" />
+                    <span className="font-mono font-medium truncate">{repo.fullName}</span>
+                  </div>
+
+                  {isSelected && (
+                    <span className="w-2 h-2 rounded-full bg-[#6DBE9B] shrink-0" />
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Sidebar Footer with Theme Mode & User Session */}
+        <div className="p-3 border-t border-[#577877]/25 bg-[#1B2D2A] space-y-2">
+          {/* User Session */}
+          <div className="flex items-center justify-between p-2 rounded-xl bg-[#162623] border border-[#577877]/25">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <div className="relative shrink-0">
+                <img
+                  src="/user_avatar.svg"
+                  alt="Bharath Kumar"
+                  className="w-7 h-7 rounded-lg border border-[#577877]/40 bg-[#1B2D2A] p-0.5"
+                />
+                <span className="absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full bg-[#6DBE9B]" />
+              </div>
+              <div className="min-w-0 truncate">
+                <span className="text-xs font-bold text-white block truncate">
+                  {userProfile?.name || 'Bharath Kumar'}
+                </span>
+                <span className="text-[10px] text-[#6DBE9B] font-mono block truncate">
+                  {userProfile?.role || 'Full-Stack Developer'}
+                </span>
+              </div>
+            </div>
+
+            <ThemeToggle />
+          </div>
+        </div>
+      </aside>
+    </>
   );
 };

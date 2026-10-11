@@ -114,14 +114,14 @@ class GeminiProvider(BaseLLMProvider):
         )
 
         models_to_try = [self.model_name]
-        for fallback in ["gemini-flash-lite-latest", "gemini-2.5-flash", "gemini-flash-latest", "gemini-pro-latest"]:
+        for fallback in ["gemini-flash-lite-latest", "gemini-2.5-flash", "gemini-2.5-flash-lite"]:
             if fallback not in models_to_try:
                 models_to_try.append(fallback)
 
         last_error = None
         for current_model in models_to_try:
             logger.info(f"Sending prompt to Gemini model '{current_model}'...")
-            max_retries = 3
+            max_retries = 2
             for attempt in range(1, max_retries + 1):
                 try:
                     response = client.models.generate_content(
@@ -140,20 +140,22 @@ class GeminiProvider(BaseLLMProvider):
                         last_error = e
                         break
                     err_str = str(e).lower()
-                    is_quota = any(c in err_str for c in ["quota", "resource_exhausted", "perday", "exceeded your current quota"])
-                    if is_quota:
-                        logger.warning(f"Quota reached for model '{current_model}'. Trying next fallback model...")
+                    
+                    # If model not found or deprecated, immediately switch to next model
+                    if "404" in err_str or "not_found" in err_str or "not found" in err_str:
+                        logger.warning(f"Model '{current_model}' not found. Switching to fast fallback...")
                         last_error = e
-                        break  # Break retry loop to try next candidate model
+                        break
 
-                    is_transient = any(code in err_str for code in ["503", "unavailable", "high demand", "overloaded"])
-                    if is_transient and attempt < max_retries:
-                        wait_sec = attempt * 2
-                        logger.warning(
-                            f"Gemini API transient error on attempt {attempt}/{max_retries} for {current_model}: {e}. "
-                            f"Retrying in {wait_sec}s..."
-                        )
-                        time.sleep(wait_sec)
+                    # If model overloaded / quota exhausted, immediately switch to next model
+                    is_quota_or_demand = any(c in err_str for c in ["quota", "resource_exhausted", "perday", "503", "unavailable", "high demand", "overloaded"])
+                    if is_quota_or_demand:
+                        logger.warning(f"Model '{current_model}' unavailable/overloaded ({e}). Switching to next fallback...")
+                        last_error = e
+                        break
+
+                    if attempt < max_retries:
+                        time.sleep(1)
                         continue
 
                     last_error = e
