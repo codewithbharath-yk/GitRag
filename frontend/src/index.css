@@ -20,32 +20,32 @@
     --color-dark-forest: #111318;
     --color-muted-teal: #767E90;
 
-    /* --- Dark Mode Surface Hierarchy (Default: Dark Ink #111318 Base) --- */
-    --bg-base: #111318;             /* Dark Ink main background */
-    --bg-well: #0B0D11;             /* Deepest well for code editors & inputs */
-    --bg-surface: #181B22;          /* Elevated surface for sidebar & headers */
-    --bg-card: #1D212B;             /* Standard card background */
-    --bg-card-hover: #262B37;       /* Hover card background */
+    /* --- Official Palette Light Mode Foundation (Warm Beige #EDECE6 Canvas) --- */
+    --bg-base: #EDECE6;             /* Warm Beige main canvas */
+    --bg-well: #E2E1DA;             /* Soft deeper well for code editors & search inputs */
+    --bg-surface: #F5F4EE;          /* Clean elevated warm surface for sidebar & headers */
+    --bg-card: #FFFFFF;             /* Crisp clean white cards */
+    --bg-card-hover: #EBEAE3;       /* Soft warm beige hover */
     --bg-elevated: #1546D9;         /* Cobalt Blue primary action */
-    --bg-elevated-hover: #2255EB;   /* Hover primary action */
+    --bg-elevated-hover: #0E38B6;
 
-    /* --- Dark Mode Text Tokens --- */
-    --text-primary: #EDECE6;        /* Warm Beige readable text */
-    --text-secondary: #A8AFBD;      /* Soft silver-grey secondary */
-    --text-muted: #767E90;          /* Muted supporting labels */
-    --text-dim: rgba(237, 236, 230, 0.38);
+    /* --- Light Mode Text Tokens --- */
+    --text-primary: #111318;        /* Dark Ink crisp typography */
+    --text-secondary: #3D4452;      /* Muted dark ink */
+    --text-muted: #6E7686;          /* Subtle label text */
+    --text-dim: rgba(17, 19, 24, 0.4);
 
     /* --- Borders & Outlines --- */
-    --border-subtle: rgba(237, 236, 230, 0.1);
-    --border-default: rgba(237, 236, 230, 0.18);
+    --border-subtle: #D8D7D0;
+    --border-default: #CBC9BF;
     --border-focus: #1546D9;
     --border-cobalt: #1546D9;
     --border-yellow: #F9B318;
 
     /* --- Actions & Interactions --- */
-    --action-primary: #1546D9;
-    --action-primary-hover: #2255EB;
-    --action-primary-active: #0E38B6;
+    --action-primary: #1546D9;      /* Cobalt Blue */
+    --action-primary-hover: #0E38B6;
+    --action-primary-active: #0A2B8F;
     --action-text: #FFFFFF;
 
     /* --- Brand Highlights & Accents --- */
@@ -268,22 +268,56 @@
   font-size: 0.75rem;
   cursor: pointer;
   transition: all 180ms ease;
-  background-color: rgba(24, 27, 34, 0.85);
+  background-color: var(--bg-card);
   border: 1px solid var(--border-subtle);
   color: var(--text-secondary);
 }
 
 .sidebar-repo-card:hover {
-  background-color: #1F2430;
-  color: #FFFFFF;
+  background-color: var(--bg-card-hover);
+  color: var(--text-primary);
   border-color: rgba(21, 70, 217, 0.4);
 }
 
 .sidebar-repo-card.active {
-  background-color: #1F2430;
+  background-color: var(--bg-card);
   border-color: var(--color-cobalt-blue);
-  color: #FFFFFF;
-  box-shadow: 0 0 0 1px rgba(21, 70, 217, 0.35);
+  color: var(--text-primary);
+  box-shadow: 0 0 0 1.5px var(--color-cobalt-blue);
+}
+
+/* =========================================================================
+   DARK MODE SYSTEM (Dark Ink #111318 Foundation)
+   ========================================================================= */
+
+[data-theme="dark"],
+.theme-dark {
+  --bg-base: #111318;             /* Dark Ink main canvas */
+  --bg-well: #0B0D11;             /* Deepest ink well */
+  --bg-surface: #181B22;          /* Elevated dark surface for sidebar & headers */
+  --bg-card: #1D212B;             /* Standard dark card */
+  --bg-card-hover: #262B37;       /* Hover dark card */
+  --bg-elevated: #1546D9;         /* Cobalt Blue primary action */
+  --bg-elevated-hover: #2255EB;
+
+  --text-primary: #EDECE6;        /* Warm Beige readable text */
+  --text-secondary: #A8AFBD;      /* Soft silver secondary */
+  --text-muted: #767E90;          /* Muted supporting labels */
+  --text-dim: rgba(237, 236, 230, 0.38);
+
+  --border-subtle: rgba(237, 236, 230, 0.1);
+  --border-default: rgba(237, 236, 230, 0.18);
+  --border-focus: #1546D9;
+  --border-cobalt: #1546D9;
+  --border-yellow: #F9B318;
+
+  --action-primary: #1546D9;
+  --action-primary-hover: #2255EB;
+  --action-primary-active: #0E38B6;
+  --action-text: #FFFFFF;
+
+  background-color: #111318 !important;
+  color: #EDECE6 !important;
 }
 
 /* =========================================================================
@@ -442,9 +476,53 @@ body:not(.theme-white):not(.theme-light) .border-\[\#6DBE9B\]\/60 {
 .theme-white .bg-\[\#1B2D2A\],
 .theme-light .bg-\[\#1B2D2A\],
 [data-theme="white"] [class*="bg-[#1B2D2A]"],
-[data-theme="light"] [class*="bg-[#1B2D2A]"] {
-  background-color: #FFFFFF !important;
-  border-color: #D8D7D0 !important;
+[data-theme="light"] [class*="bg-[#1B2D2A]"],
+[data-theme="white"] .bg-\[\#181B22\],
+[data-theme="light"] .bg-\[\#181B22\],
+.theme-white .bg-\[\#181B22\],
+.theme-light .bg-\[\#181B22\] {
+  background-color: var(--bg-surface) !important;
+  border-color: var(--border-subtle) !important;
+}
+
+/* Base Canvas & Panels */
+[data-theme="white"] .bg-\[\#111318\],
+[data-theme="light"] .bg-\[\#111318\],
+.theme-white .bg-\[\#111318\],
+.theme-light .bg-\[\#111318\] {
+  background-color: var(--bg-base) !important;
+}
+
+[data-theme="white"] .bg-\[\#1F2430\],
+[data-theme="light"] .bg-\[\#1F2430\],
+[data-theme="white"] .bg-\[\#1D212B\],
+[data-theme="light"] .bg-\[\#1D212B\],
+.theme-white .bg-\[\#1F2430\],
+.theme-light .bg-\[\#1F2430\] {
+  background-color: var(--bg-card) !important;
+}
+
+[data-theme="white"] .bg-\[\#0B0D11\],
+[data-theme="light"] .bg-\[\#0B0D11\],
+.theme-white .bg-\[\#0B0D11\],
+.theme-light .bg-\[\#0B0D11\] {
+  background-color: var(--bg-well) !important;
+}
+
+[data-theme="white"] .text-\[\#EDECE6\],
+[data-theme="light"] .text-\[\#EDECE6\],
+.theme-white .text-\[\#EDECE6\],
+.theme-light .text-\[\#EDECE6\] {
+  color: var(--text-primary) !important;
+}
+
+[data-theme="white"] .border-white\/10,
+[data-theme="light"] .border-white\/10,
+[data-theme="white"] .border-white\/15,
+[data-theme="light"] .border-white\/15,
+[data-theme="white"] .border-white\/20,
+[data-theme="light"] .border-white\/20 {
+  border-color: var(--border-subtle) !important;
 }
 
 /* Wells & Code Backgrounds: Gentle Warm Beige Tint */

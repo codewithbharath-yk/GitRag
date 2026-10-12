@@ -79,14 +79,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
       )}
 
       <aside
-        className={`fixed md:static inset-y-0 left-0 z-50 w-72 bg-[#181B22] border-r border-white/10 flex flex-col h-screen shrink-0 select-none text-[#EDECE6] transition-transform duration-300 md:translate-x-0 font-sans ${
+        className={`fixed md:static inset-y-0 left-0 z-50 w-72 bg-[var(--bg-surface)] border-r border-[var(--border-subtle)] flex flex-col h-screen shrink-0 select-none text-[var(--text-primary)] transition-transform duration-300 md:translate-x-0 font-sans ${
           isOpenMobile ? 'translate-x-0 shadow-2xl' : '-translate-x-full md:translate-x-0'
         }`}
       >
         {/* Brand Header */}
-        <div className="p-4 border-b border-white/10 flex items-center justify-between bg-[#111318]">
+        <div className="p-4 border-b border-[var(--border-subtle)] flex items-center justify-between bg-[var(--bg-surface)]">
           <div className="flex items-center gap-2.5 text-left">
-            <div className="w-9 h-9 rounded-xl bg-[#181B22] border border-white/15 flex items-center justify-center p-1.5 shadow-md">
+            <div className="w-9 h-9 rounded-xl bg-[var(--bg-card)] border border-[var(--border-subtle)] flex items-center justify-center p-1.5 shadow-xs">
               <img
                 src="/coderag_logo.svg"
                 alt="CodeRAG"
@@ -94,20 +94,20 @@ export const Sidebar: React.FC<SidebarProps> = ({
               />
             </div>
             <div>
-              <h1 className="font-extrabold text-sm text-[#EDECE6] tracking-tight flex items-center gap-1.5">
+              <h1 className="font-extrabold text-sm text-[var(--text-primary)] tracking-tight flex items-center gap-1.5">
                 <TextEffect as="span" variant="word">CodeRAG</TextEffect>
-                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#F9B318]/20 text-[#F9B318] border border-[#F9B318]/30">
+                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#F9B318]/20 text-[#111318] dark:text-[#F9B318] border border-[#F9B318]/40 font-bold">
                   AI
                 </span>
               </h1>
-              <p className="text-[11px] text-[#A8AFBD]">GitHub Code Assistant</p>
+              <p className="text-[11px] text-[var(--text-muted)]">GitHub Code Assistant</p>
             </div>
           </div>
 
           {/* Close button on mobile */}
           <button
             onClick={onCloseMobile}
-            className="md:hidden p-1.5 rounded-lg text-[#A8AFBD] hover:text-[#EDECE6] hover:bg-[#262B37]"
+            className="md:hidden p-1.5 rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card-hover)]"
             aria-label="Close sidebar"
           >
             <X className="w-4 h-4" />
@@ -173,7 +173,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
             {/* Sub-tools of Codebase Explorer */}
             {isExplorerExpanded && (
-              <div className="pl-6 pr-1 py-1 space-y-0.5 border-l border-white/10 ml-4">
+              <div className="pl-6 pr-1 py-1 space-y-0.5 border-l border-[var(--border-subtle)] ml-4">
                 <button
                   onClick={() => {
                     onSelectTab('explorer', 'chat');
@@ -183,7 +183,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     activeTab === 'explorer' && explorerSubTab === 'chat' ? 'active' : ''
                   }`}
                 >
-                  <MessageSquare className={`w-3 h-3 ${activeTab === 'explorer' && explorerSubTab === 'chat' ? 'text-white' : 'text-[#F9B318]'}`} />
+                  <MessageSquare className={`w-3 h-3 ${activeTab === 'explorer' && explorerSubTab === 'chat' ? 'text-white' : 'text-[#1546D9] dark:text-[#F9B318]'}`} />
                   <span>Chat & Search</span>
                 </button>
 
@@ -196,7 +196,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     activeTab === 'explorer' && explorerSubTab === 'diffs' ? 'active' : ''
                   }`}
                 >
-                  <GitCommit className={`w-3 h-3 ${activeTab === 'explorer' && explorerSubTab === 'diffs' ? 'text-white' : 'text-[#F9B318]'}`} />
+                  <GitCommit className={`w-3 h-3 ${activeTab === 'explorer' && explorerSubTab === 'diffs' ? 'text-white' : 'text-[#1546D9] dark:text-[#F9B318]'}`} />
                   <span>Git History & Diffs</span>
                 </button>
 
@@ -209,7 +209,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     activeTab === 'explorer' && explorerSubTab === 'ast' ? 'active' : ''
                   }`}
                 >
-                  <Code2 className={`w-3 h-3 ${activeTab === 'explorer' && explorerSubTab === 'ast' ? 'text-white' : 'text-[#F9B318]'}`} />
+                  <Code2 className={`w-3 h-3 ${activeTab === 'explorer' && explorerSubTab === 'ast' ? 'text-white' : 'text-[#1546D9] dark:text-[#F9B318]'}`} />
                   <span>AST Explorer</span>
                 </button>
 
@@ -222,7 +222,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     activeTab === 'explorer' && explorerSubTab === 'files' ? 'active' : ''
                   }`}
                 >
-                  <FolderTree className={`w-3 h-3 ${activeTab === 'explorer' && explorerSubTab === 'files' ? 'text-white' : 'text-[#F9B318]'}`} />
+                  <FolderTree className={`w-3 h-3 ${activeTab === 'explorer' && explorerSubTab === 'files' ? 'text-white' : 'text-[#1546D9] dark:text-[#F9B318]'}`} />
                   <span>Files & Architecture</span>
                 </button>
               </div>
@@ -239,7 +239,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               activeTab === 'settings' ? 'active' : ''
             }`}
           >
-            <Settings className={`w-4 h-4 ${activeTab === 'settings' ? 'text-white' : 'text-[#F9B318]'}`} />
+            <Settings className={`w-4 h-4 ${activeTab === 'settings' ? 'text-white' : 'text-[#1546D9] dark:text-[#F9B318]'}`} />
             <span>Settings</span>
           </button>
         </div>
@@ -252,7 +252,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 onOpenConnectModal();
                 onCloseMobile?.();
               }}
-              className="w-full py-2 px-3 rounded-xl bg-[#1546D9] hover:bg-[#2255EB] text-white font-semibold text-xs flex items-center justify-center gap-2 border border-[#1546D9]/40 shadow-md transition-all active:scale-[0.98] cursor-pointer"
+              className="w-full py-2 px-3 rounded-xl bg-[#1546D9] hover:bg-[#0E38B6] dark:hover:bg-[#2255EB] text-white font-semibold text-xs flex items-center justify-center gap-2 shadow-md transition-all active:scale-[0.98] cursor-pointer"
             >
               <Plus className="w-4 h-4 text-white" />
               <span>Connect Repository</span>
@@ -262,9 +262,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
         {/* Recent Repositories Section */}
         <div className="flex-1 overflow-y-auto px-3 py-2 space-y-1">
-          <div className="px-2 py-1 text-[10px] font-semibold text-[#767E90] uppercase tracking-wider flex items-center justify-between">
+          <div className="px-2 py-1 text-[10px] font-semibold text-[var(--text-muted)] uppercase tracking-wider flex items-center justify-between">
             <span>Recent Repositories</span>
-            <span className="font-mono text-[9px] text-[#A8AFBD]">{repositories.length}</span>
+            <span className="font-mono text-[9px] text-[var(--text-secondary)]">{repositories.length}</span>
           </div>
 
           <div className="space-y-1">
@@ -281,12 +281,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   className={`sidebar-repo-card ${isSelected ? 'active' : ''}`}
                 >
                   <div className="min-w-0 flex items-center gap-2 truncate">
-                    <FolderGit2 className={`w-3.5 h-3.5 shrink-0 ${isSelected ? 'text-[#F9B318]' : 'text-[#767E90]'}`} />
+                    <FolderGit2 className={`w-3.5 h-3.5 shrink-0 ${isSelected ? 'text-[#1546D9] dark:text-[#F9B318]' : 'text-[var(--text-muted)]'}`} />
                     <span className="font-mono font-medium truncate">{repo.fullName}</span>
                   </div>
 
                   {isSelected && (
-                    <span className="w-2 h-2 rounded-full bg-[#F9B318] shrink-0" />
+                    <span className="w-2 h-2 rounded-full bg-[#1546D9] dark:bg-[#F9B318] shrink-0" />
                   )}
                 </div>
               );
@@ -295,23 +295,23 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
 
         {/* Sidebar Footer with Theme Mode & User Session */}
-        <div className="p-3 border-t border-white/10 bg-[#111318] space-y-2">
+        <div className="p-3 border-t border-[var(--border-subtle)] bg-[var(--bg-surface)] space-y-2">
           {/* User Session */}
-          <div className="flex items-center justify-between p-2 rounded-xl bg-[#181B22] border border-white/10">
+          <div className="flex items-center justify-between p-2 rounded-xl bg-[var(--bg-card)] border border-[var(--border-subtle)]">
             <div className="flex items-center gap-2.5 min-w-0">
               <div className="relative shrink-0">
                 <img
                   src="/user_avatar.svg"
                   alt="Bharath Kumar"
-                  className="w-7 h-7 rounded-xl border border-white/15 bg-[#1F2430] p-0.5"
+                  className="w-7 h-7 rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-card-hover)] p-0.5"
                 />
                 <span className="absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full bg-[#F9B318]" />
               </div>
               <div className="min-w-0 truncate">
-                <span className="text-xs font-bold text-[#EDECE6] block truncate">
+                <span className="text-xs font-bold text-[var(--text-primary)] block truncate">
                   {userProfile?.name || 'Bharath Kumar'}
                 </span>
-                <span className="text-[10px] text-[#F9B318] font-mono block truncate">
+                <span className="text-[10px] text-[#1546D9] dark:text-[#F9B318] font-mono block truncate">
                   {userProfile?.role || 'Full-Stack Developer'}
                 </span>
               </div>

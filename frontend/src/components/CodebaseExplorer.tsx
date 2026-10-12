@@ -21,7 +21,6 @@ import { api } from '../api/client';
 import { ChatMessage } from './ChatMessage';
 import { GitHistoryView } from './GitHistoryView';
 import { CodeIntelligenceView } from './CodeIntelligenceView';
-import { BackButton } from './BackButton';
 import { Tilt } from './motion/Tilt';
 import { Magnetic } from './motion/Magnetic';
 import { TextEffect } from './motion/TextEffect';
@@ -157,13 +156,6 @@ export const CodebaseExplorer: React.FC<CodebaseExplorerProps> = ({
       {/* Codebase Explorer Workspace Sub-Header */}
       <div className="p-3 sm:px-6 py-2.5 bg-[var(--bg-surface)] border-b border-[var(--border-subtle)] flex flex-col lg:flex-row lg:items-center justify-between gap-3 shrink-0">
         <div className="flex items-center gap-3">
-          {currentTab !== 'chat' && (
-            <BackButton
-              label="Back to Chat & Search"
-              onClick={() => handleTabSwitch('chat')}
-              className="py-1 px-2.5 text-xs"
-            />
-          )}
           <div>
             <div className="flex items-center gap-2">
               <h1 className="text-base sm:text-lg font-extrabold text-[var(--text-primary)] tracking-tight flex items-center gap-2">

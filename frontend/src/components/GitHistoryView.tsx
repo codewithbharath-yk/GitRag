@@ -19,6 +19,7 @@ import {
   PlusCircle,
   MinusCircle,
   FileDiff,
+  ArrowLeft,
 } from 'lucide-react';
 import { api, ApiError } from '../api/client';
 import type {
@@ -29,7 +30,6 @@ import type {
   HistoryChatResponse,
 } from '../types/api';
 import { Magnetic, Spotlight, Tilt, TextEffect } from './motion';
-import { BackButton } from './BackButton';
 import { useNavigation } from '../context/NavigationContext';
 
 interface GitHistoryViewProps {
@@ -541,30 +541,39 @@ export const GitHistoryView: React.FC<GitHistoryViewProps> = ({
             </div>
           ) : detailError ? (
             <div className="p-6 space-y-4">
-              <BackButton
-                label="Back to Commits"
+              <button
                 onClick={handleDeselectCommit}
-                className="mb-2"
-              />
+                className="lg:hidden inline-flex items-center gap-1.5 text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+              >
+                <ArrowLeft className="w-3.5 h-3.5" />
+                <span>Back to commits</span>
+              </button>
               <div className="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-xs text-rose-300 space-y-2">
                 <div className="flex items-center gap-2 font-bold">
                   <AlertCircle className="w-4 h-4 text-rose-400" />
                   <span>Failed to load commit details</span>
                 </div>
-                <p className="text-[11px] text-[#A8AFBD]">{detailError}</p>
+                <p className="text-[11px] text-[var(--text-muted)]">{detailError}</p>
               </div>
             </div>
           ) : commitDetail ? (
             <div className="p-6 space-y-5">
-              {/* Back to Commits Navigation Bar */}
-              <div className="flex items-center justify-between pb-2 border-b border-white/10">
-                <BackButton
-                  label="Back to Commits"
-                  onClick={handleDeselectCommit}
-                  variant="pill"
-                />
-                <span className="text-xs font-mono text-[#F9B318]">
-                  Commit {commitDetail.sha.slice(0, 7)}
+              {/* Commit Detail Header */}
+              <div className="flex items-center justify-between pb-2 border-b border-[var(--border-subtle)]">
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={handleDeselectCommit}
+                    className="lg:hidden p-1.5 rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card)] transition-colors"
+                    title="Back to commit list"
+                  >
+                    <ArrowLeft className="w-4 h-4" />
+                  </button>
+                  <span className="text-xs font-mono font-bold text-[var(--text-primary)]">
+                    Commit {commitDetail.sha.slice(0, 7)}
+                  </span>
+                </div>
+                <span className="text-[11px] font-mono px-2 py-0.5 rounded-full bg-[var(--bg-well)] text-[#1546D9] dark:text-[#F9B318] border border-[var(--border-subtle)] font-semibold">
+                  {commitDetail.files?.length || 0} modified files
                 </span>
               </div>
 

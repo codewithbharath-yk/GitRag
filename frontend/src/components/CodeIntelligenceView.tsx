@@ -14,6 +14,7 @@ import {
   ChevronRight,
   ChevronDown,
   ChevronUp,
+  ArrowLeft,
 } from 'lucide-react';
 import { api } from '../api/client';
 import type {
@@ -23,7 +24,6 @@ import type {
   ParsedFileIntelligence,
 } from '../types/api';
 import { Magnetic, Spotlight, Tilt, TextEffect } from './motion';
-import { BackButton } from './BackButton';
 import { useNavigation } from '../context/NavigationContext';
 
 interface CodeIntelligenceViewProps {
@@ -343,21 +343,28 @@ export const CodeIntelligenceView: React.FC<CodeIntelligenceViewProps> = ({
           </div>
 
           {/* Right Panel: Selected Symbol Detail Inspector */}
-          <div className={`md:w-7/12 flex-1 flex flex-col bg-[#111318] overflow-y-auto ${!selectedSymbol ? 'hidden md:flex' : 'flex'}`}>
+          <div className={`md:w-7/12 flex-1 flex flex-col bg-[var(--bg-base)] overflow-y-auto ${!selectedSymbol ? 'hidden md:flex' : 'flex'}`}>
             {selectedSymbol ? (
               <div className="p-6 space-y-5">
-                {/* Back to Symbols Navigation Bar */}
-                <div className="flex items-center justify-between pb-2 border-b border-white/10">
-                  <BackButton
-                    label="Back to Symbols"
-                    onClick={() => {
-                      setSelectedSymbol(null);
-                      setSymbolName(null);
-                    }}
-                    variant="pill"
-                  />
-                  <span className="text-xs font-mono text-[#F9B318]">
-                    {selectedSymbol.symbol_type}: {selectedSymbol.name}
+                {/* Symbol Detail Header */}
+                <div className="flex items-center justify-between pb-2 border-b border-[var(--border-subtle)]">
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => {
+                        setSelectedSymbol(null);
+                        setSymbolName(null);
+                      }}
+                      className="md:hidden p-1.5 rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card)] transition-colors"
+                      title="Back to symbols list"
+                    >
+                      <ArrowLeft className="w-4 h-4" />
+                    </button>
+                    <span className="text-xs font-mono font-bold text-[var(--text-primary)]">
+                      {selectedSymbol.symbol_type}: {selectedSymbol.name}
+                    </span>
+                  </div>
+                  <span className="text-[11px] font-mono px-2 py-0.5 rounded-full bg-[var(--bg-well)] text-[#1546D9] dark:text-[#F9B318] border border-[var(--border-subtle)] font-semibold">
+                    Line {selectedSymbol.start_line}
                   </span>
                 </div>
 
@@ -539,18 +546,22 @@ export const CodeIntelligenceView: React.FC<CodeIntelligenceViewProps> = ({
           </div>
 
           {/* Right: File Architecture Inspector */}
-          <div className="md:w-7/12 flex-1 flex flex-col bg-[#111318] overflow-y-auto p-6 space-y-5">
+          <div className="md:w-7/12 flex-1 flex flex-col bg-[var(--bg-base)] overflow-y-auto p-6 space-y-5">
             {selectedFile ? (
               <>
-                <div className="flex items-center justify-between pb-2 border-b border-white/10">
-                  <BackButton
-                    label="Back to Files Overview"
-                    onClick={() => setSelectedFile(null)}
-                    variant="pill"
-                  />
-                  <span className="text-xs font-mono text-[#F9B318]">
-                    {selectedFile}
-                  </span>
+                <div className="flex items-center justify-between pb-2 border-b border-[var(--border-subtle)]">
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => setSelectedFile(null)}
+                      className="md:hidden p-1.5 rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card)] transition-colors"
+                      title="Back to files list"
+                    >
+                      <ArrowLeft className="w-4 h-4" />
+                    </button>
+                    <span className="text-xs font-mono font-bold text-[var(--text-primary)]">
+                      {selectedFile}
+                    </span>
+                  </div>
                 </div>
 
                 <div className="p-4 rounded-2xl bg-[#181B22] border border-white/10 space-y-3">

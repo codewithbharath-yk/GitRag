@@ -23,13 +23,10 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved === 'dark' || saved === 'light' || saved === 'system') return saved;
-      // Also check backwards compatibility
-      const oldTheme = localStorage.getItem('coderag_theme_v1');
-      if (oldTheme === 'white') return 'light';
-      if (oldTheme === 'green') return 'dark';
-      return 'dark'; // Dark Forest is the default theme
+      // Default to Warm Beige light mode matching the user's design reference
+      return 'light';
     } catch {
-      return 'dark';
+      return 'light';
     }
   });
 

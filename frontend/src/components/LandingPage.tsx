@@ -23,7 +23,6 @@ import { Spotlight } from './motion/Spotlight';
 import { Tilt } from './motion/Tilt';
 import { Magnetic } from './motion/Magnetic';
 import { ThemeToggle } from './ThemeToggle';
-import { BackButton } from './BackButton';
 import { useNavigation } from '../context/NavigationContext';
 
 interface LandingPageProps {
@@ -502,22 +501,15 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess }) => {
             ========================================================================= */}
         {step === 'showcase' && (
           <div className="space-y-6 animate-in fade-in duration-300 max-w-4xl mx-auto my-auto">
-            {/* Header / Slide Tracker with Back Button */}
+            {/* Header / Slide Tracker */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[var(--border-subtle)]">
-              <div className="flex items-center gap-3">
-                <BackButton
-                  label="Back"
-                  tooltip="Return to Welcome"
-                  onClick={() => setStep('landing')}
-                />
-                <div>
-                  <span className="text-[11px] font-mono text-[#F9B318] uppercase tracking-wider font-semibold">
-                    Visual Architecture & Feature Showcase
-                  </span>
-                  <h2 className="text-xl sm:text-2xl font-bold text-[var(--text-primary)] mt-0.5">
-                    {SHOWCASE_SLIDES[activeSlide].title}
-                  </h2>
-                </div>
+              <div>
+                <span className="text-[11px] font-mono text-[#1546D9] dark:text-[#F9B318] uppercase tracking-wider font-semibold">
+                  Visual Architecture & Feature Showcase
+                </span>
+                <h2 className="text-xl sm:text-2xl font-bold text-[var(--text-primary)] mt-0.5">
+                  {SHOWCASE_SLIDES[activeSlide].title}
+                </h2>
               </div>
 
               {/* Slide Tabs */}
@@ -631,13 +623,6 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess }) => {
             ========================================================================= */}
         {step === 'auth' && (
           <div className="space-y-6 animate-in fade-in duration-300 max-w-md mx-auto my-auto w-full">
-            <div className="flex items-center justify-start mb-1">
-              <BackButton
-                label="Back to Showcase"
-                tooltip="Return to Feature Showcase"
-                onClick={() => setStep('showcase')}
-              />
-            </div>
             <Tilt maxAngle={4} scale={1.01}>
               <Spotlight
                 color="#1546D9"

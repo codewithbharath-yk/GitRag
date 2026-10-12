@@ -18,7 +18,6 @@ import { Spotlight } from './motion/Spotlight';
 import { Tilt } from './motion/Tilt';
 import { Magnetic } from './motion/Magnetic';
 import { TextEffect } from './motion/TextEffect';
-import { BackButton } from './BackButton';
 import { useNavigation } from '../context/NavigationContext';
 import type { UserProfile } from '../types/api';
 
@@ -51,18 +50,15 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
   return (
     <div className="flex-1 overflow-y-auto bg-[var(--bg-base)] p-4 sm:p-6 lg:p-8 text-[var(--text-primary)] font-sans">
       <div className="max-w-4xl mx-auto space-y-6">
-        {/* Header with Visible Back Button */}
+        {/* Header */}
         <div className="pb-2 border-b border-[var(--border-subtle)] flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <BackButton label="Back" tooltip="Return to Dashboard" fallback={{ tab: 'dashboard' }} />
-            <div>
-              <TextEffect as="h1" variant="blur-up" className="text-2xl sm:text-3xl font-extrabold text-[var(--text-primary)] tracking-tight">
-                Settings
-              </TextEffect>
-              <p className="text-xs sm:text-sm text-[var(--text-secondary)] mt-0.5">
-                Manage your appearance, theme mode, integrations, and AI models
-              </p>
-            </div>
+          <div>
+            <TextEffect as="h1" variant="blur-up" className="text-2xl sm:text-3xl font-extrabold text-[var(--text-primary)] tracking-tight">
+              Settings
+            </TextEffect>
+            <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-0.5">
+              Manage your appearance, theme mode, integrations, and AI models
+            </p>
           </div>
         </div>
 
