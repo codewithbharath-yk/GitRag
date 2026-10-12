@@ -295,6 +295,25 @@ export const api = {
   },
 
   /**
+   * Helper alias for asking questions about git commit history.
+   */
+  async askHistoryQuestion(params: {
+    repository_id: string;
+    question: string;
+    branch?: string;
+    commit_sha?: string;
+    path?: string;
+    limit_commits?: number;
+  }): Promise<HistoryChatResponse> {
+    return this.chatHistory(params.repository_id, {
+      question: params.question,
+      branch: params.branch,
+      commit_sha: params.commit_sha,
+      path: params.path,
+    });
+  },
+
+  /**
    * Search repository symbols (functions, classes, methods).
    */
   async getRepositorySymbols(

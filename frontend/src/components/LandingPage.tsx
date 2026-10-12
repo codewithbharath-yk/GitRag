@@ -23,6 +23,8 @@ import { Spotlight } from './motion/Spotlight';
 import { Tilt } from './motion/Tilt';
 import { Magnetic } from './motion/Magnetic';
 import { ThemeToggle } from './ThemeToggle';
+import { BackButton } from './BackButton';
+import { useNavigation } from '../context/NavigationContext';
 
 interface LandingPageProps {
   onLoginSuccess: (profile: UserProfile) => void;
@@ -114,8 +116,9 @@ const SHOWCASE_SLIDES = [
 ];
 
 export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess }) => {
-  // Strict linear funnel: 'landing' -> 'showcase' -> 'auth' (No backwards redirect)
-  const [step, setStep] = useState<FunnelStep>('landing');
+  const { landingStep, setLandingStep } = useNavigation();
+  const step: FunnelStep = landingStep;
+  const setStep = (newStep: FunnelStep) => setLandingStep(newStep);
 
   // Showcase state
   const [activeSlide, setActiveSlide] = useState<number>(0);
@@ -326,12 +329,12 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess }) => {
   };
 
   return (
-    <div className="flex-1 overflow-y-auto bg-[#162623] text-[#F0F5F7] font-sans selection:bg-[#295255] selection:text-white flex flex-col min-h-screen">
+    <div className="flex-1 overflow-y-auto bg-[var(--bg-base)] text-[var(--text-primary)] font-sans selection:bg-[#1546D9] selection:text-white flex flex-col min-h-screen">
       {/* Top Navbar */}
-      <header className="sticky top-0 z-30 backdrop-blur-md bg-[#162623]/90 border-b border-[#577877]/25 px-4 sm:px-8 py-3.5 flex items-center justify-between max-w-7xl w-full mx-auto">
+      <header className="sticky top-0 z-30 backdrop-blur-md bg-[var(--bg-surface)]/90 border-b border-[var(--border-subtle)] px-4 sm:px-8 py-3.5 flex items-center justify-between max-w-7xl w-full mx-auto">
         {/* Brand Horizontal Logo */}
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-[#1B2D2A] border border-[#577877]/30 p-1.5 flex items-center justify-center shadow-md">
+          <div className="w-10 h-10 rounded-xl bg-[var(--bg-card)] border border-[var(--border-subtle)] p-1.5 flex items-center justify-center shadow-md">
             <img
               src="/coderag_logo.svg"
               alt="CodeRAG"
@@ -339,58 +342,64 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess }) => {
             />
           </div>
           <div>
-            <span className="font-extrabold text-base tracking-tight text-white flex items-center gap-2">
+            <span className="font-extrabold text-base tracking-tight text-[var(--text-primary)] flex items-center gap-2">
               CodeRAG
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#1B2D2A] text-[#6DBE9B] border border-[#577877]/40">
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#F9B318]/15 text-[#F9B318] border border-[#F9B318]/40 font-bold">
                 AI
               </span>
             </span>
-            <span className="text-[11px] text-[#577877] font-mono block -mt-0.5">
+            <span className="text-[11px] text-[var(--text-muted)] font-mono block -mt-0.5">
               YOUR CODEBASE AI ASSISTANT
             </span>
           </div>
         </div>
 
-        {/* Step Progress Tracker (Forward Only - No Back Option) */}
-        <div className="hidden sm:flex items-center gap-2 bg-[#1B2D2A] border border-[#577877]/30 p-1 rounded-xl text-xs font-semibold">
-          <div
-            className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 ${
+        {/* Step Progress Tracker (Interactive & Accessible Navigation) */}
+        <div className="hidden sm:flex items-center gap-2 bg-[var(--bg-card)] border border-[var(--border-subtle)] p-1 rounded-xl text-xs font-semibold">
+          <button
+            type="button"
+            onClick={() => setStep('landing')}
+            className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-all cursor-pointer ${
               step === 'landing'
-                ? 'bg-[#295255] text-white shadow-xs'
-                : 'text-[#577877]'
+                ? 'bg-[#1546D9] text-white shadow-xs'
+                : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-well)]'
             }`}
           >
-            <span className="w-4 h-4 rounded-full bg-[#162623] text-[10px] flex items-center justify-center font-mono">
+            <span className="w-4 h-4 rounded-full bg-[var(--bg-base)] text-[10px] flex items-center justify-center font-mono">
               1
             </span>
             <span>Welcome</span>
-          </div>
+          </button>
 
-          <div
-            className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 ${
+          <button
+            type="button"
+            onClick={() => setStep('showcase')}
+            className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-all cursor-pointer ${
               step === 'showcase'
-                ? 'bg-[#295255] text-white shadow-xs'
-                : 'text-[#577877]'
+                ? 'bg-[#1546D9] text-white shadow-xs'
+                : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-well)]'
             }`}
           >
-            <span className="w-4 h-4 rounded-full bg-[#162623] text-[10px] flex items-center justify-center font-mono">
+            <span className="w-4 h-4 rounded-full bg-[var(--bg-base)] text-[10px] flex items-center justify-center font-mono">
               2
             </span>
             <span>Visual Showcase</span>
-          </div>
+          </button>
 
-          <div
-            className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 ${
+          <button
+            type="button"
+            onClick={() => setStep('auth')}
+            className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-all cursor-pointer ${
               step === 'auth'
-                ? 'bg-[#295255] text-white shadow-xs'
-                : 'text-[#577877]'
+                ? 'bg-[#1546D9] text-white shadow-xs'
+                : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-well)]'
             }`}
           >
-            <span className="w-4 h-4 rounded-full bg-[#162623] text-[10px] flex items-center justify-center font-mono">
+            <span className="w-4 h-4 rounded-full bg-[var(--bg-base)] text-[10px] flex items-center justify-center font-mono">
               3
             </span>
             <span>Sign In</span>
-          </div>
+          </button>
         </div>
 
         {/* Right Action: ThemeToggle */}
@@ -407,25 +416,25 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess }) => {
         {step === 'landing' && (
           <div className="space-y-10 animate-in fade-in duration-300 text-center max-w-3xl mx-auto my-auto">
             {/* Ambient Radial Glow */}
-            <div className="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 w-80 sm:w-96 h-80 sm:h-96 bg-[#295255]/30 rounded-full blur-3xl -z-10" />
+            <div className="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 w-80 sm:w-96 h-80 sm:h-96 bg-[#1546D9]/15 rounded-full blur-3xl -z-10" />
 
             {/* Big Animated Logo Badge */}
             <div className="flex justify-center">
               <Tilt maxAngle={8} scale={1.04}>
                 <Spotlight
-                  color="#6DBE9B"
+                  color="#1546D9"
                   size={280}
                   strength={0.2}
-                  className="p-4 sm:p-5 rounded-3xl bg-[#1B2D2A] border-2 border-[#6DBE9B]/50 shadow-2xl relative"
+                  className="p-4 sm:p-5 rounded-3xl bg-[var(--bg-card)] border-2 border-[#1546D9]/30 shadow-2xl relative"
                 >
-                  <div className="w-28 h-28 sm:w-36 sm:h-36 rounded-2xl bg-[#111E1C] border border-[#577877]/40 p-3 sm:p-4 flex items-center justify-center overflow-hidden">
+                  <div className="w-28 h-28 sm:w-36 sm:h-36 rounded-2xl bg-[var(--bg-well)] border border-[var(--border-subtle)] p-3 sm:p-4 flex items-center justify-center overflow-hidden">
                     <img
                       src="/coderag_logo.svg"
                       alt="CodeRAG Logo"
                       className="w-full h-full object-contain filter drop-shadow-md"
                     />
                   </div>
-                  <span className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full bg-[#295255] border border-[#6DBE9B]/50 text-[10px] font-mono font-bold text-white uppercase tracking-wider shadow-md whitespace-nowrap">
+                  <span className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full bg-[#1546D9] border border-[#1546D9] text-[10px] font-mono font-bold text-white uppercase tracking-wider shadow-md whitespace-nowrap">
                     CodeRAG AI Assistant
                   </span>
                 </Spotlight>
@@ -437,39 +446,39 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess }) => {
               <TextEffect
                 as="h1"
                 variant="blur-up"
-                className="text-3xl sm:text-5xl font-black text-white tracking-tight leading-tight"
+                className="text-3xl sm:text-5xl font-black text-[var(--text-primary)] tracking-tight leading-tight"
               >
                 Understand Any Codebase. Instantly.
               </TextEffect>
-              <p className="text-sm sm:text-base text-[#B9CECC] max-w-xl mx-auto leading-relaxed">
+              <p className="text-sm sm:text-base text-[var(--text-secondary)] max-w-xl mx-auto leading-relaxed">
                 Zero-hallucination code intelligence with grounded line citations, AST structural analysis, and instant semantic search for any GitHub repository.
               </p>
             </div>
 
             {/* 4 Feature Badges */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono">
-              <div className="p-3 rounded-xl bg-[#1B2D2A] border border-[#577877]/30 flex flex-col items-center gap-1.5">
-                <MessageSquare className="w-4 h-4 text-[#6DBE9B]" />
-                <span className="text-[#F0F5F7] font-semibold">Grounded RAG Chat</span>
-                <span className="text-[10px] text-[#577877]">Verifiable Line Citations</span>
+              <div className="p-3 rounded-xl bg-[var(--bg-card)] border border-[var(--border-subtle)] flex flex-col items-center gap-1.5">
+                <MessageSquare className="w-4 h-4 text-[#F9B318]" />
+                <span className="text-[var(--text-primary)] font-semibold">Grounded RAG Chat</span>
+                <span className="text-[10px] text-[var(--text-muted)]">Verifiable Line Citations</span>
               </div>
 
-              <div className="p-3 rounded-xl bg-[#1B2D2A] border border-[#577877]/30 flex flex-col items-center gap-1.5">
-                <Zap className="w-4 h-4 text-[#6DBE9B]" />
-                <span className="text-[#F0F5F7] font-semibold">Unified Workspace</span>
-                <span className="text-[10px] text-[#577877]">4 Tools in One Hub</span>
+              <div className="p-3 rounded-xl bg-[var(--bg-card)] border border-[var(--border-subtle)] flex flex-col items-center gap-1.5">
+                <Zap className="w-4 h-4 text-[#F9B318]" />
+                <span className="text-[var(--text-primary)] font-semibold">Unified Workspace</span>
+                <span className="text-[10px] text-[var(--text-muted)]">4 Tools in One Hub</span>
               </div>
 
-              <div className="p-3 rounded-xl bg-[#1B2D2A] border border-[#577877]/30 flex flex-col items-center gap-1.5">
-                <Code2 className="w-4 h-4 text-[#6DBE9B]" />
-                <span className="text-[#F0F5F7] font-semibold">Tree-Sitter AST</span>
-                <span className="text-[10px] text-[#577877]">Syntax & Symbol Maps</span>
+              <div className="p-3 rounded-xl bg-[var(--bg-card)] border border-[var(--border-subtle)] flex flex-col items-center gap-1.5">
+                <Code2 className="w-4 h-4 text-[#F9B318]" />
+                <span className="text-[var(--text-primary)] font-semibold">Tree-Sitter AST</span>
+                <span className="text-[10px] text-[var(--text-muted)]">Syntax & Symbol Maps</span>
               </div>
 
-              <div className="p-3 rounded-xl bg-[#1B2D2A] border border-[#577877]/30 flex flex-col items-center gap-1.5">
-                <FolderTree className="w-4 h-4 text-[#6DBE9B]" />
-                <span className="text-[#F0F5F7] font-semibold">Semantic Vectors</span>
-                <span className="text-[10px] text-[#577877]">Local Qdrant Engine</span>
+              <div className="p-3 rounded-xl bg-[var(--bg-card)] border border-[var(--border-subtle)] flex flex-col items-center gap-1.5">
+                <FolderTree className="w-4 h-4 text-[#F9B318]" />
+                <span className="text-[var(--text-primary)] font-semibold">Semantic Vectors</span>
+                <span className="text-[10px] text-[var(--text-muted)]">Local Qdrant Engine</span>
               </div>
             </div>
 
@@ -478,10 +487,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess }) => {
               <Magnetic>
                 <button
                   onClick={() => setStep('showcase')}
-                  className="px-8 py-3.5 rounded-2xl bg-[#295255] hover:bg-[#34686C] text-white font-bold text-sm sm:text-base flex items-center gap-3 border border-[#6DBE9B]/50 shadow-xl transition-all active:scale-[0.98] cursor-pointer"
+                  className="px-8 py-3.5 rounded-2xl bg-[#1546D9] hover:bg-[#2255EB] text-white font-bold text-sm sm:text-base flex items-center gap-3 border border-[#1546D9] shadow-xl transition-all active:scale-[0.98] cursor-pointer"
                 >
                   <span>Explore Visual Showcase</span>
-                  <ArrowRight className="w-4 h-4 text-[#6DBE9B]" />
+                  <ArrowRight className="w-4 h-4 text-[#F9B318]" />
                 </button>
               </Magnetic>
             </div>
@@ -493,27 +502,34 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess }) => {
             ========================================================================= */}
         {step === 'showcase' && (
           <div className="space-y-6 animate-in fade-in duration-300 max-w-4xl mx-auto my-auto">
-            {/* Header / Slide Tracker */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#577877]/25">
-              <div>
-                <span className="text-[11px] font-mono text-[#6DBE9B] uppercase tracking-wider font-semibold">
-                  Visual Architecture & Feature Showcase
-                </span>
-                <h2 className="text-xl sm:text-2xl font-bold text-white mt-0.5">
-                  {SHOWCASE_SLIDES[activeSlide].title}
-                </h2>
+            {/* Header / Slide Tracker with Back Button */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[var(--border-subtle)]">
+              <div className="flex items-center gap-3">
+                <BackButton
+                  label="Back"
+                  tooltip="Return to Welcome"
+                  onClick={() => setStep('landing')}
+                />
+                <div>
+                  <span className="text-[11px] font-mono text-[#F9B318] uppercase tracking-wider font-semibold">
+                    Visual Architecture & Feature Showcase
+                  </span>
+                  <h2 className="text-xl sm:text-2xl font-bold text-[var(--text-primary)] mt-0.5">
+                    {SHOWCASE_SLIDES[activeSlide].title}
+                  </h2>
+                </div>
               </div>
 
               {/* Slide Tabs */}
-              <div className="flex items-center gap-1.5 bg-[#1B2D2A] p-1 rounded-xl border border-[#577877]/30">
+              <div className="flex items-center gap-1.5 bg-[var(--bg-card)] p-1 rounded-xl border border-[var(--border-subtle)]">
                 {SHOWCASE_SLIDES.map((s, idx) => (
                   <button
                     key={s.id}
                     onClick={() => setActiveSlide(idx)}
                     className={`px-2.5 py-1 rounded-lg text-xs font-mono font-medium transition-all cursor-pointer ${
                       activeSlide === idx
-                        ? 'bg-[#295255] text-white shadow-xs'
-                        : 'text-[#577877] hover:text-white'
+                        ? 'bg-[#1546D9] text-white shadow-xs'
+                        : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
                     }`}
                   >
                     0{idx + 1}
@@ -525,20 +541,20 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess }) => {
             {/* Showcase Visual Card */}
             <Tilt maxAngle={3} scale={1.01}>
               <Spotlight
-                color="teal"
+                color="#1546D9"
                 size={420}
                 strength={0.16}
-                className="rounded-3xl bg-[#1B2D2A] border border-[#577877]/40 shadow-2xl overflow-hidden p-6 sm:p-8"
+                className="rounded-3xl bg-[var(--bg-card)] border border-[var(--border-subtle)] shadow-2xl overflow-hidden p-6 sm:p-8"
               >
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 items-center">
                   {/* Left: Image Preview */}
-                  <div className="relative rounded-2xl overflow-hidden border border-[#577877]/40 bg-[#111E1C] shadow-lg aspect-video flex items-center justify-center">
+                  <div className="relative rounded-2xl overflow-hidden border border-[var(--border-subtle)] bg-[var(--bg-well)] shadow-lg aspect-video flex items-center justify-center">
                     <img
                       src={SHOWCASE_SLIDES[activeSlide].image}
                       alt={SHOWCASE_SLIDES[activeSlide].title}
                       className="w-full h-full object-cover"
                     />
-                    <div className="absolute top-3 left-3 px-2.5 py-1 rounded-md bg-[#162623]/90 backdrop-blur-xs border border-[#577877]/40 text-[10px] font-mono text-[#6DBE9B]">
+                    <div className="absolute top-3 left-3 px-2.5 py-1 rounded-md bg-[var(--bg-base)]/90 backdrop-blur-xs border border-[var(--border-subtle)] text-[10px] font-mono text-[#F9B318] font-bold">
                       {SHOWCASE_SLIDES[activeSlide].tag}
                     </div>
                   </div>
@@ -546,22 +562,22 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess }) => {
                   {/* Right: Description & Bullets */}
                   <div className="space-y-4">
                     <div>
-                      <span className="text-xs font-mono text-[#6DBE9B] uppercase tracking-wider">
+                      <span className="text-xs font-mono text-[#F9B318] uppercase tracking-wider font-semibold">
                         Feature 0{activeSlide + 1} of 05
                       </span>
-                      <h3 className="text-lg sm:text-xl font-bold text-white mt-1 leading-snug">
+                      <h3 className="text-lg sm:text-xl font-bold text-[var(--text-primary)] mt-1 leading-snug">
                         {SHOWCASE_SLIDES[activeSlide].subtitle}
                       </h3>
                     </div>
 
-                    <p className="text-xs sm:text-sm text-[#B9CECC] leading-relaxed">
+                    <p className="text-xs sm:text-sm text-[var(--text-secondary)] leading-relaxed">
                       {SHOWCASE_SLIDES[activeSlide].description}
                     </p>
 
-                    <div className="space-y-2 pt-1 border-t border-[#577877]/20">
+                    <div className="space-y-2 pt-1 border-t border-[var(--border-subtle)]">
                       {SHOWCASE_SLIDES[activeSlide].bullets.map((bullet, bIdx) => (
-                        <div key={bIdx} className="flex items-center gap-2 text-xs text-[#F0F5F7]">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-[#6DBE9B] shrink-0" />
+                        <div key={bIdx} className="flex items-center gap-2 text-xs text-[var(--text-primary)]">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-[#F9B318] shrink-0" />
                           <span>{bullet}</span>
                         </div>
                       ))}
@@ -571,18 +587,25 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess }) => {
               </Spotlight>
             </Tilt>
 
-            {/* Showcase Forward Controls (No Back Option) */}
+            {/* Showcase Slide Controls (Previous & Next) */}
             <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-3">
               <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setActiveSlide((prev) => Math.max(0, prev - 1))}
+                  disabled={activeSlide === 0}
+                  className="px-4 py-2 rounded-xl bg-[var(--bg-card)] hover:bg-[var(--bg-card-hover)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] disabled:opacity-40 disabled:cursor-not-allowed text-xs font-semibold border border-[var(--border-subtle)] transition-colors cursor-pointer"
+                >
+                  ← Previous Slide
+                </button>
                 {activeSlide < SHOWCASE_SLIDES.length - 1 ? (
                   <button
                     onClick={() => setActiveSlide((prev) => prev + 1)}
-                    className="px-4 py-2 rounded-xl bg-[#1B2D2A] hover:bg-[#243D39] text-[#B9CECC] hover:text-white text-xs font-semibold border border-[#577877]/40 transition-colors cursor-pointer"
+                    className="px-4 py-2 rounded-xl bg-[var(--bg-card)] hover:bg-[var(--bg-card-hover)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] text-xs font-semibold border border-[var(--border-subtle)] transition-colors cursor-pointer"
                   >
                     Next Feature Preview →
                   </button>
                 ) : (
-                  <span className="text-xs text-[#6DBE9B] font-mono flex items-center gap-1.5">
+                  <span className="text-xs text-[#F9B318] font-mono flex items-center gap-1.5 font-semibold">
                     <CheckCircle2 className="w-3.5 h-3.5" />
                     All 5 Features Reviewed
                   </span>
@@ -593,10 +616,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess }) => {
               <Magnetic>
                 <button
                   onClick={() => setStep('auth')}
-                  className="px-6 py-3 rounded-xl bg-[#295255] hover:bg-[#34686C] text-white font-bold text-xs sm:text-sm flex items-center gap-2 border border-[#6DBE9B]/50 shadow-md transition-all active:scale-[0.98] cursor-pointer"
+                  className="px-6 py-3 rounded-xl bg-[#1546D9] hover:bg-[#2255EB] text-white font-bold text-xs sm:text-sm flex items-center gap-2 border border-[#1546D9] shadow-md transition-all active:scale-[0.98] cursor-pointer"
                 >
                   <span>Proceed to Sign In & Enter CodeRAG</span>
-                  <ArrowRight className="w-4 h-4 text-[#6DBE9B]" />
+                  <ArrowRight className="w-4 h-4 text-[#F9B318]" />
                 </button>
               </Magnetic>
             </div>
@@ -608,26 +631,33 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess }) => {
             ========================================================================= */}
         {step === 'auth' && (
           <div className="space-y-6 animate-in fade-in duration-300 max-w-md mx-auto my-auto w-full">
+            <div className="flex items-center justify-start mb-1">
+              <BackButton
+                label="Back to Showcase"
+                tooltip="Return to Feature Showcase"
+                onClick={() => setStep('showcase')}
+              />
+            </div>
             <Tilt maxAngle={4} scale={1.01}>
               <Spotlight
-                color="teal"
+                color="#1546D9"
                 size={340}
                 strength={0.18}
-                className="rounded-3xl bg-[#1B2D2A] border border-[#577877]/40 shadow-2xl p-6 sm:p-8 space-y-6 text-[#F0F5F7]"
+                className="rounded-3xl bg-[var(--bg-card)] border border-[var(--border-subtle)] shadow-2xl p-6 sm:p-8 space-y-6 text-[var(--text-primary)]"
               >
                 {/* Header & Logo */}
                 <div className="text-center space-y-2">
-                  <div className="w-12 h-12 mx-auto rounded-xl bg-[#111E1C] border border-[#577877]/30 p-2 flex items-center justify-center shadow-md">
+                  <div className="w-12 h-12 mx-auto rounded-xl bg-[var(--bg-well)] border border-[var(--border-subtle)] p-2 flex items-center justify-center shadow-md">
                     <img
                       src="/coderag_logo.svg"
                       alt="CodeRAG"
                       className="w-full h-full object-contain"
                     />
                   </div>
-                  <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-white">
+                  <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-[var(--text-primary)]">
                     {authMode === 'login' ? 'Sign In to CodeRAG' : 'Create New Account'}
                   </h2>
-                  <p className="text-xs text-[#B9CECC]">
+                  <p className="text-xs text-[var(--text-secondary)]">
                     {authMode === 'login'
                       ? 'Enter your real Gmail and password to access the workspace.'
                       : 'Register your Gmail. Duplicates are strictly prevented.'}
@@ -635,7 +665,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess }) => {
                 </div>
 
                 {/* Tab Switcher: Log In vs Create Account */}
-                <div className="grid grid-cols-2 p-1 rounded-xl bg-[#111E1C] border border-[#577877]/30 text-xs font-semibold">
+                <div className="grid grid-cols-2 p-1 rounded-xl bg-[var(--bg-well)] border border-[var(--border-subtle)] text-xs font-semibold">
                   <button
                     type="button"
                     onClick={() => {
@@ -644,8 +674,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess }) => {
                     }}
                     className={`py-2 rounded-lg transition-all cursor-pointer ${
                       authMode === 'login'
-                        ? 'bg-[#295255] text-white shadow-xs'
-                        : 'text-[#577877] hover:text-[#B9CECC]'
+                        ? 'bg-[#1546D9] text-white shadow-xs'
+                        : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
                     }`}
                   >
                     Log In
@@ -659,8 +689,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess }) => {
                     }}
                     className={`py-2 rounded-lg transition-all cursor-pointer ${
                       authMode === 'signup'
-                        ? 'bg-[#295255] text-white shadow-xs'
-                        : 'text-[#577877] hover:text-[#B9CECC]'
+                        ? 'bg-[#1546D9] text-white shadow-xs'
+                        : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
                     }`}
                   >
                     Create Account
@@ -677,7 +707,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess }) => {
 
                 {/* Success Banner */}
                 {authSuccess && (
-                  <div className="p-3 rounded-xl border border-[#6DBE9B]/40 bg-[#6DBE9B]/10 text-[#6DBE9B] text-xs flex items-start gap-2.5 animate-in fade-in duration-150">
+                  <div className="p-3 rounded-xl border border-[#10B981]/40 bg-[#10B981]/10 text-[#10B981] text-xs flex items-start gap-2.5 animate-in fade-in duration-150">
                     <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5" />
                     <span className="leading-relaxed">{authSuccess}</span>
                   </div>
@@ -688,18 +718,18 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess }) => {
                   {/* Name field (Sign Up only) */}
                   {authMode === 'signup' && (
                     <div>
-                      <label className="block text-xs font-medium text-[#B9CECC] mb-1">
+                      <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1">
                         Full Name
                       </label>
                       <div className="relative">
-                        <User className="w-4 h-4 absolute left-3 top-2.5 text-[#577877]" />
+                        <User className="w-4 h-4 absolute left-3 top-2.5 text-[var(--text-muted)]" />
                         <input
                           type="text"
                           required
                           value={name}
                           onChange={(e) => setName(e.target.value)}
                           placeholder="Bharath Kumar"
-                          className="w-full pl-9 pr-3 py-2 bg-[#111E1C] border border-[#577877]/30 rounded-xl text-xs text-[#F0F5F7] placeholder-[#577877] focus:outline-none focus:border-[#6DBE9B] transition-colors"
+                          className="w-full pl-9 pr-3 py-2 bg-[var(--bg-well)] border border-[var(--border-subtle)] rounded-xl text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[#1546D9] transition-colors"
                         />
                       </div>
                     </div>
@@ -707,41 +737,41 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess }) => {
 
                   {/* Gmail Address */}
                   <div>
-                    <label className="block text-xs font-medium text-[#B9CECC] mb-1">
+                    <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1">
                       Gmail Address
                     </label>
                     <div className="relative">
-                      <Mail className="w-4 h-4 absolute left-3 top-2.5 text-[#577877]" />
+                      <Mail className="w-4 h-4 absolute left-3 top-2.5 text-[var(--text-muted)]" />
                       <input
                         type="email"
                         required
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="yourname@gmail.com"
-                        className="w-full pl-9 pr-3 py-2 bg-[#111E1C] border border-[#577877]/30 rounded-xl text-xs text-[#F0F5F7] placeholder-[#577877] focus:outline-none focus:border-[#6DBE9B] font-mono transition-colors"
+                        className="w-full pl-9 pr-3 py-2 bg-[var(--bg-well)] border border-[var(--border-subtle)] rounded-xl text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[#1546D9] font-mono transition-colors"
                       />
                     </div>
                   </div>
 
                   {/* Password */}
                   <div>
-                    <label className="block text-xs font-medium text-[#B9CECC] mb-1">
+                    <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1">
                       Password
                     </label>
                     <div className="relative">
-                      <Lock className="w-4 h-4 absolute left-3 top-2.5 text-[#577877]" />
+                      <Lock className="w-4 h-4 absolute left-3 top-2.5 text-[var(--text-muted)]" />
                       <input
                         type={showPassword ? 'text' : 'password'}
                         required
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         placeholder="Minimum 6 characters"
-                        className="w-full pl-9 pr-10 py-2 bg-[#111E1C] border border-[#577877]/30 rounded-xl text-xs text-[#F0F5F7] placeholder-[#577877] focus:outline-none focus:border-[#6DBE9B] font-mono transition-colors"
+                        className="w-full pl-9 pr-10 py-2 bg-[var(--bg-well)] border border-[var(--border-subtle)] rounded-xl text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[#1546D9] font-mono transition-colors"
                       />
                       <button
                         type="button"
                         onClick={() => setShowPassword((prev) => !prev)}
-                        className="absolute right-3 top-2.5 text-[#577877] hover:text-[#B9CECC]"
+                        className="absolute right-3 top-2.5 text-[var(--text-muted)] hover:text-[var(--text-secondary)]"
                       >
                         {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                       </button>
@@ -749,8 +779,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess }) => {
                   </div>
 
                   {/* Security Note */}
-                  <div className="flex items-center gap-1.5 text-[11px] text-[#577877]">
-                    <ShieldCheck className="w-3.5 h-3.5 text-[#6DBE9B]" />
+                  <div className="flex items-center gap-1.5 text-[11px] text-[var(--text-muted)]">
+                    <ShieldCheck className="w-3.5 h-3.5 text-[#F9B318]" />
                     <span>Hashed verification with anti-duplicate guard.</span>
                   </div>
 
@@ -760,19 +790,19 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess }) => {
                       <button
                         type="submit"
                         disabled={isSubmitting}
-                        className="w-full py-2.5 px-4 rounded-xl bg-[#295255] hover:bg-[#34686C] text-white text-xs font-bold flex items-center justify-center gap-2 border border-[#6DBE9B]/50 shadow-md transition-all active:scale-[0.98] cursor-pointer"
+                        className="w-full py-2.5 px-4 rounded-xl bg-[#1546D9] hover:bg-[#2255EB] text-white text-xs font-bold flex items-center justify-center gap-2 border border-[#1546D9] shadow-md transition-all active:scale-[0.98] cursor-pointer"
                       >
                         {isSubmitting ? (
                           <span>Verifying credentials...</span>
                         ) : authMode === 'login' ? (
                           <>
                             <span>Log In & Enter CodeRAG</span>
-                            <ArrowRight className="w-3.5 h-3.5 text-[#6DBE9B]" />
+                            <ArrowRight className="w-3.5 h-3.5 text-[#F9B318]" />
                           </>
                         ) : (
                           <>
                             <span>Create Account & Enter CodeRAG</span>
-                            <ArrowRight className="w-3.5 h-3.5 text-[#6DBE9B]" />
+                            <ArrowRight className="w-3.5 h-3.5 text-[#F9B318]" />
                           </>
                         )}
                       </button>

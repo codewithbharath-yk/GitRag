@@ -20,6 +20,7 @@ import { RepoSettingsModal } from './components/RepoSettingsModal';
 import { FilesDrawer } from './components/FilesDrawer';
 import { PageTransition } from './components/motion';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import { useNavigation } from './context/NavigationContext';
 
 const STORAGE_KEY_REPOS = 'coderag_repositories_v1';
 const STORAGE_KEY_ACTIVE = 'coderag_active_repo_v1';
@@ -132,8 +133,13 @@ export const App: React.FC = () => {
     }
   });
 
-  const [activeTab, setActiveTab] = useState<WorkspaceTab>('explorer');
-  const [explorerSubTab, setExplorerSubTab] = useState<ExplorerSubTab>('chat');
+  const {
+    tab: activeTab,
+    subTab: explorerSubTab,
+    repoId: navRepoId,
+    navigate,
+    registerOverlay,
+  } = useNavigation();
 
   // Mobile drawer state
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -150,10 +156,48 @@ export const App: React.FC = () => {
   const [repoFiles, setRepoFiles] = useState<RepoFileItem[]>([]);
   const [isCommandBarOpen, setIsCommandBarOpen] = useState(false);
 
+  // Synchronize repoId from URL/Navigation into local state
+  useEffect(() => {
+    if (navRepoId && navRepoId !== activeRepoId) {
+      setActiveRepoId(navRepoId);
+    }
+  }, [navRepoId, activeRepoId]);
+
+  // Intercept Browser Back to close open overlays first
+  useEffect(() => {
+    if (isConnectModalOpen) {
+      return registerOverlay('connectModal', () => setIsConnectModalOpen(false));
+    }
+  }, [isConnectModalOpen, registerOverlay]);
+
+  useEffect(() => {
+    if (isSettingsModalOpen) {
+      return registerOverlay('settingsModal', () => setIsSettingsModalOpen(false));
+    }
+  }, [isSettingsModalOpen, registerOverlay]);
+
+  useEffect(() => {
+    if (isFilesDrawerOpen) {
+      return registerOverlay('filesDrawer', () => setIsFilesDrawerOpen(false));
+    }
+  }, [isFilesDrawerOpen, registerOverlay]);
+
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      return registerOverlay('mobileMenu', () => setIsMobileMenuOpen(false));
+    }
+  }, [isMobileMenuOpen, registerOverlay]);
+
+  useEffect(() => {
+    if (isCommandBarOpen) {
+      return registerOverlay('commandBar', () => setIsCommandBarOpen(false));
+    }
+  }, [isCommandBarOpen, registerOverlay]);
+
   const handleLoginSuccess = (profile: UserProfile) => {
     setUserProfile(profile);
     setIsAuthenticated(true);
-    setActiveTab('explorer');
+    navigate('explorer', { subTab: 'chat', repoId: activeRepoId });
     try {
       localStorage.setItem('coderag_is_authenticated', 'true');
       localStorage.setItem('coderag_user_profile', JSON.stringify(profile));
@@ -277,8 +321,7 @@ export const App: React.FC = () => {
       return [newRepo, ...filtered];
     });
     setActiveRepoId(newRepo.id);
-    setActiveTab('explorer');
-    setExplorerSubTab('chat');
+    navigate('explorer', { subTab: 'chat', repoId: newRepo.id });
   };
 
   // Update repository after reindexing
@@ -374,12 +417,17 @@ export const App: React.FC = () => {
     }));
   };
 
+  const handleSelectRepo = (id: string) => {
+    setActiveRepoId(id);
+    navigate(activeTab, { subTab: explorerSubTab, repoId: id });
+  };
+
   // Navigation handler from sidebar and buttons
   const handleNavigateTab = (tab: WorkspaceTab, subTab?: string) => {
-    setActiveTab(tab);
-    if (subTab) {
-      setExplorerSubTab(subTab as ExplorerSubTab);
-    }
+    navigate(tab, {
+      subTab: (subTab as ExplorerSubTab) || (tab === 'explorer' ? explorerSubTab : undefined),
+      repoId: activeRepoId,
+    });
   };
 
   if (!isAuthenticated) {
@@ -391,14 +439,14 @@ export const App: React.FC = () => {
   }
 
   return (
-    <div className="flex h-screen w-full bg-[#162623] text-[#F0F5F7] overflow-hidden select-none font-sans">
+    <div className="flex h-screen w-full bg-[var(--bg-base)] text-[var(--text-primary)] overflow-hidden select-none font-sans">
       {/* Primary Sidebar */}
       <Sidebar
         repositories={repositories}
         activeRepoId={activeRepoId}
         activeTab={activeTab}
         explorerSubTab={explorerSubTab}
-        onSelectRepo={(id) => setActiveRepoId(id)}
+        onSelectRepo={handleSelectRepo}
         onSelectTab={handleNavigateTab}
         onOpenConnectModal={() => setIsConnectModalOpen(true)}
         onOpenSettingsModal={handleOpenSettingsModal}
@@ -415,7 +463,7 @@ export const App: React.FC = () => {
         <WorkspaceHeader
           repositories={repositories}
           activeRepo={activeRepo}
-          onSelectRepo={(id) => setActiveRepoId(id)}
+          onSelectRepo={handleSelectRepo}
           onOpenConnectModal={() => setIsConnectModalOpen(true)}
           onOpenCommandBar={() => setIsCommandBarOpen(true)}
           onToggleMobileMenu={() => setIsMobileMenuOpen((prev) => !prev)}
@@ -429,7 +477,7 @@ export const App: React.FC = () => {
               <DashboardView
                 repositories={repositories}
                 activeRepoId={activeRepoId}
-                onSelectRepo={(id) => setActiveRepoId(id)}
+                onSelectRepo={handleSelectRepo}
                 onNavigateTab={handleNavigateTab}
                 onOpenConnectModal={() => setIsConnectModalOpen(true)}
                 onOpenSettingsModal={handleOpenSettingsModal}
@@ -439,10 +487,10 @@ export const App: React.FC = () => {
               <RepositoriesView
                 repositories={repositories}
                 activeRepoId={activeRepoId}
-                onSelectRepo={(id) => setActiveRepoId(id)}
+                onSelectRepo={handleSelectRepo}
                 onNavigateToExplorer={(id) => {
                   if (id) setActiveRepoId(id);
-                  setActiveTab('explorer');
+                  navigate('explorer', { subTab: 'chat', repoId: id || activeRepoId });
                 }}
                 onOpenConnectModal={() => setIsConnectModalOpen(true)}
                 onOpenSettingsModal={handleOpenSettingsModal}
@@ -451,7 +499,7 @@ export const App: React.FC = () => {
               <CodebaseExplorer
                 repository={activeRepo}
                 activeSubTab={explorerSubTab}
-                onSubTabChange={(sub) => setExplorerSubTab(sub)}
+                onSubTabChange={(sub) => navigate('explorer', { subTab: sub, repoId: activeRepoId })}
                 messages={activeRepo ? chatHistories[activeRepo.id] || [] : []}
                 isQuerying={isQuerying}
                 onSendMessage={handleSendMessage}

@@ -29,6 +29,8 @@ import type {
   HistoryChatResponse,
 } from '../types/api';
 import { Magnetic, Spotlight, Tilt, TextEffect } from './motion';
+import { BackButton } from './BackButton';
+import { useNavigation } from '../context/NavigationContext';
 
 interface GitHistoryViewProps {
   repository: StoredRepository;
@@ -38,6 +40,8 @@ interface GitHistoryViewProps {
 export const GitHistoryView: React.FC<GitHistoryViewProps> = ({
   repository,
 }) => {
+  const { commitSha, setCommitSha } = useNavigation();
+
   // Commit list state
   const [commits, setCommits] = useState<CommitItem[]>([]);
   const [page, setPage] = useState(1);
@@ -52,7 +56,7 @@ export const GitHistoryView: React.FC<GitHistoryViewProps> = ({
   const [appliedPath, setAppliedPath] = useState('');
 
   // Selected commit for inspection
-  const [selectedCommitSha, setSelectedCommitSha] = useState<string | null>(null);
+  const [selectedCommitSha, setSelectedCommitSha] = useState<string | null>(commitSha);
   const [commitDetail, setCommitDetail] = useState<CommitDetail | null>(null);
   const [isLoadingDetail, setIsLoadingDetail] = useState(false);
   const [detailError, setDetailError] = useState<string | null>(null);
@@ -113,31 +117,56 @@ export const GitHistoryView: React.FC<GitHistoryViewProps> = ({
     };
   }, [fetchCommits, branchFilter, appliedPath]);
 
-  // Load commit detail when selected
-  const handleSelectCommit = async (sha: string) => {
-    setSelectedCommitSha(sha);
-    setIsLoadingDetail(true);
-    setDetailError(null);
-    setCommitDetail(null);
-    setAiExplanation(null);
-    setExplainError(null);
+  // Load commit detail
+  const loadCommitDetail = useCallback(
+    async (sha: string) => {
+      setSelectedCommitSha(sha);
+      setIsLoadingDetail(true);
+      setDetailError(null);
+      setCommitDetail(null);
+      setAiExplanation(null);
+      setExplainError(null);
 
-    try {
-      const detail = await api.getCommitDetail(repository.id, sha);
-      setCommitDetail(detail);
-      // Auto-expand first 3 files
-      const initialExpanded: Record<string, boolean> = {};
-      detail.files.slice(0, 3).forEach((f) => {
-        initialExpanded[f.filename] = true;
-      });
-      setExpandedFiles(initialExpanded);
-    } catch (err) {
-      setDetailError(
-        err instanceof ApiError ? err.message : 'Failed to retrieve commit details and diff.'
-      );
-    } finally {
-      setIsLoadingDetail(false);
+      try {
+        const detail = await api.getCommitDetail(repository.id, sha);
+        setCommitDetail(detail);
+        // Auto-expand first 3 files
+        const initialExpanded: Record<string, boolean> = {};
+        detail.files.slice(0, 3).forEach((f) => {
+          initialExpanded[f.filename] = true;
+        });
+        setExpandedFiles(initialExpanded);
+      } catch (err) {
+        setDetailError(
+          err instanceof ApiError ? err.message : 'Failed to retrieve commit details and diff.'
+        );
+      } finally {
+        setIsLoadingDetail(false);
+      }
+    },
+    [repository.id]
+  );
+
+  // Sync external navigation changes (browser back/forward or deep links)
+  useEffect(() => {
+    if (commitSha && commitSha !== selectedCommitSha) {
+      loadCommitDetail(commitSha);
+    } else if (!commitSha && selectedCommitSha) {
+      setSelectedCommitSha(null);
+      setCommitDetail(null);
     }
+  }, [commitSha, selectedCommitSha, loadCommitDetail]);
+
+  const handleSelectCommit = (sha: string) => {
+    setCommitSha(sha);
+    loadCommitDetail(sha);
+  };
+
+  const handleDeselectCommit = () => {
+    setCommitSha(null);
+    setSelectedCommitSha(null);
+    setCommitDetail(null);
+    setDetailError(null);
   };
 
   // Trigger Gemini AI explanation for commit
@@ -164,16 +193,16 @@ export const GitHistoryView: React.FC<GitHistoryViewProps> = ({
     setIsAskingHistory(true);
     setHistoryChatError(null);
     try {
-      const res = await api.chatHistory(repository.id, {
+      const res = await api.askHistoryQuestion({
+        repository_id: repository.id,
         question: historyQuestion.trim(),
         branch: branchFilter || undefined,
-        commit_sha: selectedCommitSha || undefined,
-        path: appliedPath || undefined,
+        limit_commits: 20,
       });
       setHistoryAnswer(res);
     } catch (err) {
       setHistoryChatError(
-        err instanceof ApiError ? err.message : 'Failed to retrieve answer from Git history.'
+        err instanceof ApiError ? err.message : 'Failed to analyze commit history.'
       );
     } finally {
       setIsAskingHistory(false);
@@ -209,47 +238,47 @@ export const GitHistoryView: React.FC<GitHistoryViewProps> = ({
   };
 
   return (
-    <div className="flex-1 flex flex-col h-full bg-[#162623] overflow-hidden text-[#F0F5F7] font-sans">
+    <div className="flex-1 flex flex-col h-full bg-[#111318] overflow-hidden text-[#EDECE6] font-sans">
       {/* Top Header / History Controls */}
-      <header className="p-4 px-6 border-b border-[#577877]/25 bg-[#1B2D2A] shrink-0">
+      <header className="p-4 px-6 border-b border-white/10 bg-[#181B22] shrink-0">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-[#295255] border border-[#577877]/40 flex items-center justify-center text-[#F0F5F7] shadow-sm">
+            <div className="w-9 h-9 rounded-xl bg-[#1546D9] border border-white/15 flex items-center justify-center text-white shadow-sm shrink-0">
               <GitCommit className="w-5 h-5" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-base font-bold text-[#F0F5F7]">
+                <h1 className="text-base font-bold text-[#EDECE6]">
                   <TextEffect as="span">Git History & Diff Intelligence</TextEffect>
                 </h1>
-                <span className="text-xs px-2 py-0.5 rounded-full bg-[#162623] text-[#B9CECC] border border-[#577877]/40 font-mono">
+                <span className="text-xs px-2 py-0.5 rounded-full bg-[#111318] text-[#A8AFBD] border border-white/10 font-mono">
                   Git Logs
                 </span>
               </div>
-              <p className="text-xs text-[#577877] mt-0.5">
+              <p className="text-xs text-[#767E90] mt-0.5">
                 Commit logs, unified diff patches, and evidence-grounded AI history analysis for{' '}
-                <span className="font-mono text-[#F0F5F7] font-semibold">{repository.fullName}</span>
+                <span className="font-mono text-[#EDECE6] font-semibold">{repository.fullName}</span>
               </p>
             </div>
           </div>
 
           {/* Quick Filter Toolbar */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             {/* Branch selector/input */}
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#111E1C] border border-[#577877]/30 text-xs">
-              <GitBranch className="w-3.5 h-3.5 text-[#577877]" />
+            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#0B0D11] border border-white/10 text-xs">
+              <GitBranch className="w-3.5 h-3.5 text-[#F9B318]" />
               <input
                 type="text"
                 value={branchFilter}
                 onChange={(e) => setBranchFilter(e.target.value)}
                 placeholder="branch (e.g. main)"
-                className="bg-transparent text-[#F0F5F7] outline-none w-24 font-mono text-xs placeholder:text-[#577877]"
+                className="bg-transparent text-[#EDECE6] outline-none w-24 font-mono text-xs placeholder:text-[#767E90]"
               />
             </div>
 
             {/* Path filter input */}
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#111E1C] border border-[#577877]/30 text-xs">
-              <Filter className="w-3.5 h-3.5 text-[#577877]" />
+            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#0B0D11] border border-white/10 text-xs">
+              <Filter className="w-3.5 h-3.5 text-[#767E90]" />
               <input
                 type="text"
                 value={pathFilter}
@@ -258,115 +287,89 @@ export const GitHistoryView: React.FC<GitHistoryViewProps> = ({
                   if (e.key === 'Enter') setAppliedPath(pathFilter.trim());
                 }}
                 placeholder="path filter (e.g. src/auth.py)"
-                className="bg-transparent text-[#F0F5F7] outline-none w-44 font-mono text-xs placeholder:text-[#577877]"
+                className="bg-transparent text-[#EDECE6] outline-none w-36 font-mono text-xs placeholder:text-[#767E90]"
               />
-              {pathFilter !== appliedPath && (
+              {pathFilter && (
                 <button
-                  onClick={() => setAppliedPath(pathFilter.trim())}
-                  className="text-[11px] text-[#F0F5F7] hover:text-[#B9CECC] font-semibold underline ml-1"
+                  onClick={() => {
+                    setPathFilter('');
+                    setAppliedPath('');
+                  }}
+                  className="text-[#767E90] hover:text-[#EDECE6] text-[10px]"
                 >
-                  Apply
+                  ✕
                 </button>
               )}
             </div>
 
-            {/* Refresh */}
-            <Magnetic pullStrength={0.15}>
-              <button
-                onClick={() => fetchCommits(page, branchFilter, appliedPath)}
-                disabled={isLoadingCommits}
-                title="Refresh commit history"
-                className="p-2 rounded-lg bg-[#111E1C] hover:bg-[#1E3430] border border-[#577877]/30 text-[#B9CECC] transition-colors disabled:opacity-50"
-              >
-                <RefreshCw className={`w-3.5 h-3.5 ${isLoadingCommits ? 'animate-spin' : ''}`} />
-              </button>
-            </Magnetic>
+            <button
+              onClick={() => fetchCommits(1, branchFilter, appliedPath)}
+              disabled={isLoadingCommits}
+              title="Refresh commits"
+              className="p-2 rounded-xl bg-[#0B0D11] hover:bg-[#1F2430] border border-white/10 text-[#A8AFBD] hover:text-[#EDECE6] transition-colors"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 ${isLoadingCommits ? 'animate-spin' : ''}`} />
+            </button>
           </div>
         </div>
+      </header>
 
-        {/* History Natural Language Query Input */}
-        <div className="mt-3.5">
-          <form onSubmit={handleAskHistory} className="relative flex items-center">
-            <div className="absolute left-3.5 flex items-center gap-2 pointer-events-none text-[#577877]">
-              <Sparkles className="w-4 h-4 text-[#577877]" />
-              <span className="text-xs text-[#B9CECC] font-medium hidden sm:inline">Ask Git History:</span>
+      {/* History QA Query Assistant Panel */}
+      <div className="p-4 px-6 border-b border-white/10 bg-[#181B22]/60 shrink-0">
+        <Spotlight variant="cobalt" className="rounded-2xl">
+          <div className="p-4 rounded-2xl bg-[#1D212B] border border-white/10 space-y-3 shadow-sm">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 text-xs font-semibold text-[#EDECE6]">
+                <Sparkles className="w-3.5 h-3.5 text-[#F9B318]" />
+                <span>Ask Repository History (e.g., &ldquo;When was authentication added?&rdquo;)</span>
+              </div>
             </div>
-            <input
-              type="text"
-              value={historyQuestion}
-              onChange={(e) => setHistoryQuestion(e.target.value)}
-              placeholder="e.g. 'What changed in the latest commit?', 'Which commits touched auth.py?'"
-              className="w-full pl-9 sm:pl-36 pr-24 py-2 rounded-xl bg-[#111E1C] border border-[#577877]/30 hover:border-[#295255] focus:border-[#295255] text-xs text-[#F0F5F7] placeholder-[#577877] outline-none transition-all shadow-inner"
-            />
-            <Magnetic>
+
+            <form onSubmit={handleAskHistory} className="flex gap-2">
+              <input
+                type="text"
+                value={historyQuestion}
+                onChange={(e) => setHistoryQuestion(e.target.value)}
+                placeholder="Ask about historical commits, architecture changes, author contributions..."
+                className="flex-1 px-3.5 py-2 bg-[#0B0D11] border border-white/10 rounded-xl text-xs text-[#EDECE6] placeholder-[#767E90] focus:outline-none focus:border-[#1546D9] focus:ring-1 focus:ring-[#1546D9]"
+              />
               <button
                 type="submit"
-                disabled={!historyQuestion.trim() || isAskingHistory}
-                className="absolute right-1.5 px-3 py-1 rounded-lg bg-[#295255] hover:bg-[#34686C] disabled:bg-[#1E3430] text-[#F0F5F7] font-medium text-xs flex items-center gap-1.5 border border-[#577877]/40 transition-all disabled:opacity-50"
+                disabled={isAskingHistory || !historyQuestion.trim()}
+                className="px-4 py-2 rounded-xl bg-[#1546D9] hover:bg-[#2255EB] text-white text-xs font-semibold flex items-center gap-1.5 shadow-sm disabled:opacity-50 transition-colors"
               >
                 {isAskingHistory ? (
                   <Loader2 className="w-3.5 h-3.5 animate-spin" />
                 ) : (
                   <Send className="w-3.5 h-3.5" />
                 )}
-                <span>Query</span>
+                <span>Analyze</span>
               </button>
-            </Magnetic>
-          </form>
-        </div>
-      </header>
-
-      {/* History Query Answer Card (if active) */}
-      {(historyAnswer || historyChatError || isAskingHistory) && (
-        <div className="p-4 px-6 border-b border-[#577877]/25 bg-[#111E1C] shrink-0">
-          <Spotlight variant="emerald" className="rounded-xl">
-            <div className="max-w-5xl mx-auto rounded-xl p-4 bg-[#1B2D2A] border border-[#577877]/40 shadow-lg space-y-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 text-[#F0F5F7] text-xs font-semibold">
-                <Sparkles className="w-4 h-4 text-[#577877]" />
-                <span>Git History Intelligence Answer</span>
-              </div>
-              <button
-                onClick={() => {
-                  setHistoryAnswer(null);
-                  setHistoryChatError(null);
-                }}
-                className="text-xs text-[#577877] hover:text-[#F0F5F7]"
-              >
-                Dismiss
-              </button>
-            </div>
-
-            {isAskingHistory && (
-              <div className="flex items-center gap-3 py-4 text-xs text-[#B9CECC]">
-                <Loader2 className="w-4 h-4 animate-spin text-[#577877]" />
-                <span>Searching commit logs and diff patches with Gemini...</span>
-              </div>
-            )}
+            </form>
 
             {historyChatError && (
-              <div className="flex items-start gap-2 text-xs text-[#D96B6B] bg-[#D96B6B]/10 p-3 rounded-lg border border-[#D96B6B]/30">
-                <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-[#D96B6B]" />
+              <div className="p-2.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-center gap-2">
+                <AlertCircle className="w-3.5 h-3.5 shrink-0" />
                 <span>{historyChatError}</span>
               </div>
             )}
 
             {historyAnswer && (
-              <div className="space-y-3">
-                <p className="text-xs text-[#F0F5F7] whitespace-pre-wrap leading-relaxed font-sans">
+              <div className="space-y-3 pt-2">
+                <p className="text-xs text-[#EDECE6] whitespace-pre-wrap leading-relaxed font-sans">
                   {historyAnswer.answer}
                 </p>
 
                 {/* Referenced Commits and Files Chips */}
-                <div className="pt-2 border-t border-[#577877]/20 flex flex-wrap items-center gap-2 text-[11px]">
+                <div className="pt-2 border-t border-white/10 flex flex-wrap items-center gap-2 text-[11px]">
                   {historyAnswer.referenced_commits.length > 0 && (
-                    <div className="flex items-center gap-1 text-[#577877]">
+                    <div className="flex items-center gap-1 text-[#767E90]">
                       <span>Referenced Commits:</span>
                       {historyAnswer.referenced_commits.map((sha) => (
                         <button
                           key={sha}
                           onClick={() => handleSelectCommit(sha)}
-                          className="px-2 py-0.5 rounded bg-[#162623] border border-[#577877]/40 font-mono text-[#F0F5F7] hover:bg-[#1E3430] transition-colors"
+                          className="px-2 py-0.5 rounded-lg bg-[#0B0D11] border border-white/10 font-mono text-[#EDECE6] hover:bg-[#1546D9] hover:text-white transition-colors"
                         >
                           {sha.slice(0, 7)}
                         </button>
@@ -375,17 +378,17 @@ export const GitHistoryView: React.FC<GitHistoryViewProps> = ({
                   )}
 
                   {historyAnswer.referenced_files.length > 0 && (
-                    <div className="flex items-center gap-1 text-[#577877] ml-auto">
+                    <div className="flex items-center gap-1 text-[#767E90] ml-auto">
                       <span>Files:</span>
                       {historyAnswer.referenced_files.map((f) => (
-                        <span key={f} className="px-1.5 py-0.5 rounded bg-[#111E1C] text-[#B9CECC] font-mono border border-[#577877]/30">
+                        <span key={f} className="px-1.5 py-0.5 rounded-md bg-[#0B0D11] text-[#A8AFBD] font-mono border border-white/10">
                           {f}
                         </span>
                       ))}
                     </div>
                   )}
 
-                  <span className="text-[10px] text-[#577877] font-mono ml-auto">
+                  <span className="text-[10px] text-[#767E90] font-mono ml-auto">
                     {historyAnswer.latency_ms}ms
                   </span>
                 </div>
@@ -394,14 +397,13 @@ export const GitHistoryView: React.FC<GitHistoryViewProps> = ({
           </div>
         </Spotlight>
       </div>
-    )}
 
       {/* Main Split Body: Commits List on Left, Diff Inspector on Right */}
       <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
         {/* Left Side: Commit Log Table */}
-        <div className="lg:w-5/12 flex flex-col border-r border-[#577877]/25 bg-[#1B2D2A] overflow-hidden">
-          <div className="p-3 px-4 bg-[#111E1C] border-b border-[#577877]/25 flex items-center justify-between text-xs text-[#577877]">
-            <span className="font-semibold text-[#F0F5F7]">
+        <div className={`lg:w-5/12 flex flex-col border-r border-white/10 bg-[#181B22] overflow-hidden ${selectedCommitSha ? 'hidden lg:flex' : 'flex'}`}>
+          <div className="p-3 px-4 bg-[#111318] border-b border-white/10 flex items-center justify-between text-xs text-[#767E90]">
+            <span className="font-semibold text-[#EDECE6]">
               Commit History {totalReturned > 0 ? `(${totalReturned})` : ''}
             </span>
             <div className="flex items-center gap-2 font-mono text-[11px]">
@@ -412,7 +414,7 @@ export const GitHistoryView: React.FC<GitHistoryViewProps> = ({
                   setPage(newPage);
                   fetchCommits(newPage, branchFilter, appliedPath);
                 }}
-                className="px-2 py-0.5 rounded bg-[#162623] hover:bg-[#1E3430] disabled:opacity-40 text-[#B9CECC] border border-[#577877]/30"
+                className="px-2.5 py-1 rounded-lg bg-[#0B0D11] hover:bg-[#1F2430] disabled:opacity-40 text-[#A8AFBD] border border-white/10"
               >
                 Prev
               </button>
@@ -424,7 +426,7 @@ export const GitHistoryView: React.FC<GitHistoryViewProps> = ({
                   setPage(newPage);
                   fetchCommits(newPage, branchFilter, appliedPath);
                 }}
-                className="px-2 py-0.5 rounded bg-[#162623] hover:bg-[#1E3430] disabled:opacity-40 text-[#B9CECC] border border-[#577877]/30"
+                className="px-2.5 py-1 rounded-lg bg-[#0B0D11] hover:bg-[#1F2430] disabled:opacity-40 text-[#A8AFBD] border border-white/10"
               >
                 Next
               </button>
@@ -432,26 +434,26 @@ export const GitHistoryView: React.FC<GitHistoryViewProps> = ({
           </div>
 
           {/* List Content */}
-          <div className="flex-1 overflow-y-auto divide-y divide-[#577877]/15">
+          <div className="flex-1 overflow-y-auto divide-y divide-white/5">
             {isLoadingCommits && commits.length === 0 && (
-              <div className="p-8 text-center text-xs text-[#577877] flex flex-col items-center justify-center gap-2">
-                <Loader2 className="w-5 h-5 animate-spin text-[#B9CECC]" />
+              <div className="p-8 text-center text-xs text-[#767E90] flex flex-col items-center justify-center gap-2">
+                <Loader2 className="w-5 h-5 animate-spin text-[#A8AFBD]" />
                 <span>Retrieving commits from GitHub...</span>
               </div>
             )}
 
             {listError && (
-              <div className="m-4 p-3 rounded-lg bg-[#D96B6B]/10 border border-[#D96B6B]/30 text-xs text-[#D96B6B] space-y-1">
+              <div className="m-4 p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-xs text-rose-300 space-y-1">
                 <div className="flex items-center gap-1.5 font-semibold">
-                  <AlertCircle className="w-4 h-4 text-[#D96B6B]" />
+                  <AlertCircle className="w-4 h-4 text-rose-400" />
                   <span>Unable to load commit log</span>
                 </div>
-                <p className="text-[11px] text-[#B9CECC]">{listError}</p>
+                <p className="text-[11px] text-[#A8AFBD]">{listError}</p>
               </div>
             )}
 
             {!isLoadingCommits && commits.length === 0 && !listError && (
-              <div className="p-8 text-center text-xs text-[#577877]">
+              <div className="p-8 text-center text-xs text-[#767E90]">
                 No commits found matching the selected branch or file path filter.
               </div>
             )}
@@ -466,12 +468,12 @@ export const GitHistoryView: React.FC<GitHistoryViewProps> = ({
                   onClick={() => handleSelectCommit(commit.sha)}
                   className={`p-3.5 px-4 cursor-pointer transition-colors relative group ${
                     isSelected
-                      ? 'bg-[#213834] border-l-4 border-[#295255]'
-                      : 'hover:bg-[#1E3430] border-l-4 border-transparent'
+                      ? 'bg-[#1546D9]/15 border-l-4 border-[#1546D9]'
+                      : 'hover:bg-[#1D212B] border-l-4 border-transparent'
                   }`}
                 >
                   <div className="flex items-start justify-between gap-2">
-                    <p className="text-xs font-semibold text-[#F0F5F7] line-clamp-1 group-hover:text-[#F0F5F7] transition-colors">
+                    <p className="text-xs font-semibold text-[#EDECE6] line-clamp-1 group-hover:text-white transition-colors">
                       {titleLine}
                     </p>
                     <button
@@ -480,10 +482,10 @@ export const GitHistoryView: React.FC<GitHistoryViewProps> = ({
                         handleCopySha(commit.sha);
                       }}
                       title="Copy full SHA"
-                      className="px-1.5 py-0.5 rounded bg-[#111E1C] border border-[#577877]/30 font-mono text-[10px] text-[#577877] hover:text-[#F0F5F7] shrink-0 flex items-center gap-1"
+                      className="px-1.5 py-0.5 rounded-md bg-[#0B0D11] border border-white/10 font-mono text-[10px] text-[#767E90] hover:text-[#EDECE6] shrink-0 flex items-center gap-1"
                     >
                       {copiedSha === commit.sha ? (
-                        <Check className="w-2.5 h-2.5 text-[#6DBE9B]" />
+                        <Check className="w-2.5 h-2.5 text-[#10B981]" />
                       ) : (
                         <Copy className="w-2.5 h-2.5" />
                       )}
@@ -491,16 +493,16 @@ export const GitHistoryView: React.FC<GitHistoryViewProps> = ({
                     </button>
                   </div>
 
-                  <div className="mt-2 flex items-center justify-between text-[11px] text-[#577877]">
+                  <div className="mt-2 flex items-center justify-between text-[11px] text-[#767E90]">
                     <div className="flex items-center gap-1.5">
-                      <div className="w-4 h-4 rounded-full bg-[#295255] text-[#F0F5F7] font-bold flex items-center justify-center text-[9px]">
+                      <div className="w-4 h-4 rounded-full bg-[#1546D9] text-white font-bold flex items-center justify-center text-[9px]">
                         {commit.author.name[0] || 'U'}
                       </div>
-                      <span className="truncate max-w-[120px] text-[#B9CECC]">{commit.author.name}</span>
+                      <span className="truncate max-w-[120px] text-[#A8AFBD]">{commit.author.name}</span>
                     </div>
 
                     <div className="flex items-center gap-2">
-                      <span className="flex items-center gap-1 text-[10px] text-[#577877]">
+                      <span className="flex items-center gap-1 text-[10px] text-[#767E90]">
                         <Clock className="w-3 h-3" />
                         {formatDate(commit.author.date)}
                       </span>
@@ -510,7 +512,7 @@ export const GitHistoryView: React.FC<GitHistoryViewProps> = ({
                         rel="noreferrer"
                         onClick={(e) => e.stopPropagation()}
                         title="View commit on GitHub"
-                        className="text-[#577877] hover:text-[#F0F5F7]"
+                        className="text-[#767E90] hover:text-[#EDECE6]"
                       >
                         <ExternalLink className="w-3 h-3" />
                       </a>
@@ -523,69 +525,86 @@ export const GitHistoryView: React.FC<GitHistoryViewProps> = ({
         </div>
 
         {/* Right Side: Diff & Commit Detail Inspector */}
-        <div className="lg:w-7/12 flex-1 flex flex-col bg-[#162623] overflow-y-auto">
+        <div className={`lg:w-7/12 flex-1 flex flex-col bg-[#111318] overflow-y-auto ${!selectedCommitSha ? 'hidden lg:flex' : 'flex'}`}>
           {!selectedCommitSha ? (
-            <div className="flex-1 flex flex-col items-center justify-center p-8 text-center text-[#577877] space-y-2">
-              <FileDiff className="w-10 h-10 text-[#295255] mb-2" />
-              <p className="text-sm font-medium text-[#F0F5F7]">Select a commit to inspect diffs</p>
-              <p className="text-xs text-[#B9CECC] max-w-sm">
+            <div className="flex-1 flex flex-col items-center justify-center p-8 text-center text-[#767E90] space-y-2">
+              <FileDiff className="w-10 h-10 text-[#1546D9] mb-2" />
+              <p className="text-sm font-medium text-[#EDECE6]">Select a commit to inspect diffs</p>
+              <p className="text-xs text-[#A8AFBD] max-w-sm">
                 Choose any commit on the left to see modified files, addition/deletion metrics, unified diff patches, and AI-grounded explanations.
               </p>
             </div>
           ) : isLoadingDetail ? (
-            <div className="flex-1 flex items-center justify-center p-8 text-xs text-[#B9CECC] gap-2">
-              <Loader2 className="w-5 h-5 animate-spin text-[#577877]" />
+            <div className="flex-1 flex items-center justify-center p-8 text-xs text-[#A8AFBD] gap-2">
+              <Loader2 className="w-5 h-5 animate-spin text-[#1546D9]" />
               <span>Fetching commit diff and changed files...</span>
             </div>
           ) : detailError ? (
-            <div className="p-6">
-              <div className="p-4 rounded-xl bg-[#D96B6B]/10 border border-[#D96B6B]/30 text-xs text-[#D96B6B] space-y-2">
+            <div className="p-6 space-y-4">
+              <BackButton
+                label="Back to Commits"
+                onClick={handleDeselectCommit}
+                className="mb-2"
+              />
+              <div className="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-xs text-rose-300 space-y-2">
                 <div className="flex items-center gap-2 font-bold">
-                  <AlertCircle className="w-4 h-4 text-[#D96B6B]" />
+                  <AlertCircle className="w-4 h-4 text-rose-400" />
                   <span>Failed to load commit details</span>
                 </div>
-                <p className="text-[11px] text-[#B9CECC]">{detailError}</p>
+                <p className="text-[11px] text-[#A8AFBD]">{detailError}</p>
               </div>
             </div>
           ) : commitDetail ? (
             <div className="p-6 space-y-5">
-              {/* Commit Header Card with Tilt & Spotlight */}
+              {/* Back to Commits Navigation Bar */}
+              <div className="flex items-center justify-between pb-2 border-b border-white/10">
+                <BackButton
+                  label="Back to Commits"
+                  onClick={handleDeselectCommit}
+                  variant="pill"
+                />
+                <span className="text-xs font-mono text-[#F9B318]">
+                  Commit {commitDetail.sha.slice(0, 7)}
+                </span>
+              </div>
+
+              {/* Commit Header Card */}
               <Tilt maxAngle={2}>
-                <Spotlight variant="teal" className="rounded-xl">
-                  <div className="rounded-xl p-4 bg-[#1B2D2A] border border-[#577877]/30 shadow-sm space-y-3">
+                <Spotlight variant="cobalt" className="rounded-2xl">
+                  <div className="rounded-2xl p-4 bg-[#181B22] border border-white/10 shadow-sm space-y-3">
                     <div className="flex items-start justify-between gap-4">
                       <div>
-                        <h2 className="text-sm font-bold text-[#F0F5F7] whitespace-pre-wrap font-mono">
+                        <h2 className="text-sm font-bold text-[#EDECE6] whitespace-pre-wrap font-mono">
                           {commitDetail.message}
                         </h2>
-                        <div className="mt-2 flex flex-wrap items-center gap-3 text-xs text-[#577877]">
+                        <div className="mt-2 flex flex-wrap items-center gap-3 text-xs text-[#767E90]">
                           <span className="flex items-center gap-1">
-                            <User className="w-3.5 h-3.5 text-[#577877]" />
-                            <strong className="text-[#B9CECC]">{commitDetail.author.name}</strong>
+                            <User className="w-3.5 h-3.5 text-[#767E90]" />
+                            <strong className="text-[#A8AFBD]">{commitDetail.author.name}</strong>
                             {commitDetail.author.email && (
-                              <span className="text-[#577877] font-mono text-[10px]">
+                              <span className="text-[#767E90] font-mono text-[10px]">
                                 &lt;{commitDetail.author.email}&gt;
                               </span>
                             )}
                           </span>
-                          <span className="flex items-center gap-1 text-[11px] text-[#577877]">
+                          <span className="flex items-center gap-1 text-[11px] text-[#767E90]">
                             <Clock className="w-3.5 h-3.5" />
                             {formatDate(commitDetail.author.date)}
                           </span>
                         </div>
                       </div>
 
-                      {/* Explain with Gemini Button */}
+                      {/* Explain with Gemini Button in Cobalt Blue */}
                       <Magnetic>
                         <button
                           onClick={() => handleExplainCommit(commitDetail.sha)}
                           disabled={isExplaining}
-                          className="px-3.5 py-2 rounded-xl bg-[#295255] hover:bg-[#34686C] text-[#F0F5F7] font-medium text-xs flex items-center gap-2 border border-[#577877]/50 shadow-sm transition-all shrink-0 disabled:opacity-50 active:scale-[0.98]"
+                          className="px-3.5 py-2 rounded-xl bg-[#1546D9] hover:bg-[#2255EB] text-white font-medium text-xs flex items-center gap-2 border border-[#1546D9]/40 shadow-sm transition-all shrink-0 disabled:opacity-50 active:scale-[0.98] cursor-pointer"
                         >
                           {isExplaining ? (
                             <Loader2 className="w-3.5 h-3.5 animate-spin" />
                           ) : (
-                            <Sparkles className="w-3.5 h-3.5" />
+                            <Sparkles className="w-3.5 h-3.5 text-[#F9B318]" />
                           )}
                           <span>Explain with Gemini</span>
                         </button>
@@ -593,69 +612,69 @@ export const GitHistoryView: React.FC<GitHistoryViewProps> = ({
                     </div>
 
                     {/* Metrics bar */}
-                    <div className="pt-3 border-t border-[#577877]/20 flex flex-wrap items-center gap-4 text-xs font-mono">
-                      <div className="flex items-center gap-1 text-[#6DBE9B]">
+                    <div className="pt-3 border-t border-white/10 flex flex-wrap items-center gap-4 text-xs font-mono">
+                      <div className="flex items-center gap-1 text-[#10B981]">
                         <PlusCircle className="w-3.5 h-3.5" />
                         <span>+{commitDetail.stats.additions} additions</span>
                       </div>
-                      <div className="flex items-center gap-1 text-[#D96B6B]">
+                      <div className="flex items-center gap-1 text-[#EF4444]">
                         <MinusCircle className="w-3.5 h-3.5" />
                         <span>-{commitDetail.stats.deletions} deletions</span>
                       </div>
-                      <div className="flex items-center gap-1 text-[#B9CECC]">
-                        <FileCode className="w-3.5 h-3.5 text-[#577877]" />
+                      <div className="flex items-center gap-1 text-[#A8AFBD]">
+                        <FileCode className="w-3.5 h-3.5 text-[#767E90]" />
                         <span>{commitDetail.files.length} changed file{commitDetail.files.length === 1 ? '' : 's'}</span>
                       </div>
                       <a
                         href={commitDetail.html_url}
                         target="_blank"
                         rel="noreferrer"
-                        className="ml-auto flex items-center gap-1 text-[#B9CECC] hover:text-[#F0F5F7] text-[11px]"
+                        className="ml-auto flex items-center gap-1 text-[#A8AFBD] hover:text-[#EDECE6] text-[11px]"
                       >
                         <span>View on GitHub</span>
-                        <ExternalLink className="w-3 h-3 text-[#577877]" />
+                        <ExternalLink className="w-3 h-3 text-[#767E90]" />
                       </a>
                     </div>
                   </div>
                 </Spotlight>
               </Tilt>
 
-              {/* AI Explanation Card (when generated) */}
+              {/* AI Explanation Card */}
               {isExplaining && (
-                <div className="p-4 rounded-xl bg-[#1B2D2A] border border-[#577877]/30 flex items-center gap-3 text-xs text-[#B9CECC]">
-                  <Loader2 className="w-4 h-4 animate-spin text-[#577877]" />
+                <div className="p-4 rounded-xl bg-[#181B22] border border-white/10 flex items-center gap-3 text-xs text-[#A8AFBD]">
+                  <Loader2 className="w-4 h-4 animate-spin text-[#1546D9]" />
                   <span>Synthesizing evidence-grounded code analysis with Gemini...</span>
                 </div>
               )}
 
               {explainError && (
-                <div className="p-4 rounded-xl bg-[#D96B6B]/10 border border-[#D96B6B]/30 text-xs text-[#D96B6B]">
+                <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-xs text-rose-300">
                   Failed to synthesize explanation: {explainError}
                 </div>
               )}
 
               {aiExplanation && (
-                <Spotlight variant="emerald" className="rounded-xl">
-                  <div className="p-4 rounded-xl bg-[#1B2D2A] border border-[#577877]/40 shadow-md space-y-3">
+                <Spotlight variant="yellow" className="rounded-2xl">
+                  <div className="p-4 rounded-2xl bg-[#181B22] border border-[#F9B318]/30 shadow-md space-y-3">
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2 text-xs font-bold text-[#F0F5F7]">
-                        <Sparkles className="w-4 h-4 text-[#577877]" />
+                      <div className="flex items-center gap-2 text-xs font-bold text-[#EDECE6]">
+                        <Sparkles className="w-4 h-4 text-[#F9B318]" />
                         <span>Gemini Code Analysis</span>
                       </div>
-                      <span className="text-[10px] font-mono text-[#577877]">
+                      <span className="text-[10px] font-mono text-[#767E90]">
                         Analyzed in {aiExplanation.latency_ms}ms
                       </span>
                     </div>
 
-                    <p className="text-xs text-[#F0F5F7] whitespace-pre-wrap leading-relaxed font-sans">
+                    <p className="text-xs text-[#EDECE6] whitespace-pre-wrap leading-relaxed font-sans">
                       {aiExplanation.explanation}
                     </p>
 
-                    {/* Observed Changes & Inferred Intent */}
+                    {/* Observed Changes */}
                     {aiExplanation.observed_changes.length > 0 && (
-                      <div className="pt-2 border-t border-[#577877]/20 space-y-1">
-                        <span className="text-[11px] font-semibold text-[#577877]">Directly Observed Modifications:</span>
-                        <ul className="text-[11px] text-[#B9CECC] space-y-0.5 list-disc list-inside font-mono">
+                      <div className="pt-2 border-t border-white/10 space-y-1">
+                        <span className="text-[11px] font-semibold text-[#767E90]">Directly Observed Modifications:</span>
+                        <ul className="text-[11px] text-[#A8AFBD] space-y-0.5 list-disc list-inside font-mono">
                           {aiExplanation.observed_changes.map((obs, idx) => (
                             <li key={idx}>{obs}</li>
                           ))}
@@ -668,7 +687,7 @@ export const GitHistoryView: React.FC<GitHistoryViewProps> = ({
 
               {/* Changed Files List & Diffs */}
               <div className="space-y-3">
-                <h3 className="text-xs font-bold text-[#577877] uppercase tracking-wider">
+                <h3 className="text-xs font-bold text-[#767E90] uppercase tracking-wider">
                   Changed Files ({commitDetail.files.length})
                 </h3>
 
@@ -679,32 +698,32 @@ export const GitHistoryView: React.FC<GitHistoryViewProps> = ({
                     // Status badge color
                     const statusColor =
                       file.status === 'added'
-                        ? 'bg-[#1E3430] text-[#6DBE9B] border-[#6DBE9B]/30'
+                        ? 'bg-emerald-500/10 text-[#10B981] border-emerald-500/30'
                         : file.status === 'removed'
-                        ? 'bg-[#1E3430] text-[#D96B6B] border-[#D96B6B]/30'
-                        : 'bg-[#111E1C] text-[#B9CECC] border-[#577877]/30';
+                        ? 'bg-rose-500/10 text-[#EF4444] border-rose-500/30'
+                        : 'bg-[#0B0D11] text-[#A8AFBD] border-white/10';
 
                     return (
                       <div
                         key={file.filename}
-                        className="rounded-xl border border-[#577877]/30 bg-[#1B2D2A] overflow-hidden"
+                        className="rounded-2xl border border-white/10 bg-[#181B22] overflow-hidden shadow-xs"
                       >
                         {/* File header bar */}
                         <div
                           onClick={() => toggleFileExpanded(file.filename)}
-                          className="p-3 px-4 flex items-center justify-between cursor-pointer hover:bg-[#1E3430] transition-colors select-none"
+                          className="p-3 px-4 flex items-center justify-between cursor-pointer hover:bg-[#1D212B] transition-colors select-none"
                         >
                           <div className="flex items-center gap-2.5 min-w-0">
                             {isExpanded ? (
-                              <ChevronDown className="w-4 h-4 text-[#577877] shrink-0" />
+                              <ChevronDown className="w-4 h-4 text-[#767E90] shrink-0" />
                             ) : (
-                              <ChevronRight className="w-4 h-4 text-[#577877] shrink-0" />
+                              <ChevronRight className="w-4 h-4 text-[#767E90] shrink-0" />
                             )}
-                            <span className="font-mono text-xs font-semibold text-[#F0F5F7] truncate">
+                            <span className="font-mono text-xs font-semibold text-[#EDECE6] truncate">
                               {file.filename}
                             </span>
                             {file.previous_filename && (
-                              <span className="text-[11px] text-[#577877] font-mono">
+                              <span className="text-[11px] text-[#767E90] font-mono">
                                 (from {file.previous_filename})
                               </span>
                             )}
@@ -716,35 +735,35 @@ export const GitHistoryView: React.FC<GitHistoryViewProps> = ({
                             >
                               {file.status}
                             </span>
-                            <span className="text-xs font-mono text-[#6DBE9B]">+{file.additions}</span>
-                            <span className="text-xs font-mono text-[#D96B6B]">-{file.deletions}</span>
+                            <span className="text-xs font-mono text-[#10B981]">+{file.additions}</span>
+                            <span className="text-xs font-mono text-[#EF4444]">-{file.deletions}</span>
                           </div>
                         </div>
 
                         {/* Collapsible Unified Diff Patch */}
                         {isExpanded && (
-                          <div className="border-t border-[#577877]/25 bg-[#111E1C] p-3 font-mono text-[11px] overflow-x-auto">
+                          <div className="border-t border-white/10 bg-[#0B0D11] p-3 font-mono text-[11px] overflow-x-auto">
                             {file.patch_truncated && (
-                              <div className="mb-2 p-2 rounded bg-[#D9A066]/10 border border-[#D9A066]/30 text-[10px] text-[#D9A066]">
+                              <div className="mb-2 p-2 rounded-lg bg-[#F9B318]/10 border border-[#F9B318]/30 text-[10px] text-[#F9B318]">
                                 ⚠️ Patch truncated: exceeded lines limit to protect context.
                               </div>
                             )}
 
                             {file.patch ? (
-                              <pre className="text-[#B9CECC] whitespace-pre">
+                              <pre className="text-[#A8AFBD] whitespace-pre">
                                 {file.patch.split('\n').map((line, idx) => {
-                                  let lineStyle = 'text-[#B9CECC]';
+                                  let lineStyle = 'text-[#A8AFBD]';
                                   let bgStyle = '';
 
                                   if (line.startsWith('@@')) {
-                                    lineStyle = 'text-[#F0F5F7] font-bold';
-                                    bgStyle = 'bg-[#295255]/40';
+                                    lineStyle = 'text-white font-bold';
+                                    bgStyle = 'bg-[#1546D9]/25';
                                   } else if (line.startsWith('+') && !line.startsWith('+++')) {
-                                    lineStyle = 'text-[#6DBE9B]';
-                                    bgStyle = 'bg-[#6DBE9B]/10';
+                                    lineStyle = 'text-[#10B981]';
+                                    bgStyle = 'bg-emerald-500/10';
                                   } else if (line.startsWith('-') && !line.startsWith('---')) {
-                                    lineStyle = 'text-[#D96B6B]';
-                                    bgStyle = 'bg-[#D96B6B]/10';
+                                    lineStyle = 'text-[#EF4444]';
+                                    bgStyle = 'bg-rose-500/10';
                                   }
 
                                   return (
@@ -755,7 +774,7 @@ export const GitHistoryView: React.FC<GitHistoryViewProps> = ({
                                 })}
                               </pre>
                             ) : (
-                              <p className="text-[#577877] italic py-2">
+                              <p className="text-[#767E90] italic py-2">
                                 (No unified diff patch available - file may be binary, large, or removed without content)
                               </p>
                             )}

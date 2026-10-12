@@ -74,11 +74,11 @@ export const GlobalCommandBar: React.FC<GlobalCommandBarProps> = ({
     <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-150 font-sans">
       <Spotlight
         color="teal"
-        className="w-full max-w-2xl bg-[#162623] border border-[#577877]/40 rounded-2xl shadow-2xl overflow-hidden text-[#F0F5F7]"
+        className="w-full max-w-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] rounded-2xl shadow-2xl overflow-hidden text-[var(--text-primary)]"
       >
         {/* Search Input Bar */}
-        <div className="p-4 border-b border-[#577877]/25 flex items-center gap-3 bg-[#1B2D2A]">
-          <Search className="w-5 h-5 text-[#6DBE9B] shrink-0" />
+        <div className="p-4 border-b border-[var(--border-subtle)] flex items-center gap-3 bg-[var(--bg-surface)]">
+          <Search className="w-5 h-5 text-[var(--color-cobalt-blue)] shrink-0" />
           <input
             type="text"
             placeholder={
@@ -90,12 +90,12 @@ export const GlobalCommandBar: React.FC<GlobalCommandBarProps> = ({
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={handleKeyDown}
             autoFocus
-            className="w-full bg-transparent border-none text-sm text-[#F0F5F7] placeholder-[#577877] focus:outline-none focus:ring-0"
+            className="w-full bg-transparent border-none text-sm text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-0 font-sans"
           />
           {query.trim() && (
             <button
               onClick={handleAsk}
-              className="px-2.5 py-1 rounded-md bg-[#295255] hover:bg-[#34686C] text-xs text-white font-medium flex items-center gap-1 shrink-0 transition-colors"
+              className="px-2.5 py-1 rounded-md bg-[#1546D9] hover:bg-[#2255EB] text-xs text-white font-medium flex items-center gap-1 shrink-0 transition-colors shadow-sm cursor-pointer"
             >
               <span>Ask AI</span>
               <ArrowRight className="w-3 h-3" />
@@ -103,7 +103,7 @@ export const GlobalCommandBar: React.FC<GlobalCommandBarProps> = ({
           )}
           <button
             onClick={onClose}
-            className="p-1 rounded-lg text-[#577877] hover:text-[#F0F5F7] hover:bg-[#1E3430] transition-colors"
+            className="p-1 rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card-hover)] transition-colors cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
@@ -114,19 +114,19 @@ export const GlobalCommandBar: React.FC<GlobalCommandBarProps> = ({
           {/* Quick Questions */}
           {query.trim() && (
             <div>
-              <div className="px-2 py-1 text-[10px] font-semibold text-[#577877] uppercase tracking-wider">
+              <div className="px-2 py-1 text-[10px] font-semibold text-[var(--text-muted)] uppercase tracking-wider font-mono">
                 Ask AI Assistant
               </div>
               <button
                 onClick={handleAsk}
-                className="w-full text-left p-2.5 rounded-lg bg-[#1B2D2A] hover:bg-[#1E3430] border border-[#577877]/20 flex items-center justify-between group transition-colors"
+                className="w-full text-left p-2.5 rounded-lg bg-[var(--bg-well)] hover:bg-[var(--bg-card-hover)] border border-[var(--border-subtle)] flex items-center justify-between group transition-colors cursor-pointer"
               >
                 <div className="flex items-center gap-2.5">
-                  <Sparkles className="w-4 h-4 text-[#6DBE9B]" />
-                  <span className="text-[#F0F5F7]">"{query}"</span>
+                  <Sparkles className="w-4 h-4 text-[#F9B318]" />
+                  <span className="text-[var(--text-primary)]">"{query}"</span>
                 </div>
-                <span className="text-[11px] text-[#577877] group-hover:text-[#F0F5F7] flex items-center gap-1 font-mono">
-                  Press Enter <ArrowRight className="w-3 h-3" />
+                <span className="text-[11px] text-[var(--text-muted)] group-hover:text-[var(--text-primary)] flex items-center gap-1 font-mono">
+                  Press Enter <ArrowRight className="w-3 h-3 text-[#1546D9]" />
                 </span>
               </button>
             </div>
@@ -134,7 +134,7 @@ export const GlobalCommandBar: React.FC<GlobalCommandBarProps> = ({
 
           {/* Codebase Explorer Tools */}
           <div>
-            <div className="px-2 py-1 text-[10px] font-semibold text-[#577877] uppercase tracking-wider">
+            <div className="px-2 py-1 text-[10px] font-semibold text-[var(--text-muted)] uppercase tracking-wider font-mono">
               Codebase Explorer Tools
             </div>
             <div className="grid grid-cols-2 gap-1.5 mt-1">
@@ -143,12 +143,12 @@ export const GlobalCommandBar: React.FC<GlobalCommandBarProps> = ({
                   onNavigateTab('explorer', 'chat');
                   onClose();
                 }}
-                className="p-2.5 rounded-lg bg-[#1B2D2A] hover:bg-[#1E3430] border border-[#577877]/20 flex items-center gap-2.5 text-left transition-colors"
+                className="p-2.5 rounded-lg bg-[var(--bg-well)] hover:bg-[var(--bg-card-hover)] border border-[var(--border-subtle)] flex items-center gap-2.5 text-left transition-colors cursor-pointer"
               >
-                <MessageSquare className="w-4 h-4 text-[#6DBE9B]" />
+                <MessageSquare className="w-4 h-4 text-[var(--color-cobalt-blue)]" />
                 <div>
-                  <span className="font-medium text-[#F0F5F7] block">Chat & Search</span>
-                  <span className="text-[10px] text-[#577877]">Ask questions & semantic search</span>
+                  <span className="font-medium text-[var(--text-primary)] block">Chat & Search</span>
+                  <span className="text-[10px] text-[var(--text-muted)]">Ask questions & semantic search</span>
                 </div>
               </button>
 
@@ -157,12 +157,12 @@ export const GlobalCommandBar: React.FC<GlobalCommandBarProps> = ({
                   onNavigateTab('explorer', 'diffs');
                   onClose();
                 }}
-                className="p-2.5 rounded-lg bg-[#1B2D2A] hover:bg-[#1E3430] border border-[#577877]/20 flex items-center gap-2.5 text-left transition-colors"
+                className="p-2.5 rounded-lg bg-[var(--bg-well)] hover:bg-[var(--bg-card-hover)] border border-[var(--border-subtle)] flex items-center gap-2.5 text-left transition-colors cursor-pointer"
               >
-                <GitCommit className="w-4 h-4 text-[#6DBE9B]" />
+                <GitCommit className="w-4 h-4 text-[var(--color-cobalt-blue)]" />
                 <div>
-                  <span className="font-medium text-[#F0F5F7] block">Git History & Diffs</span>
-                  <span className="text-[10px] text-[#577877]">View commits & code diffs</span>
+                  <span className="font-medium text-[var(--text-primary)] block">Git History & Diffs</span>
+                  <span className="text-[10px] text-[var(--text-muted)]">View commits & code diffs</span>
                 </div>
               </button>
 
@@ -171,12 +171,12 @@ export const GlobalCommandBar: React.FC<GlobalCommandBarProps> = ({
                   onNavigateTab('explorer', 'ast');
                   onClose();
                 }}
-                className="p-2.5 rounded-lg bg-[#1B2D2A] hover:bg-[#1E3430] border border-[#577877]/20 flex items-center gap-2.5 text-left transition-colors"
+                className="p-2.5 rounded-lg bg-[var(--bg-well)] hover:bg-[var(--bg-card-hover)] border border-[var(--border-subtle)] flex items-center gap-2.5 text-left transition-colors cursor-pointer"
               >
-                <Code2 className="w-4 h-4 text-[#6DBE9B]" />
+                <Code2 className="w-4 h-4 text-[var(--color-cobalt-blue)]" />
                 <div>
-                  <span className="font-medium text-[#F0F5F7] block">AST Explorer</span>
-                  <span className="text-[10px] text-[#577877]">Syntax trees & symbol relations</span>
+                  <span className="font-medium text-[var(--text-primary)] block">AST Explorer</span>
+                  <span className="text-[10px] text-[var(--text-muted)]">Syntax trees & symbol relations</span>
                 </div>
               </button>
 
@@ -185,12 +185,12 @@ export const GlobalCommandBar: React.FC<GlobalCommandBarProps> = ({
                   onNavigateTab('explorer', 'files');
                   onClose();
                 }}
-                className="p-2.5 rounded-lg bg-[#1B2D2A] hover:bg-[#1E3430] border border-[#577877]/20 flex items-center gap-2.5 text-left transition-colors"
+                className="p-2.5 rounded-lg bg-[var(--bg-well)] hover:bg-[var(--bg-card-hover)] border border-[var(--border-subtle)] flex items-center gap-2.5 text-left transition-colors cursor-pointer"
               >
-                <FolderTree className="w-4 h-4 text-[#6DBE9B]" />
+                <FolderTree className="w-4 h-4 text-[var(--color-cobalt-blue)]" />
                 <div>
-                  <span className="font-medium text-[#F0F5F7] block">Files & Architecture</span>
-                  <span className="text-[10px] text-[#577877]">Explore repository files & viewer</span>
+                  <span className="font-medium text-[var(--text-primary)] block">Files & Architecture</span>
+                  <span className="text-[10px] text-[var(--text-muted)]">Explore repository files & viewer</span>
                 </div>
               </button>
             </div>
@@ -198,7 +198,7 @@ export const GlobalCommandBar: React.FC<GlobalCommandBarProps> = ({
 
           {/* Repositories */}
           <div>
-            <div className="px-2 py-1 text-[10px] font-semibold text-[#577877] uppercase tracking-wider">
+            <div className="px-2 py-1 text-[10px] font-semibold text-[var(--text-muted)] uppercase tracking-wider font-mono">
               Connected Repositories
             </div>
             <div className="space-y-1 mt-1">
@@ -210,17 +210,17 @@ export const GlobalCommandBar: React.FC<GlobalCommandBarProps> = ({
                     onNavigateTab('explorer');
                     onClose();
                   }}
-                  className={`w-full p-2 rounded-lg text-left flex items-center justify-between transition-colors ${
+                  className={`w-full p-2 rounded-lg text-left flex items-center justify-between transition-colors cursor-pointer ${
                     activeRepo?.id === repo.id
-                      ? 'bg-[#295255] text-white border border-[#577877]/50'
-                      : 'bg-[#1B2D2A] text-[#B9CECC] hover:bg-[#1E3430] hover:text-[#F0F5F7] border border-[#577877]/20'
+                      ? 'bg-[#1546D9] text-white border border-[#1546D9]'
+                      : 'bg-[var(--bg-well)] text-[var(--text-secondary)] hover:bg-[var(--bg-card-hover)] hover:text-[var(--text-primary)] border border-[var(--border-subtle)]'
                   }`}
                 >
                   <div className="flex items-center gap-2 truncate">
-                    <FolderGit2 className="w-3.5 h-3.5 text-[#6DBE9B] shrink-0" />
+                    <FolderGit2 className={`w-3.5 h-3.5 shrink-0 ${activeRepo?.id === repo.id ? 'text-white' : 'text-[var(--color-cobalt-blue)]'}`} />
                     <span className="font-mono text-xs font-medium truncate">{repo.fullName}</span>
                   </div>
-                  <span className="text-[10px] font-mono text-[#B9CECC] shrink-0">
+                  <span className={`text-[10px] font-mono shrink-0 ${activeRepo?.id === repo.id ? 'text-white/80' : 'text-[var(--text-muted)]'}`}>
                     {repo.branch}
                   </span>
                 </button>
@@ -229,15 +229,15 @@ export const GlobalCommandBar: React.FC<GlobalCommandBarProps> = ({
           </div>
 
           {/* Primary Pages */}
-          <div className="pt-1 flex items-center gap-2 border-t border-[#577877]/20">
+          <div className="pt-1 flex items-center gap-2 border-t border-[var(--border-subtle)]">
             <button
               onClick={() => {
                 onNavigateTab('dashboard');
                 onClose();
               }}
-              className="flex-1 p-2 rounded-lg bg-[#1B2D2A] hover:bg-[#1E3430] text-[#B9CECC] hover:text-[#F0F5F7] flex items-center justify-center gap-1.5 transition-colors"
+              className="flex-1 p-2 rounded-lg bg-[var(--bg-well)] hover:bg-[var(--bg-card-hover)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] border border-[var(--border-subtle)] flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
             >
-              <LayoutDashboard className="w-3.5 h-3.5" />
+              <LayoutDashboard className="w-3.5 h-3.5 text-[var(--color-cobalt-blue)]" />
               <span>Dashboard</span>
             </button>
             <button
@@ -245,9 +245,9 @@ export const GlobalCommandBar: React.FC<GlobalCommandBarProps> = ({
                 onNavigateTab('repositories');
                 onClose();
               }}
-              className="flex-1 p-2 rounded-lg bg-[#1B2D2A] hover:bg-[#1E3430] text-[#B9CECC] hover:text-[#F0F5F7] flex items-center justify-center gap-1.5 transition-colors"
+              className="flex-1 p-2 rounded-lg bg-[var(--bg-well)] hover:bg-[var(--bg-card-hover)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] border border-[var(--border-subtle)] flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
             >
-              <FolderGit2 className="w-3.5 h-3.5" />
+              <FolderGit2 className="w-3.5 h-3.5 text-[var(--color-cobalt-blue)]" />
               <span>Repositories</span>
             </button>
             <button
@@ -255,18 +255,18 @@ export const GlobalCommandBar: React.FC<GlobalCommandBarProps> = ({
                 onNavigateTab('settings');
                 onClose();
               }}
-              className="flex-1 p-2 rounded-lg bg-[#1B2D2A] hover:bg-[#1E3430] text-[#B9CECC] hover:text-[#F0F5F7] flex items-center justify-center gap-1.5 transition-colors"
+              className="flex-1 p-2 rounded-lg bg-[var(--bg-well)] hover:bg-[var(--bg-card-hover)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] border border-[var(--border-subtle)] flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
             >
-              <Settings className="w-3.5 h-3.5" />
+              <Settings className="w-3.5 h-3.5 text-[var(--color-cobalt-blue)]" />
               <span>Settings</span>
             </button>
           </div>
         </div>
 
         {/* Footer Shortcut Tip */}
-        <div className="p-2.5 border-t border-[#577877]/25 bg-[#111E1C] flex items-center justify-between text-[11px] text-[#577877] font-mono">
+        <div className="p-2.5 border-t border-[var(--border-subtle)] bg-[var(--bg-surface)] flex items-center justify-between text-[11px] text-[var(--text-muted)] font-mono">
           <span>Navigate with mouse or Enter</span>
-          <span className="px-1.5 py-0.5 rounded bg-[#162623] border border-[#577877]/30">ESC to close</span>
+          <span className="px-1.5 py-0.5 rounded bg-[var(--bg-well)] border border-[var(--border-subtle)]">ESC to close</span>
         </div>
       </Spotlight>
     </div>

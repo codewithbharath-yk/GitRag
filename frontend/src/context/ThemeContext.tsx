@@ -62,18 +62,18 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const root = document.documentElement;
     const body = document.body;
 
-    root.setAttribute('data-theme', actualTheme === 'light' ? 'white' : 'dark');
+    root.setAttribute('data-theme', actualTheme === 'light' ? 'light' : 'dark');
 
     if (actualTheme === 'light') {
-      root.classList.add('theme-white', 'theme-light');
-      root.classList.remove('theme-green', 'theme-dark');
-      body.classList.add('theme-white', 'theme-light');
-      body.classList.remove('theme-green', 'theme-dark');
+      root.classList.add('theme-light', 'theme-white');
+      root.classList.remove('theme-dark', 'theme-green');
+      body.classList.add('theme-light', 'theme-white');
+      body.classList.remove('theme-dark', 'theme-green');
     } else {
-      root.classList.add('theme-green', 'theme-dark');
-      root.classList.remove('theme-white', 'theme-light');
-      body.classList.add('theme-green', 'theme-dark');
-      body.classList.remove('theme-white', 'theme-light');
+      root.classList.add('theme-dark', 'theme-green');
+      root.classList.remove('theme-light', 'theme-white');
+      body.classList.add('theme-dark', 'theme-green');
+      body.classList.remove('theme-light', 'theme-white');
     }
   }, [theme, actualTheme]);
 

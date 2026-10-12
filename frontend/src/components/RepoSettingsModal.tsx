@@ -103,21 +103,21 @@ export const RepoSettingsModal: React.FC<RepoSettingsModalProps> = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-xs animate-in fade-in duration-200 font-sans">
       <Spotlight variant="teal" className="w-full max-w-lg rounded-xl">
-        <div className="relative w-full max-w-lg rounded-xl bg-[#162623] border border-[#577877]/35 shadow-2xl p-6 space-y-6 text-[#F0F5F7]">
+        <div className="relative w-full max-w-lg rounded-xl bg-[var(--bg-card)] border border-[var(--border-subtle)] shadow-2xl p-6 space-y-6 text-[var(--text-primary)]">
           {/* Header */}
-          <div className="flex items-center justify-between pb-3 border-b border-[#577877]/25">
+          <div className="flex items-center justify-between pb-3 border-b border-[var(--border-subtle)]">
             <div className="flex items-center gap-2.5">
-              <div className="p-2 rounded-lg bg-[#1B2D2A] text-[#577877] border border-[#577877]/30">
-                <Settings className="w-5 h-5 text-[#577877]" />
+              <div className="p-2 rounded-lg bg-[var(--bg-well)] text-[var(--color-cobalt-blue)] border border-[var(--border-subtle)]">
+                <Settings className="w-5 h-5 text-[var(--color-cobalt-blue)]" />
               </div>
               <div>
-                <TextEffect as="h3" className="font-bold text-base text-[#F0F5F7]">Repository Settings</TextEffect>
-                <p className="text-xs text-[#577877] font-mono">{repository.fullName}</p>
+                <TextEffect as="h3" className="font-bold text-base text-[var(--text-primary)]">Repository Settings</TextEffect>
+                <p className="text-xs text-[var(--text-muted)] font-mono">{repository.fullName}</p>
               </div>
             </div>
             <button
               onClick={onClose}
-              className="p-1.5 rounded-lg text-[#577877] hover:text-[#F0F5F7] hover:bg-[#1E3430] transition-colors"
+              className="p-1.5 rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card-hover)] transition-colors cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
@@ -126,42 +126,42 @@ export const RepoSettingsModal: React.FC<RepoSettingsModalProps> = ({
           {/* Metadata Details with Tilt & Spotlight */}
           <Tilt maxAngle={2}>
             <Spotlight variant="subtle" className="rounded-xl">
-              <div className="p-4 rounded-xl bg-[#111E1C] border border-[#577877]/25 space-y-2.5 text-xs">
+              <div className="p-4 rounded-xl bg-[var(--bg-well)] border border-[var(--border-subtle)] space-y-2.5 text-xs">
                 <div className="flex items-center justify-between">
-                  <span className="text-[#577877]">Target Branch</span>
-                  <span className="font-mono text-[#F0F5F7] flex items-center gap-1">
-                    <GitBranch className="w-3.5 h-3.5 text-[#577877]" />
+                  <span className="text-[var(--text-muted)]">Target Branch</span>
+                  <span className="font-mono text-[var(--text-primary)] flex items-center gap-1">
+                    <GitBranch className="w-3.5 h-3.5 text-[var(--color-cobalt-blue)]" />
                     {repository.branch}
                   </span>
                 </div>
 
                 <div className="flex items-center justify-between">
-                  <span className="text-[#577877]">Indexed Files</span>
-                  <span className="font-mono text-[#F0F5F7] flex items-center gap-1">
-                    <FileCode className="w-3.5 h-3.5 text-[#577877]" />
+                  <span className="text-[var(--text-muted)]">Indexed Files</span>
+                  <span className="font-mono text-[var(--text-primary)] flex items-center gap-1">
+                    <FileCode className="w-3.5 h-3.5 text-[var(--color-cobalt-blue)]" />
                     {repository.filesCount} files
                   </span>
                 </div>
 
                 <div className="flex items-center justify-between">
-                  <span className="text-[#577877]">Vector Chunks (Qdrant)</span>
-                  <span className="font-mono text-[#F0F5F7] flex items-center gap-1">
-                    <Layers className="w-3.5 h-3.5 text-[#577877]" />
+                  <span className="text-[var(--text-muted)]">Vector Chunks (Qdrant)</span>
+                  <span className="font-mono text-[var(--text-primary)] flex items-center gap-1">
+                    <Layers className="w-3.5 h-3.5 text-[var(--color-cobalt-blue)]" />
                     {repository.chunksCount} chunks
                   </span>
                 </div>
 
                 <div className="flex items-center justify-between">
-                  <span className="text-[#577877]">Last Indexed</span>
-                  <span className="font-mono text-[#B9CECC]">
+                  <span className="text-[var(--text-muted)]">Last Indexed</span>
+                  <span className="font-mono text-[var(--text-secondary)]">
                     {new Date(repository.lastIndexedAt).toLocaleString()}
                   </span>
                 </div>
 
                 {health && (
-                  <div className="flex items-center justify-between border-t border-[#577877]/15 pt-2">
-                    <span className="text-[#577877]">Engine</span>
-                    <span className="font-mono text-[#F0F5F7]">
+                  <div className="flex items-center justify-between border-t border-[var(--border-subtle)] pt-2">
+                    <span className="text-[var(--text-muted)]">Engine</span>
+                    <span className="font-mono text-[var(--text-primary)]">
                       {health.embedding_provider} / {health.llm_provider}
                     </span>
                   </div>
@@ -172,15 +172,15 @@ export const RepoSettingsModal: React.FC<RepoSettingsModalProps> = ({
 
         {/* Status / Error alerts */}
         {statusMessage && (
-          <div className="p-3 rounded-lg bg-[#6DBE9B]/10 border border-[#6DBE9B]/30 text-[#6DBE9B] text-xs flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 text-[#6DBE9B] shrink-0" />
+          <div className="p-3 rounded-lg bg-[#1546D9]/15 border border-[#1546D9]/40 text-[#1546D9] text-xs flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 text-[#1546D9] shrink-0" />
             <span>{statusMessage}</span>
           </div>
         )}
 
         {errorMessage && (
-          <div className="p-3 rounded-lg bg-[#D96B6B]/10 border border-[#D96B6B]/30 text-[#D96B6B] text-xs flex items-center gap-2">
-            <AlertTriangle className="w-4 h-4 text-[#D96B6B] shrink-0" />
+          <div className="p-3 rounded-lg bg-[#EF4444]/15 border border-[#EF4444]/40 text-[#EF4444] text-xs flex items-center gap-2">
+            <AlertTriangle className="w-4 h-4 text-[#EF4444] shrink-0" />
             <span>{errorMessage}</span>
           </div>
         )}
@@ -189,14 +189,14 @@ export const RepoSettingsModal: React.FC<RepoSettingsModalProps> = ({
         <div className="space-y-3 pt-2">
           {/* Re-index section */}
           {showReindexConfirm ? (
-            <div className="p-3.5 rounded-xl bg-[#D9A066]/10 border border-[#D9A066]/30 space-y-2.5">
-              <p className="text-xs text-[#D9A066]">
+            <div className="p-3.5 rounded-xl bg-[#F9B318]/15 border border-[#F9B318]/40 space-y-2.5">
+              <p className="text-xs text-[var(--text-primary)]">
                 Are you sure you want to re-index <strong>{repository.fullName}</strong>? This will clear existing vectors and re-embed all source code using the local BGE model.
               </p>
               <div className="flex items-center justify-end gap-2">
                 <button
                   onClick={() => setShowReindexConfirm(false)}
-                  className="px-3 py-1.5 rounded-md bg-[#162623] text-xs text-[#B9CECC] hover:bg-[#1E3430]"
+                  className="px-3 py-1.5 rounded-md bg-[var(--bg-well)] text-xs text-[var(--text-secondary)] hover:bg-[var(--bg-card-hover)] cursor-pointer"
                 >
                   Cancel
                 </button>
@@ -204,7 +204,7 @@ export const RepoSettingsModal: React.FC<RepoSettingsModalProps> = ({
                   <button
                     onClick={handleReindex}
                     disabled={isReindexing}
-                    className="px-3.5 py-1.5 rounded-md bg-[#295255] hover:bg-[#34686C] text-xs text-[#F0F5F7] font-medium flex items-center gap-1.5 border border-[#577877]/40"
+                    className="px-3.5 py-1.5 rounded-md bg-[#1546D9] hover:bg-[#2255EB] text-xs text-white font-medium flex items-center gap-1.5 shadow-sm cursor-pointer"
                   >
                     {isReindexing && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                     <span>Confirm Re-index</span>
@@ -217,9 +217,9 @@ export const RepoSettingsModal: React.FC<RepoSettingsModalProps> = ({
               <button
                 onClick={() => setShowReindexConfirm(true)}
                 disabled={isReindexing || isDeleting}
-                className="w-full py-2.5 px-4 rounded-lg bg-[#1B2D2A] hover:bg-[#213834] text-[#F0F5F7] font-medium text-xs flex items-center justify-center gap-2 transition-all border border-[#577877]/30"
+                className="w-full py-2.5 px-4 rounded-lg bg-[var(--bg-well)] hover:bg-[var(--bg-card-hover)] text-[var(--text-primary)] font-medium text-xs flex items-center justify-center gap-2 transition-all border border-[var(--border-subtle)] cursor-pointer"
               >
-                <RefreshCw className={`w-3.5 h-3.5 ${isReindexing ? 'animate-spin' : ''}`} />
+                <RefreshCw className={`w-3.5 h-3.5 text-[var(--color-cobalt-blue)] ${isReindexing ? 'animate-spin' : ''}`} />
                 <span>Re-index Repository Vectors</span>
               </button>
             </Magnetic>
@@ -227,14 +227,14 @@ export const RepoSettingsModal: React.FC<RepoSettingsModalProps> = ({
 
           {/* Delete section */}
           {showDeleteConfirm ? (
-            <div className="p-3.5 rounded-xl bg-[#D96B6B]/10 border border-[#D96B6B]/30 space-y-2.5">
-              <p className="text-xs text-[#D96B6B]">
+            <div className="p-3.5 rounded-xl bg-[#EF4444]/15 border border-[#EF4444]/40 space-y-2.5">
+              <p className="text-xs text-[var(--text-primary)]">
                 Are you sure you want to remove <strong>{repository.fullName}</strong>? All associated vectors in Qdrant will be permanently deleted.
               </p>
               <div className="flex items-center justify-end gap-2">
                 <button
                   onClick={() => setShowDeleteConfirm(false)}
-                  className="px-3 py-1.5 rounded-md bg-[#162623] text-xs text-[#B9CECC] hover:bg-[#1E3430]"
+                  className="px-3 py-1.5 rounded-md bg-[var(--bg-well)] text-xs text-[var(--text-secondary)] hover:bg-[var(--bg-card-hover)] cursor-pointer"
                 >
                   Cancel
                 </button>
@@ -242,7 +242,7 @@ export const RepoSettingsModal: React.FC<RepoSettingsModalProps> = ({
                   <button
                     onClick={handleDelete}
                     disabled={isDeleting}
-                    className="px-3.5 py-1.5 rounded-md bg-[#D96B6B] hover:bg-[#E57A7A] text-xs text-white font-medium flex items-center gap-1.5"
+                    className="px-3.5 py-1.5 rounded-md bg-[#EF4444] hover:bg-[#DC2626] text-xs text-white font-medium flex items-center gap-1.5 cursor-pointer"
                   >
                     {isDeleting && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                     <span>Confirm Delete</span>
@@ -255,7 +255,7 @@ export const RepoSettingsModal: React.FC<RepoSettingsModalProps> = ({
               <button
                 onClick={() => setShowDeleteConfirm(true)}
                 disabled={isReindexing || isDeleting}
-                className="w-full py-2.5 px-4 rounded-lg bg-[#D96B6B]/10 hover:bg-[#D96B6B]/20 text-[#D96B6B] border border-[#D96B6B]/30 font-medium text-xs flex items-center justify-center gap-2 transition-all"
+                className="w-full py-2.5 px-4 rounded-lg bg-[#EF4444]/10 hover:bg-[#EF4444]/20 text-[#EF4444] border border-[#EF4444]/30 font-medium text-xs flex items-center justify-center gap-2 transition-all cursor-pointer"
               >
                 <Trash2 className="w-3.5 h-3.5" />
                 <span>Remove Repository from CodeRAG</span>

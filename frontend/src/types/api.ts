@@ -234,6 +234,7 @@ export interface CodeSymbol {
   start_line: number;
   end_line: number;
   parent_symbol?: string | null;
+  container_name?: string | null;
   language: string;
   parameters: string[];
   return_type?: string | null;
@@ -244,7 +245,9 @@ export interface CodeSymbol {
 export interface CodeImport {
   file_path: string;
   source_module: string;
+  module?: string;
   imported_symbols: string[];
+  names?: string[];
   alias?: string | null;
   is_relative: boolean;
   line_number: number;

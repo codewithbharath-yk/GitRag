@@ -35,19 +35,19 @@ export const CitationCard: React.FC<CitationCardProps> = ({
   };
 
   return (
-    <div className="group flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-2.5 rounded-lg border border-[#577877]/30 bg-[#1B2D2A] hover:border-[#577877]/60 hover:bg-[#213834] transition-all text-xs card-hover-teal">
+    <div className="group flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-2.5 rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-card)] hover:border-[var(--color-cobalt-blue)]/40 hover:bg-[var(--bg-card-hover)] transition-all text-xs">
       <div className="flex items-center gap-2 min-w-0">
-        <div className="p-1.5 rounded bg-[#162623] border border-[#577877]/30 text-[#577877] shrink-0">
-          <FileCode className="w-4 h-4 text-[#577877]" />
+        <div className="p-1.5 rounded bg-[var(--bg-well)] border border-[var(--border-subtle)] text-[var(--color-cobalt-blue)] shrink-0">
+          <FileCode className="w-4 h-4 text-[var(--color-cobalt-blue)]" />
         </div>
         <div className="min-w-0 truncate">
-          <span className="font-mono text-[#F0F5F7] font-medium truncate block">
+          <span className="font-mono text-[var(--text-primary)] font-medium truncate block">
             {citation.path}
           </span>
-          <div className="flex items-center gap-2 text-[#577877] text-[11px] font-mono">
+          <div className="flex items-center gap-2 text-[var(--text-muted)] text-[11px] font-mono">
             <span>
-              Lines <strong className="text-[#B9CECC]">L{citation.start_line}</strong>–
-              <strong className="text-[#B9CECC]">L{citation.end_line}</strong>
+              Lines <strong className="text-[var(--text-primary)]">L{citation.start_line}</strong>–
+              <strong className="text-[var(--text-primary)]">L{citation.end_line}</strong>
             </span>
             <span>•</span>
             <span>
@@ -62,10 +62,10 @@ export const CitationCard: React.FC<CitationCardProps> = ({
         <span
           className={`px-2 py-0.5 rounded text-[11px] font-mono font-medium ${
             scorePercent >= 70
-              ? 'bg-[#1E3430] text-[#6DBE9B] border border-[#6DBE9B]/30'
+              ? 'bg-[#1546D9] text-white border border-[#1546D9]'
               : scorePercent >= 45
-              ? 'bg-[#1E3430] text-[#D9A066] border border-[#D9A066]/30'
-              : 'bg-[#162623] text-[#B9CECC] border border-[#577877]/30'
+              ? 'bg-[#F9B318]/20 text-[#F9B318] border border-[#F9B318]/40'
+              : 'bg-[var(--bg-well)] text-[var(--text-muted)] border border-[var(--border-subtle)]'
           }`}
           title={`Cosine similarity score: ${citation.score.toFixed(4)}`}
         >
@@ -76,9 +76,9 @@ export const CitationCard: React.FC<CitationCardProps> = ({
         <button
           onClick={handleCopyPath}
           title="Copy file path and line reference"
-          className="p-1.5 rounded text-[#577877] hover:text-[#F0F5F7] hover:bg-[#162623] transition-colors"
+          className="p-1.5 rounded text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-well)] transition-colors cursor-pointer"
         >
-          {copied ? <Check className="w-3.5 h-3.5 text-[#6DBE9B]" /> : <Copy className="w-3.5 h-3.5" />}
+          {copied ? <Check className="w-3.5 h-3.5 text-[#1546D9]" /> : <Copy className="w-3.5 h-3.5" />}
         </button>
 
         {/* GitHub External Anchor */}
@@ -89,10 +89,10 @@ export const CitationCard: React.FC<CitationCardProps> = ({
               target="_blank"
               rel="noopener noreferrer"
               title="Open actual source at GitHub line"
-              className="flex items-center gap-1 px-2.5 py-1 rounded bg-[#295255] hover:bg-[#34686C] text-[#F0F5F7] transition-colors border border-[#577877]/40 font-sans text-xs"
+              className="flex items-center gap-1 px-2.5 py-1 rounded bg-[#1546D9] hover:bg-[#2255EB] text-white transition-colors border border-white/20 font-sans text-xs font-medium cursor-pointer shadow-sm"
             >
               <span>Open source</span>
-              <ExternalLink className="w-3 h-3 text-[#B9CECC]" />
+              <ExternalLink className="w-3 h-3 text-white/80" />
             </a>
           </Magnetic>
         )}
