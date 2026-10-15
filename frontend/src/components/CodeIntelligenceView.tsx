@@ -10,6 +10,7 @@ import {
   ChevronDown,
   ChevronUp,
   ArrowLeft,
+  Layers,
 } from 'lucide-react';
 import { api } from '../api/client';
 import type {

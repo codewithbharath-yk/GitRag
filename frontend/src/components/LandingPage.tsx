@@ -6,12 +6,14 @@ import {
   Code2,
   MessageSquare,
   Zap,
+  FolderTree,
   Mail,
   Lock,
   User,
   Eye,
   EyeOff,
   ShieldCheck,
+  Compass,
 } from 'lucide-react';
 import type { UserProfile } from '../types/api';
 import { api } from '../api/client';
@@ -43,7 +45,7 @@ const SHOWCASE_SLIDES = [
     id: 'ai-chat',
     title: 'AI-Powered Code Intelligence & Line Citations',
     subtitle: 'Zero hallucinations. Grounded answers derived directly from repository chunks.',
-    image: '/coderag_mascot_logo.jpg',
+    image: '/coderag_mascot_showcase.svg',
     tag: 'RAG Pipeline • Gemini Flash',
     description:
       'CodeRAG pair-programs alongside you, answering natural language queries by fetching indexed dense embeddings and attaching verifiable file citations with exact line numbers.',
@@ -324,6 +326,21 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess }) => {
     }
   };
 
+  const handleGuestAccess = () => {
+    const guestProfile: UserProfile = {
+      name: 'Guest Developer',
+      email: 'guest@coderag.ai',
+      role: 'Full-Stack Developer',
+    };
+    try {
+      localStorage.setItem('coderag_user_profile', JSON.stringify(guestProfile));
+      localStorage.setItem('coderag_is_authenticated', 'true');
+    } catch {
+      // ignore
+    }
+    onLoginSuccess(guestProfile);
+  };
+
   return (
     <div className="flex-1 overflow-y-auto bg-[var(--bg-base)] text-[var(--text-primary)] font-sans selection:bg-[#D4A373] selection:text-[#1F3B2C] flex flex-col min-h-screen">
       {/* Top Navbar */}
@@ -354,7 +371,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess }) => {
         <div className="hidden sm:flex items-center gap-2 bg-[var(--bg-card)] border border-[var(--border-subtle)] p-1 rounded-xl text-xs font-semibold">
           <button
             type="button"
-            onClick={() => setStep('landing')}
+            onClick={() => {
+              setStep('landing');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
             className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-all cursor-pointer ${
               step === 'landing'
                 ? 'bg-[#D4A373] text-[#1F3B2C] font-bold shadow-xs'
@@ -369,7 +389,15 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess }) => {
 
           <button
             type="button"
-            onClick={() => setStep('showcase')}
+            onClick={() => {
+              setStep('landing');
+              const el = document.getElementById('visual-showcase');
+              if (el) {
+                el.scrollIntoView({ behavior: 'smooth' });
+              } else {
+                setStep('showcase');
+              }
+            }}
             className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-all cursor-pointer ${
               step === 'showcase'
                 ? 'bg-[#D4A373] text-[#1F3B2C] font-bold shadow-xs'
@@ -398,103 +426,252 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess }) => {
           </button>
         </div>
 
-        {/* Right Action: ThemeToggle */}
-        <div className="flex items-center gap-3">
+        {/* Right Action: Guest Demo & ThemeToggle */}
+        <div className="flex items-center gap-2.5">
+          <button
+            onClick={handleGuestAccess}
+            className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[var(--bg-card)] hover:bg-[var(--bg-well)] text-[#D4A373] border border-[#D4A373]/30 text-xs font-mono font-semibold transition-all cursor-pointer"
+            title="Instant demo access as guest"
+          >
+            <Compass className="w-3.5 h-3.5" />
+            <span>Guest Demo</span>
+          </button>
           <ThemeToggle />
         </div>
       </header>
 
       {/* Main Container */}
-      <main className="flex-1 flex flex-col justify-center max-w-6xl w-full mx-auto px-4 sm:px-8 py-8 sm:py-12">
+      <main className="flex-1 flex flex-col justify-center max-w-6xl w-full mx-auto px-4 sm:px-8 py-8 sm:py-12 space-y-16">
         {/* =========================================================================
-            STAGE 1: GRAND LANDING HERO (Clean, No Clutter, Big Logo)
+            STAGE 1: GRAND LANDING HERO (Clean, No Clutter, Big Logo, Instant Actions)
             ========================================================================= */}
         {step === 'landing' && (
-          <div className="space-y-10 animate-in fade-in duration-300 text-center max-w-3xl mx-auto my-auto">
-            {/* Ambient Radial Glow */}
-            <div className="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 w-80 sm:w-96 h-80 sm:h-96 bg-[#D4A373]/15 rounded-full blur-3xl -z-10" />
+          <div className="space-y-14 animate-in fade-in duration-300">
+            <div className="text-center max-w-3xl mx-auto space-y-10">
+              {/* Ambient Radial Glow */}
+              <div className="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 w-80 sm:w-96 h-80 sm:h-96 bg-[#D4A373]/15 rounded-full blur-3xl -z-10" />
 
-            {/* Big Animated Logo Badge */}
-            <div className="flex justify-center">
-              <Tilt maxAngle={8} scale={1.04}>
+              {/* Big Animated Mascot Logo Badge */}
+              <div className="flex justify-center">
+                <Tilt maxAngle={8} scale={1.04}>
+                  <Spotlight
+                    color="#D4A373"
+                    size={280}
+                    strength={0.2}
+                    className="p-4 sm:p-5 rounded-3xl bg-[var(--bg-card)] border-2 border-[#D4A373]/30 shadow-2xl relative"
+                  >
+                    <div className="w-28 h-28 sm:w-36 sm:h-36 rounded-2xl bg-[var(--bg-well)] border border-[var(--border-subtle)] p-3 sm:p-4 flex items-center justify-center overflow-hidden">
+                      <img
+                        src="/coderag_logo.svg"
+                        alt="CodeRAG Logo"
+                        className="w-full h-full object-contain filter drop-shadow-md"
+                      />
+                    </div>
+                    <span className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full bg-[#D4A373] border border-[#D4A373] text-[10px] font-mono font-bold text-[#1F3B2C] uppercase tracking-wider shadow-md whitespace-nowrap">
+                      CodeRAG AI Assistant
+                    </span>
+                  </Spotlight>
+                </Tilt>
+              </div>
+
+              {/* Headline and Description */}
+              <div className="space-y-3 pt-2">
+                <TextEffect
+                  as="h1"
+                  variant="blur-up"
+                  className="text-3xl sm:text-5xl font-black text-[var(--text-primary)] tracking-tight leading-tight"
+                >
+                  Understand Any Codebase. Instantly.
+                </TextEffect>
+                <p className="text-sm sm:text-base text-[var(--text-secondary)] max-w-xl mx-auto leading-relaxed">
+                  Zero-hallucination code intelligence with grounded line citations, AST structural analysis, and instant semantic search for any GitHub repository.
+                </p>
+              </div>
+
+              {/* 4 Feature Badges */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono">
+                <div className="p-3 rounded-xl bg-[var(--bg-card)] border border-[var(--border-subtle)] flex flex-col items-center gap-1.5 hover:border-[#D4A373]/40 transition-colors">
+                  <MessageSquare className="w-4 h-4 text-[#D4A373]" />
+                  <span className="text-[var(--text-primary)] font-semibold">Grounded RAG Chat</span>
+                  <span className="text-[10px] text-[var(--text-muted)]">Verifiable Line Citations</span>
+                </div>
+
+                <div className="p-3 rounded-xl bg-[var(--bg-card)] border border-[var(--border-subtle)] flex flex-col items-center gap-1.5 hover:border-[#D4A373]/40 transition-colors">
+                  <Zap className="w-4 h-4 text-[#D4A373]" />
+                  <span className="text-[var(--text-primary)] font-semibold">Unified Workspace</span>
+                  <span className="text-[10px] text-[var(--text-muted)]">4 Tools in One Hub</span>
+                </div>
+
+                <div className="p-3 rounded-xl bg-[var(--bg-card)] border border-[var(--border-subtle)] flex flex-col items-center gap-1.5 hover:border-[#D4A373]/40 transition-colors">
+                  <Code2 className="w-4 h-4 text-[#D4A373]" />
+                  <span className="text-[var(--text-primary)] font-semibold">Tree-Sitter AST</span>
+                  <span className="text-[10px] text-[var(--text-muted)]">Syntax & Symbol Maps</span>
+                </div>
+
+                <div className="p-3 rounded-xl bg-[var(--bg-card)] border border-[var(--border-subtle)] flex flex-col items-center gap-1.5 hover:border-[#D4A373]/40 transition-colors">
+                  <FolderTree className="w-4 h-4 text-[#D4A373]" />
+                  <span className="text-[var(--text-primary)] font-semibold">Semantic Vectors</span>
+                  <span className="text-[10px] text-[var(--text-muted)]">Local Qdrant Engine</span>
+                </div>
+              </div>
+
+              {/* Action Buttons: Sign In, Explore Visuals, Guest Demo */}
+              <div className="pt-2 flex flex-wrap items-center justify-center gap-3 sm:gap-4">
+                <Magnetic>
+                  <button
+                    onClick={() => setStep('auth')}
+                    className="px-6 py-3.5 rounded-2xl bg-[#D4A373] hover:bg-[#C5915F] text-[#1F3B2C] font-bold text-sm sm:text-base flex items-center gap-2.5 border border-[#D4A373] shadow-xl transition-all active:scale-[0.98] cursor-pointer"
+                  >
+                    <span>Sign In / Create Account</span>
+                    <ArrowRight className="w-4 h-4 text-[#1F3B2C]" />
+                  </button>
+                </Magnetic>
+
+                <button
+                  onClick={() => {
+                    const el = document.getElementById('visual-showcase');
+                    el?.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                  className="px-5 py-3.5 rounded-2xl bg-[var(--bg-card)] hover:bg-[var(--bg-well)] text-[var(--text-primary)] font-semibold text-xs sm:text-sm flex items-center gap-2 border border-[var(--border-subtle)] hover:border-[#D4A373]/50 transition-all cursor-pointer shadow-sm"
+                >
+                  <span>Explore Feature Visuals & Images ↓</span>
+                </button>
+
+                <button
+                  onClick={handleGuestAccess}
+                  className="px-5 py-3.5 rounded-2xl bg-transparent hover:bg-[var(--bg-well)] text-[#D4A373] font-mono font-bold text-xs sm:text-sm flex items-center gap-2 border border-[#D4A373]/30 hover:border-[#D4A373] transition-all cursor-pointer"
+                >
+                  <Compass className="w-4 h-4" />
+                  <span>Explore as Guest →</span>
+                </button>
+              </div>
+            </div>
+
+            {/* =========================================================================
+                STAGE 2 EMBEDDED: VISUAL ARCHITECTURE & FEATURE SHOWCASE WITH IMAGES
+                ========================================================================= */}
+            <div id="visual-showcase" className="pt-8 border-t border-[var(--border-subtle)] space-y-6 max-w-4xl mx-auto w-full">
+              {/* Header / Slide Tracker */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[var(--border-subtle)]">
+                <div>
+                  <span className="text-[11px] font-mono text-[#D4A373] uppercase tracking-wider font-semibold">
+                    Visual Architecture & Feature Showcase
+                  </span>
+                  <h2 className="text-xl sm:text-2xl font-bold text-[var(--text-primary)] mt-0.5">
+                    {SHOWCASE_SLIDES[activeSlide].title}
+                  </h2>
+                </div>
+
+                {/* Slide Tabs */}
+                <div className="flex items-center gap-1.5 bg-[var(--bg-card)] p-1 rounded-xl border border-[var(--border-subtle)]">
+                  {SHOWCASE_SLIDES.map((s, idx) => (
+                    <button
+                      key={s.id}
+                      onClick={() => setActiveSlide(idx)}
+                      className={`px-2.5 py-1 rounded-lg text-xs font-mono font-medium transition-all cursor-pointer ${
+                        activeSlide === idx
+                          ? 'bg-[#D4A373] text-[#1F3B2C] font-bold shadow-xs'
+                          : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+                      }`}
+                    >
+                      0{idx + 1}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Showcase Visual Card with Emerald Night & Antique Gold Framing */}
+              <Tilt maxAngle={3} scale={1.01}>
                 <Spotlight
                   color="#D4A373"
-                  size={280}
-                  strength={0.2}
-                  className="p-4 sm:p-5 rounded-3xl bg-[var(--bg-card)] border-2 border-[#D4A373]/30 shadow-2xl relative"
+                  size={420}
+                  strength={0.16}
+                  className="rounded-3xl bg-[var(--bg-card)] border-2 border-[#D4A373]/30 shadow-2xl overflow-hidden p-6 sm:p-8"
                 >
-                  <div className="w-28 h-28 sm:w-36 sm:h-36 rounded-2xl bg-[var(--bg-well)] border border-[var(--border-subtle)] p-3 sm:p-4 flex items-center justify-center overflow-hidden">
-                    <img
-                      src="/coderag_logo.svg"
-                      alt="CodeRAG Logo"
-                      className="w-full h-full object-contain filter drop-shadow-md"
-                    />
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 items-center">
+                    {/* Left: Framed High-Res Image Preview */}
+                    <div className="relative rounded-2xl overflow-hidden border-2 border-[#D4A373]/40 bg-[#1F3B2C] shadow-xl aspect-video flex items-center justify-center group">
+                      <img
+                        src={SHOWCASE_SLIDES[activeSlide].image}
+                        alt={SHOWCASE_SLIDES[activeSlide].title}
+                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#1F3B2C]/50 via-transparent to-transparent pointer-events-none" />
+                      <div className="absolute top-3 left-3 px-3 py-1 rounded-lg bg-[var(--bg-base)]/90 backdrop-blur-md border border-[#D4A373]/40 text-[10px] font-mono text-[#D4A373] font-bold shadow-md">
+                        {SHOWCASE_SLIDES[activeSlide].tag}
+                      </div>
+                    </div>
+
+                    {/* Right: Description & Bullets */}
+                    <div className="space-y-4">
+                      <div>
+                        <span className="text-xs font-mono text-[#D4A373] uppercase tracking-wider font-semibold">
+                          Feature 0{activeSlide + 1} of 05
+                        </span>
+                        <h3 className="text-lg sm:text-xl font-bold text-[var(--text-primary)] mt-1 leading-snug">
+                          {SHOWCASE_SLIDES[activeSlide].subtitle}
+                        </h3>
+                      </div>
+
+                      <p className="text-xs sm:text-sm text-[var(--text-secondary)] leading-relaxed">
+                        {SHOWCASE_SLIDES[activeSlide].description}
+                      </p>
+
+                      <div className="space-y-2 pt-1 border-t border-[var(--border-subtle)]">
+                        {SHOWCASE_SLIDES[activeSlide].bullets.map((bullet, bIdx) => (
+                          <div key={bIdx} className="flex items-center gap-2 text-xs text-[var(--text-primary)]">
+                            <CheckCircle2 className="w-3.5 h-3.5 text-[#D4A373] shrink-0" />
+                            <span>{bullet}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   </div>
-                  <span className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full bg-[#D4A373] border border-[#D4A373] text-[10px] font-mono font-bold text-[#1F3B2C] uppercase tracking-wider shadow-md whitespace-nowrap">
-                    CodeRAG AI Assistant
-                  </span>
                 </Spotlight>
               </Tilt>
-            </div>
 
-            {/* Headline and Description */}
-            <div className="space-y-3 pt-2">
-              <TextEffect
-                as="h1"
-                variant="blur-up"
-                className="text-3xl sm:text-5xl font-black text-[var(--text-primary)] tracking-tight leading-tight"
-              >
-                Understand Any Codebase. Instantly.
-              </TextEffect>
-              <p className="text-sm sm:text-base text-[var(--text-secondary)] max-w-xl mx-auto leading-relaxed">
-                Zero-hallucination code intelligence with grounded line citations, AST structural analysis, and instant semantic search for any GitHub repository.
-              </p>
-            </div>
+              {/* Showcase Slide Controls (Previous & Next) */}
+              <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-3">
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setActiveSlide((prev) => Math.max(0, prev - 1))}
+                    disabled={activeSlide === 0}
+                    className="px-4 py-2 rounded-xl bg-[var(--bg-card)] hover:bg-[var(--bg-card-hover)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] disabled:opacity-40 disabled:cursor-not-allowed text-xs font-semibold border border-[var(--border-subtle)] transition-colors cursor-pointer"
+                  >
+                    ← Previous Slide
+                  </button>
+                  {activeSlide < SHOWCASE_SLIDES.length - 1 ? (
+                    <button
+                      onClick={() => setActiveSlide((prev) => prev + 1)}
+                      className="px-4 py-2 rounded-xl bg-[var(--bg-card)] hover:bg-[var(--bg-card-hover)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] text-xs font-semibold border border-[var(--border-subtle)] transition-colors cursor-pointer"
+                    >
+                      Next Feature Preview →
+                    </button>
+                  ) : (
+                    <span className="text-xs text-[#D4A373] font-mono flex items-center gap-1.5 font-semibold">
+                      <CheckCircle2 className="w-3.5 h-3.5" />
+                      All 5 Features Reviewed
+                    </span>
+                  )}
+                </div>
 
-            {/* 4 Feature Badges */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono">
-              <div className="p-3 rounded-xl bg-[var(--bg-card)] border border-[var(--border-subtle)] flex flex-col items-center gap-1.5">
-                <MessageSquare className="w-4 h-4 text-[#D4A373]" />
-                <span className="text-[var(--text-primary)] font-semibold">Grounded RAG Chat</span>
-                <span className="text-[10px] text-[var(--text-muted)]">Verifiable Line Citations</span>
+                {/* Primary Forward Action to Auth */}
+                <Magnetic>
+                  <button
+                    onClick={() => setStep('auth')}
+                    className="px-6 py-2.5 rounded-xl bg-[#D4A373] hover:bg-[#C5915F] text-[#1F3B2C] font-bold text-xs sm:text-sm flex items-center gap-2 border border-[#D4A373] shadow-md transition-all active:scale-[0.98] cursor-pointer"
+                  >
+                    <span>Proceed to Sign In & Enter CodeRAG</span>
+                    <ArrowRight className="w-4 h-4 text-[#1F3B2C]" />
+                  </button>
+                </Magnetic>
               </div>
-
-              <div className="p-3 rounded-xl bg-[var(--bg-card)] border border-[var(--border-subtle)] flex flex-col items-center gap-1.5">
-                <Zap className="w-4 h-4 text-[#D4A373]" />
-                <span className="text-[var(--text-primary)] font-semibold">Unified Workspace</span>
-                <span className="text-[10px] text-[var(--text-muted)]">4 Tools in One Hub</span>
-              </div>
-
-              <div className="p-3 rounded-xl bg-[var(--bg-card)] border border-[var(--border-subtle)] flex flex-col items-center gap-1.5">
-                <Code2 className="w-4 h-4 text-[#D4A373]" />
-                <span className="text-[var(--text-primary)] font-semibold">Tree-Sitter AST</span>
-                <span className="text-[10px] text-[var(--text-muted)]">Syntax & Symbol Maps</span>
-              </div>
-
-              <div className="p-3 rounded-xl bg-[var(--bg-card)] border border-[var(--border-subtle)] flex flex-col items-center gap-1.5">
-                <FolderTree className="w-4 h-4 text-[#D4A373]" />
-                <span className="text-[var(--text-primary)] font-semibold">Semantic Vectors</span>
-                <span className="text-[10px] text-[var(--text-muted)]">Local Qdrant Engine</span>
-              </div>
-            </div>
-
-            {/* Forward Action Button */}
-            <div className="pt-4 flex justify-center">
-              <Magnetic>
-                <button
-                  onClick={() => setStep('showcase')}
-                  className="px-8 py-3.5 rounded-2xl bg-[#D4A373] hover:bg-[#C5915F] text-[#1F3B2C] font-bold text-sm sm:text-base flex items-center gap-3 border border-[#D4A373] shadow-xl transition-all active:scale-[0.98] cursor-pointer"
-                >
-                  <span>Explore Visual Showcase</span>
-                  <ArrowRight className="w-4 h-4 text-[#1F3B2C]" />
-                </button>
-              </Magnetic>
             </div>
           </div>
         )}
 
         {/* =========================================================================
-            STAGE 2: VISUAL SHOWCASE (All 5 Visual Slides Sequentially)
+            STAGE 2 STANDALONE: VISUAL SHOWCASE VIEW (When Navigated Directly)
             ========================================================================= */}
         {step === 'showcase' && (
           <div className="space-y-6 animate-in fade-in duration-300 max-w-4xl mx-auto my-auto">
@@ -533,17 +710,18 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess }) => {
                 color="#D4A373"
                 size={420}
                 strength={0.16}
-                className="rounded-3xl bg-[var(--bg-card)] border border-[var(--border-subtle)] shadow-2xl overflow-hidden p-6 sm:p-8"
+                className="rounded-3xl bg-[var(--bg-card)] border-2 border-[#D4A373]/30 shadow-2xl overflow-hidden p-6 sm:p-8"
               >
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 items-center">
-                  {/* Left: Image Preview */}
-                  <div className="relative rounded-2xl overflow-hidden border border-[var(--border-subtle)] bg-[var(--bg-well)] shadow-lg aspect-video flex items-center justify-center">
+                  {/* Left: Framed High-Res Image Preview */}
+                  <div className="relative rounded-2xl overflow-hidden border-2 border-[#D4A373]/40 bg-[#1F3B2C] shadow-xl aspect-video flex items-center justify-center group">
                     <img
                       src={SHOWCASE_SLIDES[activeSlide].image}
                       alt={SHOWCASE_SLIDES[activeSlide].title}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                     />
-                    <div className="absolute top-3 left-3 px-2.5 py-1 rounded-md bg-[var(--bg-base)]/90 backdrop-blur-xs border border-[var(--border-subtle)] text-[10px] font-mono text-[#D4A373] font-bold">
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#1F3B2C]/50 via-transparent to-transparent pointer-events-none" />
+                    <div className="absolute top-3 left-3 px-3 py-1 rounded-lg bg-[var(--bg-base)]/90 backdrop-blur-md border border-[#D4A373]/40 text-[10px] font-mono text-[#D4A373] font-bold shadow-md">
                       {SHOWCASE_SLIDES[activeSlide].tag}
                     </div>
                   </div>
@@ -605,7 +783,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess }) => {
               <Magnetic>
                 <button
                   onClick={() => setStep('auth')}
-                  className="px-6 py-3 rounded-xl bg-[#D4A373] hover:bg-[#C5915F] text-[#1F3B2C] font-bold text-xs sm:text-sm flex items-center gap-2 border border-[#D4A373] shadow-md transition-all active:scale-[0.98] cursor-pointer"
+                  className="px-6 py-2.5 rounded-xl bg-[#D4A373] hover:bg-[#C5915F] text-[#1F3B2C] font-bold text-xs sm:text-sm flex items-center gap-2 border border-[#D4A373] shadow-md transition-all active:scale-[0.98] cursor-pointer"
                 >
                   <span>Proceed to Sign In & Enter CodeRAG</span>
                   <ArrowRight className="w-4 h-4 text-[#1F3B2C]" />
