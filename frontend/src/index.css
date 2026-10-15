@@ -3,73 +3,92 @@
 @layer base {
   :root {
     /* =========================================================================
-       THE OFFICIAL FOUR-COLOUR PALETTE
-       - Warm Beige: #EDECE6
-       - Cobalt Blue: #1546D9
-       - Sun Yellow: #F9B318
-       - Dark Ink: #111318
+       OFFICIAL CODERAG BRAND PALETTE (EXACT THREE COLORS)
+       - Emerald Night: #1F3B2C (Main brand color, navigation, dark surfaces)
+       - Antique Gold:  #D4A373 (Primary actions, highlights, active states)
+       - Silk Beige:    #F1E3D3 (Light backgrounds, surfaces, contrasting text)
        ========================================================================= */
-    --color-warm-beige: #EDECE6;
-    --color-cobalt-blue: #1546D9;
-    --color-sun-yellow: #F9B318;
-    --color-dark-ink: #111318;
+    --color-emerald-night: #1F3B2C;
+    --color-antique-gold:  #D4A373;
+    --color-silk-beige:    #F1E3D3;
 
-    /* Legacy compatibility tokens mapped directly to the four colours */
-    --color-deep-teal: #1546D9;
-    --color-soft-white: #EDECE6;
-    --color-dark-forest: #111318;
-    --color-muted-teal: #767E90;
+    /* Semantic Core Tokens — Light Mode (Silk Beige #F1E3D3 Canvas) */
+    --background: #F1E3D3;
+    --foreground: #1F3B2C;
+    --surface: #FAF4ED;
+    --surface-foreground: #1F3B2C;
+    --primary: #D4A373;
+    --primary-foreground: #1F3B2C;
+    --secondary: #EADBCB;
+    --secondary-foreground: #1F3B2C;
+    --muted: #E2D2BF;
+    --muted-foreground: #4D6E5C;
+    --border: #DBC7B2;
+    --input: #EFE2D3;
+    --ring: #D4A373;
+    --hover: #E7D7C5;
+    --selected: #D4A373;
+    --selected-foreground: #1F3B2C;
+    --sidebar: #1F3B2C;
+    --sidebar-foreground: #F1E3D3;
+    --header: #FAF4ED;
+    --editor-background: #EAE0D3;
+    --code-selection: rgba(212, 163, 115, 0.35);
 
-    /* --- Official Palette Light Mode Foundation (Warm Beige #EDECE6 Canvas) --- */
-    --bg-base: #EDECE6;             /* Warm Beige main canvas */
-    --bg-well: #E2E1DA;             /* Soft deeper well for code editors & search inputs */
-    --bg-surface: #F5F4EE;          /* Clean elevated warm surface for sidebar & headers */
-    --bg-card: #FFFFFF;             /* Crisp clean white cards */
-    --bg-card-hover: #EBEAE3;       /* Soft warm beige hover */
-    --bg-elevated: #1546D9;         /* Cobalt Blue primary action */
-    --bg-elevated-hover: #0E38B6;
+    /* Surface & Well System */
+    --bg-base: #F1E3D3;             /* Silk Beige main canvas */
+    --bg-well: #E6D6C4;             /* Deeper well for code editors & search inputs */
+    --bg-surface: #FAF4ED;          /* Elevated light surface */
+    --bg-card: #FFFFFF;             /* Crisp clean cards */
+    --bg-card-hover: #EFE3D5;       /* Silk beige hover */
+    --bg-elevated: #D4A373;         /* Antique Gold primary action */
+    --bg-elevated-hover: #C5915F;
 
-    /* --- Light Mode Text Tokens --- */
-    --text-primary: #111318;        /* Dark Ink crisp typography */
-    --text-secondary: #3D4452;      /* Muted dark ink */
-    --text-muted: #6E7686;          /* Subtle label text */
-    --text-dim: rgba(17, 19, 24, 0.4);
+    /* Light Mode Typography */
+    --text-primary: #1F3B2C;        /* Emerald Night crisp typography */
+    --text-secondary: #355845;      /* Medium emerald text */
+    --text-muted: #577866;          /* Muted supporting labels */
+    --text-dim: rgba(31, 59, 44, 0.42);
 
-    /* --- Borders & Outlines --- */
-    --border-subtle: #D8D7D0;
-    --border-default: #CBC9BF;
-    --border-focus: #1546D9;
-    --border-cobalt: #1546D9;
-    --border-yellow: #F9B318;
+    /* Borders & Focus */
+    --border-subtle: #E2D3C2;
+    --border-default: #D4C3AF;
+    --border-focus: #D4A373;
+    --border-gold: #D4A373;
+    --border-emerald: #1F3B2C;
 
-    /* --- Actions & Interactions --- */
-    --action-primary: #1546D9;      /* Cobalt Blue */
-    --action-primary-hover: #0E38B6;
-    --action-primary-active: #0A2B8F;
-    --action-text: #FFFFFF;
+    /* Actions & Interactions */
+    --action-primary: #D4A373;      /* Antique Gold */
+    --action-primary-hover: #C5915F;
+    --action-primary-active: #B27F4F;
+    --action-text: #1F3B2C;         /* Emerald Night on Antique Gold for high contrast */
 
-    /* --- Brand Highlights & Accents --- */
-    --accent-yellow: #F9B318;
-    --accent-yellow-text: #111318;
-    --accent-blue: #1546D9;
-    --accent-beige: #EDECE6;
+    /* Functional Status Indicators */
+    --status-success: #1E8E5A;
+    --status-success-bg: rgba(30, 142, 90, 0.12);
+    --status-success-border: rgba(30, 142, 90, 0.35);
 
-    /* --- Restrained Status Colors --- */
-    --status-success: #10B981;
-    --status-success-bg: rgba(16, 185, 129, 0.12);
-    --status-success-border: rgba(16, 185, 129, 0.3);
+    --status-warning: #D4A373;
+    --status-warning-bg: rgba(212, 163, 115, 0.16);
+    --status-warning-border: rgba(212, 163, 115, 0.4);
 
-    --status-warning: #F9B318;
-    --status-warning-bg: rgba(249, 179, 24, 0.14);
-    --status-warning-border: rgba(249, 179, 24, 0.35);
-
-    --status-error: #EF4444;
-    --status-error-bg: rgba(239, 68, 68, 0.12);
-    --status-error-border: rgba(239, 68, 68, 0.3);
+    --status-error: #D64545;
+    --status-error-bg: rgba(214, 69, 69, 0.12);
+    --status-error-border: rgba(214, 69, 69, 0.35);
 
     /* Typography */
     --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     --font-mono: 'JetBrains Mono', 'Fira Code', ui-monospace, SFMono-Regular, monospace;
+
+    /* Legacy compatibility tokens mapped to official 3-color palette */
+    --color-warm-beige: #F1E3D3;
+    --color-cobalt-blue: #D4A373;
+    --color-sun-yellow: #D4A373;
+    --color-dark-ink: #1F3B2C;
+    --color-deep-teal: #1F3B2C;
+    --color-soft-white: #F1E3D3;
+    --color-dark-forest: #1F3B2C;
+    --color-muted-teal: #577866;
   }
 
   body {
@@ -92,9 +111,9 @@
   }
 }
 
-/* Accessible focus ring: Cobalt Blue with Sun Yellow offset */
+/* Accessible focus ring: Antique Gold with Emerald Night outline */
 :focus-visible {
-  outline: 2px solid var(--color-cobalt-blue);
+  outline: 2px solid var(--color-antique-gold);
   outline-offset: 2px;
 }
 
@@ -109,12 +128,12 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(237, 236, 230, 0.2);
+  background: rgba(212, 163, 115, 0.28);
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-cobalt-blue);
+  background: var(--color-antique-gold);
 }
 
 /* Typography Utilities */
@@ -122,51 +141,65 @@
   font-family: var(--font-mono);
 }
 
-/* Four-Colour Palette Direct Classes */
-.bg-warm-beige { background-color: var(--color-warm-beige); }
-.bg-cobalt-blue { background-color: var(--color-cobalt-blue); }
-.bg-sun-yellow { background-color: var(--color-sun-yellow); }
-.bg-dark-ink { background-color: var(--color-dark-ink); }
+/* =========================================================================
+   OFFICIAL 3-COLOR DIRECT UTILITY CLASSES
+   ========================================================================= */
+.bg-emerald-night { background-color: var(--color-emerald-night); }
+.bg-antique-gold  { background-color: var(--color-antique-gold); }
+.bg-silk-beige    { background-color: var(--color-silk-beige); }
 
-.text-warm-beige { color: var(--color-warm-beige); }
-.text-cobalt-blue { color: var(--color-cobalt-blue); }
-.text-sun-yellow { color: var(--color-sun-yellow); }
-.text-dark-ink { color: var(--color-dark-ink); }
+.text-emerald-night { color: var(--color-emerald-night); }
+.text-antique-gold  { color: var(--color-antique-gold); }
+.text-silk-beige    { color: var(--color-silk-beige); }
 
-.border-warm-beige { border-color: var(--color-warm-beige); }
-.border-cobalt-blue { border-color: var(--color-cobalt-blue); }
-.border-sun-yellow { border-color: var(--color-sun-yellow); }
-.border-dark-ink { border-color: var(--color-dark-ink); }
+.border-emerald-night { border-color: var(--color-emerald-night); }
+.border-antique-gold  { border-color: var(--color-antique-gold); }
+.border-silk-beige    { border-color: var(--color-silk-beige); }
 
-/* Compatibility Classes mapped to new palette */
-.bg-dark-forest { background-color: var(--color-dark-ink); }
-.bg-deep-teal { background-color: var(--color-cobalt-blue); }
-.bg-muted-teal { background-color: var(--color-dark-ink); }
-.bg-soft-white { background-color: var(--color-warm-beige); }
+/* Compatibility Classes mapped to 3-color palette */
+.bg-warm-beige   { background-color: var(--color-silk-beige); }
+.bg-cobalt-blue  { background-color: var(--color-antique-gold); }
+.bg-sun-yellow   { background-color: var(--color-antique-gold); }
+.bg-dark-ink     { background-color: var(--color-emerald-night); }
+.bg-dark-forest  { background-color: var(--color-emerald-night); }
+.bg-deep-teal    { background-color: var(--color-emerald-night); }
+.bg-muted-teal   { background-color: var(--color-emerald-night); }
+.bg-soft-white   { background-color: var(--color-silk-beige); }
 
-.text-dark-forest { color: var(--color-dark-ink); }
-.text-deep-teal { color: var(--color-cobalt-blue); }
-.text-muted-teal { color: var(--text-muted); }
-.text-soft-white { color: var(--color-warm-beige); }
+.text-warm-beige   { color: var(--color-silk-beige); }
+.text-cobalt-blue  { color: var(--color-antique-gold); }
+.text-sun-yellow   { color: var(--color-antique-gold); }
+.text-dark-ink     { color: var(--color-emerald-night); }
+.text-dark-forest  { color: var(--color-emerald-night); }
+.text-deep-teal    { color: var(--color-antique-gold); }
+.text-muted-teal   { color: var(--text-muted); }
+.text-soft-white   { color: var(--color-silk-beige); }
 
-.border-dark-forest { border-color: var(--border-default); }
-.border-deep-teal { border-color: var(--color-cobalt-blue); }
-.border-muted-teal { border-color: var(--border-subtle); }
-.border-soft-white { border-color: var(--color-warm-beige); }
+.border-warm-beige   { border-color: var(--color-silk-beige); }
+.border-cobalt-blue  { border-color: var(--color-antique-gold); }
+.border-sun-yellow   { border-color: var(--color-antique-gold); }
+.border-dark-ink     { border-color: var(--color-emerald-night); }
+.border-dark-forest  { border-color: var(--border-default); }
+.border-deep-teal    { border-color: var(--color-antique-gold); }
+.border-muted-teal   { border-color: var(--border-subtle); }
+.border-soft-white   { border-color: var(--color-silk-beige); }
 
-/* Interactive Primary Buttons in Cobalt Blue */
+/* =========================================================================
+   BUTTONS & CONTROLS (Antique Gold & Emerald Night)
+   ========================================================================= */
 .btn-primary {
   background-color: var(--action-primary);
-  color: #FFFFFF;
-  border: 1px solid rgba(21, 70, 217, 0.4);
-  font-weight: 600;
+  color: #1F3B2C !important;
+  border: 1px solid rgba(31, 59, 44, 0.2);
+  font-weight: 700;
   transition: all 180ms cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 2px 8px rgba(212, 163, 115, 0.3);
 }
 
 .btn-primary:hover:not(:disabled) {
   background-color: var(--action-primary-hover);
-  border-color: #FFFFFF;
-  box-shadow: 0 4px 14px rgba(21, 70, 217, 0.45);
+  border-color: #1F3B2C;
+  box-shadow: 0 4px 16px rgba(212, 163, 115, 0.45);
 }
 
 .btn-primary:active:not(:disabled) {
@@ -175,26 +208,27 @@
 }
 
 .btn-secondary {
-  background-color: rgba(21, 70, 217, 0.12);
+  background-color: rgba(212, 163, 115, 0.12);
   color: var(--text-primary);
   border: 1px solid var(--border-default);
+  font-weight: 600;
   transition: all 180ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .btn-secondary:hover:not(:disabled) {
-  background-color: rgba(21, 70, 217, 0.25);
-  border-color: var(--color-cobalt-blue);
-  color: #FFFFFF;
+  background-color: rgba(212, 163, 115, 0.22);
+  border-color: var(--color-antique-gold);
+  color: var(--text-primary);
 }
 
-/* Card Transitions */
-.card-hover-cobalt {
+/* Card Transitions & Glow */
+.card-hover-gold {
   transition: border-color 200ms ease, box-shadow 200ms ease, transform 200ms ease;
 }
 
-.card-hover-cobalt:hover {
-  border-color: var(--color-cobalt-blue);
-  box-shadow: 0 10px 24px -8px rgba(21, 70, 217, 0.25);
+.card-hover-gold:hover {
+  border-color: var(--color-antique-gold);
+  box-shadow: 0 10px 24px -8px rgba(212, 163, 115, 0.25);
 }
 
 /* Navigation Tab Buttons */
@@ -213,19 +247,20 @@
 }
 
 .nav-tab-btn:hover {
-  background-color: rgba(21, 70, 217, 0.12);
-  color: #FFFFFF;
+  background-color: rgba(212, 163, 115, 0.15);
+  color: var(--text-primary);
 }
 
 .nav-tab-btn.active {
-  background-color: #1546D9 !important;
-  color: #FFFFFF !important;
-  border-color: #1546D9 !important;
-  box-shadow: 0 2px 8px rgba(21, 70, 217, 0.35) !important;
+  background-color: #D4A373 !important;
+  color: #1F3B2C !important;
+  border-color: #D4A373 !important;
+  box-shadow: 0 2px 8px rgba(212, 163, 115, 0.35) !important;
+  font-weight: 700;
 }
 
 .nav-tab-btn.active * {
-  color: #FFFFFF !important;
+  color: #1F3B2C !important;
 }
 
 .subnav-tab-btn {
@@ -233,7 +268,7 @@
   align-items: center;
   border-radius: 0.5rem;
   font-size: 11px;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--text-secondary);
   background-color: transparent;
   border: 1px solid transparent;
@@ -242,19 +277,19 @@
 }
 
 .subnav-tab-btn:hover {
-  background-color: rgba(21, 70, 217, 0.15);
-  color: #FFFFFF;
+  background-color: rgba(212, 163, 115, 0.18);
+  color: var(--text-primary);
 }
 
 .subnav-tab-btn.active {
-  background-color: #1546D9 !important;
-  color: #FFFFFF !important;
-  font-weight: 600;
-  border-color: #1546D9 !important;
+  background-color: #D4A373 !important;
+  color: #1F3B2C !important;
+  font-weight: 700;
+  border-color: #D4A373 !important;
 }
 
 .subnav-tab-btn.active * {
-  color: #FFFFFF !important;
+  color: #1F3B2C !important;
 }
 
 .sidebar-repo-card {
@@ -276,486 +311,234 @@
 .sidebar-repo-card:hover {
   background-color: var(--bg-card-hover);
   color: var(--text-primary);
-  border-color: rgba(21, 70, 217, 0.4);
+  border-color: rgba(212, 163, 115, 0.5);
 }
 
 .sidebar-repo-card.active {
   background-color: var(--bg-card);
-  border-color: var(--color-cobalt-blue);
+  border-color: var(--color-antique-gold);
   color: var(--text-primary);
-  box-shadow: 0 0 0 1.5px var(--color-cobalt-blue);
+  box-shadow: 0 0 0 1.5px var(--color-antique-gold);
 }
 
 /* =========================================================================
-   DARK MODE SYSTEM (Dark Ink #111318 Foundation)
+   DARK MODE SYSTEM (Emerald Night #1F3B2C Foundation)
+   - Emerald Night (#1F3B2C) main brand background
+   - Coordinated dark surfaces (#162C21, #244433, #2A4F3C)
+   - Antique Gold (#D4A373) for primary actions, selected tabs & highlights
+   - Silk Beige (#F1E3D3) for readable text & contrasting surfaces
    ========================================================================= */
 
 [data-theme="dark"],
 .theme-dark {
-  --bg-base: #111318;             /* Dark Ink main canvas */
-  --bg-well: #0B0D11;             /* Deepest ink well */
-  --bg-surface: #181B22;          /* Elevated dark surface for sidebar & headers */
-  --bg-card: #1D212B;             /* Standard dark card */
-  --bg-card-hover: #262B37;       /* Hover dark card */
-  --bg-elevated: #1546D9;         /* Cobalt Blue primary action */
-  --bg-elevated-hover: #2255EB;
+  --background: #1F3B2C;
+  --foreground: #F1E3D3;
+  --surface: #244433;
+  --surface-foreground: #F1E3D3;
+  --primary: #D4A373;
+  --primary-foreground: #1F3B2C;
+  --secondary: #2C513D;
+  --secondary-foreground: #F1E3D3;
+  --muted: #1B3426;
+  --muted-foreground: #BDB09E;
+  --border: rgba(241, 227, 211, 0.18);
+  --input: #1B3426;
+  --ring: #D4A373;
+  --hover: #2C513D;
+  --selected: #D4A373;
+  --selected-foreground: #1F3B2C;
+  --sidebar: #172D22;
+  --sidebar-foreground: #F1E3D3;
+  --header: #244433;
+  --editor-background: #162C21;
+  --code-selection: rgba(212, 163, 115, 0.35);
 
-  --text-primary: #EDECE6;        /* Warm Beige readable text */
-  --text-secondary: #A8AFBD;      /* Soft silver secondary */
-  --text-muted: #767E90;          /* Muted supporting labels */
-  --text-dim: rgba(237, 236, 230, 0.38);
+  --bg-base: #1F3B2C;             /* Emerald Night main canvas */
+  --bg-well: #162C21;             /* Deepest well */
+  --bg-surface: #244433;          /* Elevated surface for sidebar & headers */
+  --bg-card: #284D3A;             /* Standard dark card */
+  --bg-card-hover: #315C46;       /* Hover card */
+  --bg-elevated: #D4A373;         /* Antique Gold action */
+  --bg-elevated-hover: #E2B687;
 
-  --border-subtle: rgba(237, 236, 230, 0.1);
-  --border-default: rgba(237, 236, 230, 0.18);
-  --border-focus: #1546D9;
-  --border-cobalt: #1546D9;
-  --border-yellow: #F9B318;
+  --text-primary: #F1E3D3;        /* Silk Beige readable text */
+  --text-secondary: #DFCEBC;      /* Soft secondary */
+  --text-muted: #BDB09E;          /* Muted supporting labels */
+  --text-dim: rgba(241, 227, 211, 0.4);
 
-  --action-primary: #1546D9;
-  --action-primary-hover: #2255EB;
-  --action-primary-active: #0E38B6;
-  --action-text: #FFFFFF;
+  --border-subtle: rgba(241, 227, 211, 0.12);
+  --border-default: rgba(241, 227, 211, 0.22);
+  --border-focus: #D4A373;
+  --border-gold: #D4A373;
+  --border-emerald: #1F3B2C;
 
-  background-color: #111318 !important;
-  color: #EDECE6 !important;
+  --action-primary: #D4A373;
+  --action-primary-hover: #E2B687;
+  --action-primary-active: #C5915F;
+  --action-text: #1F3B2C;
+
+  background-color: #1F3B2C !important;
+  color: #F1E3D3 !important;
 }
 
 /* =========================================================================
-   DARK MODE OVERRIDES (Dark Ink #111318 Foundation)
-   Remaps existing hardcoded arbitrary teal/forest classes to Dark Ink & Cobalt.
-   ========================================================================= */
-
-body:not(.theme-white):not(.theme-light) .bg-\[\#162623\],
-:root:not([data-theme="white"]):not([data-theme="light"]) .bg-\[\#162623\],
-[data-theme="dark"] .bg-\[\#162623\],
-.theme-dark .bg-\[\#162623\] {
-  background-color: #111318 !important;
-}
-
-body:not(.theme-white):not(.theme-light) .bg-\[\#1B2D2A\],
-:root:not([data-theme="white"]):not([data-theme="light"]) .bg-\[\#1B2D2A\],
-[data-theme="dark"] .bg-\[\#1B2D2A\],
-.theme-dark .bg-\[\#1B2D2A\] {
-  background-color: #181B22 !important;
-}
-
-body:not(.theme-white):not(.theme-light) .bg-\[\#1E3430\],
-:root:not([data-theme="white"]):not([data-theme="light"]) .bg-\[\#1E3430\],
-[data-theme="dark"] .bg-\[\#1E3430\],
-.theme-dark .bg-\[\#1E3430\] {
-  background-color: #1D212B !important;
-}
-
-body:not(.theme-white):not(.theme-light) .bg-\[\#111E1C\],
-:root:not([data-theme="white"]):not([data-theme="light"]) .bg-\[\#111E1C\],
-[data-theme="dark"] .bg-\[\#111E1C\],
-.theme-dark .bg-\[\#111E1C\] {
-  background-color: #0B0D11 !important;
-}
-
-body:not(.theme-white):not(.theme-light) .bg-\[\#243D39\],
-:root:not([data-theme="white"]):not([data-theme="light"]) .bg-\[\#243D39\],
-body:not(.theme-white):not(.theme-light) .bg-\[\#213834\],
-:root:not([data-theme="white"]):not([data-theme="light"]) .bg-\[\#213834\] {
-  background-color: #262B37 !important;
-}
-
-body:not(.theme-white):not(.theme-light) .bg-\[\#295255\],
-:root:not([data-theme="white"]):not([data-theme="light"]) .bg-\[\#295255\],
-[data-theme="dark"] .bg-\[\#295255\],
-.theme-dark .bg-\[\#295255\] {
-  background-color: #1546D9 !important;
-  color: #FFFFFF !important;
-}
-
-body:not(.theme-white):not(.theme-light) .hover\:bg-\[\#34686C\]:hover,
-[data-theme="dark"] .hover\:bg-\[\#34686C\]:hover {
-  background-color: #2255EB !important;
-}
-
-body:not(.theme-white):not(.theme-light) .hover\:bg-\[\#1E3430\]:hover,
-[data-theme="dark"] .hover\:bg-\[\#1E3430\]:hover {
-  background-color: #262B37 !important;
-}
-
-body:not(.theme-white):not(.theme-light) .text-\[\#F0F5F7\],
-[data-theme="dark"] .text-\[\#F0F5F7\] {
-  color: #EDECE6 !important;
-}
-
-body:not(.theme-white):not(.theme-light) .text-\[\#B9CECC\],
-[data-theme="dark"] .text-\[\#B9CECC\] {
-  color: #A8AFBD !important;
-}
-
-body:not(.theme-white):not(.theme-light) .text-\[\#577877\],
-[data-theme="dark"] .text-\[\#577877\] {
-  color: #767E90 !important;
-}
-
-body:not(.theme-white):not(.theme-light) .text-\[\#6DBE9B\],
-[data-theme="dark"] .text-\[\#6DBE9B\] {
-  color: #F9B318 !important;
-}
-
-body:not(.theme-white):not(.theme-light) .border-\[\#577877\]\/25,
-body:not(.theme-white):not(.theme-light) .border-\[\#577877\]\/30,
-body:not(.theme-white):not(.theme-light) .border-\[\#577877\]\/40,
-body:not(.theme-white):not(.theme-light) .border-\[\#577877\]\/50 {
-  border-color: rgba(237, 236, 230, 0.14) !important;
-}
-
-body:not(.theme-white):not(.theme-light) .border-\[\#6DBE9B\]\/40,
-body:not(.theme-white):not(.theme-light) .border-\[\#6DBE9B\]\/50,
-body:not(.theme-white):not(.theme-light) .border-\[\#6DBE9B\]\/60 {
-  border-color: #F9B318 !important;
-}
-
-/* =========================================================================
-   LIGHT MODE (Warm Beige #EDECE6 System)
-   Active when [data-theme="light"], [data-theme="white"], .theme-light, or .theme-white is present.
-   - Warm Beige (#EDECE6) main canvas
-   - Cobalt Blue (#1546D9) primary buttons & links
-   - Dark Ink (#111318) text for maximum readability
-   - Sun Yellow (#F9B318) for small highlights & badges
+   LIGHT MODE SYSTEM (Silk Beige #F1E3D3 Foundation)
+   - Silk Beige (#F1E3D3) main canvas
+   - Emerald Night (#1F3B2C) for text & structural navigation
+   - Antique Gold (#D4A373) for primary actions & selected states
+   - Coordinated lighter surfaces for cards & dialogs
    ========================================================================= */
 
 [data-theme="white"],
 [data-theme="light"],
 .theme-white,
 .theme-light {
-  --bg-base: #EDECE6;
-  --bg-well: #E2E1DA;
-  --bg-surface: #FFFFFF;
+  --background: #F1E3D3;
+  --foreground: #1F3B2C;
+  --surface: #FAF4ED;
+  --surface-foreground: #1F3B2C;
+  --primary: #D4A373;
+  --primary-foreground: #1F3B2C;
+  --secondary: #EADBCB;
+  --secondary-foreground: #1F3B2C;
+  --muted: #E2D2BF;
+  --muted-foreground: #4D6E5C;
+  --border: #DBC7B2;
+  --input: #EFE2D3;
+  --ring: #D4A373;
+  --hover: #E7D7C5;
+  --selected: #D4A373;
+  --selected-foreground: #1F3B2C;
+  --sidebar: #1F3B2C;
+  --sidebar-foreground: #F1E3D3;
+  --header: #FAF4ED;
+  --editor-background: #EAE0D3;
+  --code-selection: rgba(212, 163, 115, 0.35);
+
+  --bg-base: #F1E3D3;
+  --bg-well: #E6D6C4;
+  --bg-surface: #FAF4ED;
   --bg-card: #FFFFFF;
-  --bg-card-hover: #EBEAE3;
-  --bg-elevated: #FFFFFF;
-  --bg-elevated-hover: #EBEAE3;
+  --bg-card-hover: #EFE3D5;
+  --bg-elevated: #D4A373;
+  --bg-elevated-hover: #C5915F;
 
-  --text-primary: #111318;
-  --text-secondary: #3F4756;
-  --text-muted: #6E778B;
-  --text-dim: rgba(17, 19, 24, 0.45);
+  --text-primary: #1F3B2C;
+  --text-secondary: #355845;
+  --text-muted: #577866;
+  --text-dim: rgba(31, 59, 44, 0.42);
 
-  --border-subtle: #D8D7D0;
-  --border-default: #CBC9BF;
-  --border-focus: #1546D9;
-  --border-cobalt: #1546D9;
-  --border-yellow: #F9B318;
+  --border-subtle: #E2D3C2;
+  --border-default: #D4C3AF;
+  --border-focus: #D4A373;
+  --border-gold: #D4A373;
+  --border-emerald: #1F3B2C;
 
-  --action-primary: #1546D9;
-  --action-primary-hover: #0E38B6;
-  --action-primary-active: #0A2B8F;
-  --action-text: #FFFFFF;
+  --action-primary: #D4A373;
+  --action-primary-hover: #C5915F;
+  --action-primary-active: #B27F4F;
+  --action-text: #1F3B2C;
 
-  background-color: #EDECE6 !important;
-  color: #111318 !important;
+  background-color: #F1E3D3 !important;
+  color: #1F3B2C !important;
 }
 
-/* Base Canvas & Backgrounds: Warm Beige #EDECE6 */
-[data-theme="white"] body,
-[data-theme="light"] body,
-.theme-white body,
-.theme-light body,
-[data-theme="white"] #root,
-[data-theme="light"] #root,
-.theme-white #root,
-.theme-light #root,
-[data-theme="white"] .bg-\[\#162623\],
-[data-theme="light"] .bg-\[\#162623\],
+/* Hardcoded Tailwind hex overrides to guarantee consistent palette in all views */
+body:not(.theme-white):not(.theme-light) .bg-\[\#162623\],
+:root:not([data-theme="white"]):not([data-theme="light"]) .bg-\[\#162623\],
+[data-theme="dark"] .bg-\[\#162623\],
+.theme-dark .bg-\[\#162623\] {
+  background-color: #1F3B2C !important;
+}
+
+body:not(.theme-white):not(.theme-light) .bg-\[\#1B2D2A\],
+:root:not([data-theme="white"]):not([data-theme="light"]) .bg-\[\#1B2D2A\],
+[data-theme="dark"] .bg-\[\#1B2D2A\],
+.theme-dark .bg-\[\#1B2D2A\] {
+  background-color: #244433 !important;
+}
+
+body:not(.theme-white):not(.theme-light) .bg-\[\#1E3430\],
+:root:not([data-theme="white"]):not([data-theme="light"]) .bg-\[\#1E3430\],
+[data-theme="dark"] .bg-\[\#1E3430\],
+.theme-dark .bg-\[\#1E3430\] {
+  background-color: #284D3A !important;
+}
+
+body:not(.theme-white):not(.theme-light) .bg-\[\#111E1C\],
+:root:not([data-theme="white"]):not([data-theme="light"]) .bg-\[\#111E1C\],
+[data-theme="dark"] .bg-\[\#111E1C\],
+.theme-dark .bg-\[\#111E1C\] {
+  background-color: #162C21 !important;
+}
+
+body:not(.theme-white):not(.theme-light) .bg-\[\#243D39\],
+:root:not([data-theme="white"]):not([data-theme="light"]) .bg-\[\#243D39\],
+body:not(.theme-white):not(.theme-light) .bg-\[\#213834\],
+:root:not([data-theme="white"]):not([data-theme="light"]) .bg-\[\#213834\] {
+  background-color: #315C46 !important;
+}
+
+body:not(.theme-white):not(.theme-light) .bg-\[\#295255\],
+:root:not([data-theme="white"]):not([data-theme="light"]) .bg-\[\#295255\],
+[data-theme="dark"] .bg-\[\#295255\],
+.theme-dark .bg-\[\#295255\] {
+  background-color: #D4A373 !important;
+  color: #1F3B2C !important;
+}
+
+body:not(.theme-white):not(.theme-light) .text-\[\#F0F5F7\],
+[data-theme="dark"] .text-\[\#F0F5F7\] {
+  color: #F1E3D3 !important;
+}
+
+body:not(.theme-white):not(.theme-light) .text-\[\#B9CECC\],
+[data-theme="dark"] .text-\[\#B9CECC\] {
+  color: #DFCEBC !important;
+}
+
+body:not(.theme-white):not(.theme-light) .text-\[\#577877\],
+[data-theme="dark"] .text-\[\#577877\] {
+  color: #BDB09E !important;
+}
+
+body:not(.theme-white):not(.theme-light) .text-\[\#6DBE9B\],
+[data-theme="dark"] .text-\[\#6DBE9B\] {
+  color: #D4A373 !important;
+}
+
+/* Light mode overrides */
 .theme-white .bg-\[\#162623\],
-.theme-light .bg-\[\#162623\],
-[data-theme="white"] [class*="bg-[#162623]"],
-[data-theme="light"] [class*="bg-[#162623]"] {
-  background-color: #EDECE6 !important;
+.theme-light .bg-\[\#162623\] {
+  background-color: #F1E3D3 !important;
 }
 
-/* Elevated Surfaces (Sidebar, Topbars): Crisp White with subtle Warm Beige border */
-[data-theme="white"] .bg-\[\#1B2D2A\],
-[data-theme="light"] .bg-\[\#1B2D2A\],
 .theme-white .bg-\[\#1B2D2A\],
-.theme-light .bg-\[\#1B2D2A\],
-[data-theme="white"] [class*="bg-[#1B2D2A]"],
-[data-theme="light"] [class*="bg-[#1B2D2A]"],
-[data-theme="white"] .bg-\[\#181B22\],
-[data-theme="light"] .bg-\[\#181B22\],
-.theme-white .bg-\[\#181B22\],
-.theme-light .bg-\[\#181B22\] {
-  background-color: var(--bg-surface) !important;
-  border-color: var(--border-subtle) !important;
+.theme-light .bg-\[\#1B2D2A\] {
+  background-color: #FAF4ED !important;
 }
 
-/* Base Canvas & Panels */
-[data-theme="white"] .bg-\[\#111318\],
-[data-theme="light"] .bg-\[\#111318\],
-.theme-white .bg-\[\#111318\],
-.theme-light .bg-\[\#111318\] {
-  background-color: var(--bg-base) !important;
-}
-
-[data-theme="white"] .bg-\[\#1F2430\],
-[data-theme="light"] .bg-\[\#1F2430\],
-[data-theme="white"] .bg-\[\#1D212B\],
-[data-theme="light"] .bg-\[\#1D212B\],
-.theme-white .bg-\[\#1F2430\],
-.theme-light .bg-\[\#1F2430\] {
-  background-color: var(--bg-card) !important;
-}
-
-[data-theme="white"] .bg-\[\#0B0D11\],
-[data-theme="light"] .bg-\[\#0B0D11\],
-.theme-white .bg-\[\#0B0D11\],
-.theme-light .bg-\[\#0B0D11\] {
-  background-color: var(--bg-well) !important;
-}
-
-[data-theme="white"] .text-\[\#EDECE6\],
-[data-theme="light"] .text-\[\#EDECE6\],
-.theme-white .text-\[\#EDECE6\],
-.theme-light .text-\[\#EDECE6\] {
-  color: var(--text-primary) !important;
-}
-
-[data-theme="white"] .border-white\/10,
-[data-theme="light"] .border-white\/10,
-[data-theme="white"] .border-white\/15,
-[data-theme="light"] .border-white\/15,
-[data-theme="white"] .border-white\/20,
-[data-theme="light"] .border-white\/20 {
-  border-color: var(--border-subtle) !important;
-}
-
-/* Wells & Code Backgrounds: Gentle Warm Beige Tint */
-[data-theme="white"] .bg-\[\#111E1C\],
-[data-theme="light"] .bg-\[\#111E1C\],
-.theme-white .bg-\[\#111E1C\],
-.theme-light .bg-\[\#111E1C\],
-[data-theme="white"] [class*="bg-[#111E1C]"],
-[data-theme="light"] [class*="bg-[#111E1C]"] {
-  background-color: #E2E1DA !important;
-  border-color: #D8D7D0 !important;
-}
-
-/* Cards & Elevated Containers */
-[data-theme="white"] .bg-\[\#1E3430\],
-[data-theme="light"] .bg-\[\#1E3430\],
 .theme-white .bg-\[\#1E3430\],
-.theme-light .bg-\[\#1E3430\],
-[data-theme="white"] [class*="bg-[#1E3430]"],
-[data-theme="light"] [class*="bg-[#1E3430]"] {
+.theme-light .bg-\[\#1E3430\] {
   background-color: #FFFFFF !important;
-  border-color: #D8D7D0 !important;
-  box-shadow: 0 1px 4px 0 rgba(17, 19, 24, 0.05) !important;
 }
 
-[data-theme="white"] .bg-\[\#213834\],
-[data-theme="light"] .bg-\[\#213834\],
-[data-theme="white"] .bg-\[\#243D39\],
-[data-theme="light"] .bg-\[\#243D39\],
-.theme-white .bg-\[\#243D39\],
-.theme-light .bg-\[\#243D39\] {
-  background-color: #EBEAE3 !important;
-}
-
-/* Primary Text in Light Mode: Dark Ink #111318 */
-[data-theme="white"] .text-\[\#F0F5F7\],
-[data-theme="light"] .text-\[\#F0F5F7\],
 .theme-white .text-\[\#F0F5F7\],
-.theme-light .text-\[\#F0F5F7\],
-[data-theme="white"] .text-white,
-[data-theme="light"] .text-white,
-.theme-white .text-white,
-.theme-light .text-white {
-  color: #111318 !important;
+.theme-light .text-\[\#F0F5F7\] {
+  color: #1F3B2C !important;
 }
 
-/* Secondary & Muted Text in Light Mode */
-[data-theme="white"] .text-\[\#B9CECC\],
-[data-theme="light"] .text-\[\#B9CECC\],
 .theme-white .text-\[\#B9CECC\],
 .theme-light .text-\[\#B9CECC\] {
-  color: #3F4756 !important;
+  color: #355845 !important;
 }
 
-[data-theme="white"] .text-\[\#577877\],
-[data-theme="light"] .text-\[\#577877\],
 .theme-white .text-\[\#577877\],
 .theme-light .text-\[\#577877\] {
-  color: #6E778B !important;
+  color: #577866 !important;
 }
 
-/* Primary Action Buttons: Cobalt Blue with Crisp White Text */
-[data-theme="white"] .bg-\[\#295255\],
-[data-theme="light"] .bg-\[\#295255\],
-.theme-white .bg-\[\#295255\],
-.theme-light .bg-\[\#295255\],
-[data-theme="white"] .btn-primary,
-[data-theme="light"] .btn-primary,
-.theme-white .btn-primary,
-.theme-light .btn-primary,
-[data-theme="white"] button.bg-\[\#295255\],
-[data-theme="light"] button.bg-\[\#295255\] {
-  background-color: #1546D9 !important;
-  color: #FFFFFF !important;
-  border-color: #1546D9 !important;
-}
-
-[data-theme="white"] .bg-\[\#295255\] *,
-[data-theme="light"] .bg-\[\#295255\] *,
-.theme-white .bg-\[\#295255\] *,
-.theme-light .bg-\[\#295255\] *,
-[data-theme="white"] .btn-primary *,
-[data-theme="light"] .btn-primary *,
-.theme-white .btn-primary *,
-.theme-light .btn-primary * {
-  color: #FFFFFF !important;
-}
-
-[data-theme="white"] .hover\:bg-\[\#34686C\]:hover,
-[data-theme="light"] .hover\:bg-\[\#34686C\]:hover,
-.theme-white .hover\:bg-\[\#34686C\]:hover,
-.theme-light .hover\:bg-\[\#34686C\]:hover {
-  background-color: #0E38B6 !important;
-  color: #FFFFFF !important;
-}
-
-/* Hover States in Light Mode */
-[data-theme="white"] .hover\:bg-\[\#1B2D2A\]:hover,
-[data-theme="light"] .hover\:bg-\[\#1B2D2A\]:hover,
-[data-theme="white"] .hover\:bg-\[\#1E3430\]:hover,
-[data-theme="light"] .hover\:bg-\[\#1E3430\]:hover,
-[data-theme="white"] .hover\:bg-\[\#162623\]:hover,
-[data-theme="light"] .hover\:bg-\[\#162623\]:hover {
-  background-color: #E6E5DE !important;
-  color: #111318 !important;
-}
-
-[data-theme="white"] .hover\:bg-\[\#1B2D2A\]:hover *,
-[data-theme="light"] .hover\:bg-\[\#1B2D2A\]:hover *,
-[data-theme="white"] .hover\:bg-\[\#1E3430\]:hover *,
-[data-theme="light"] .hover\:bg-\[\#1E3430\]:hover * {
-  color: #111318 !important;
-}
-
-/* Navigation Tabs in Light Mode */
-[data-theme="white"] .nav-tab-btn,
-[data-theme="light"] .nav-tab-btn {
-  color: #3F4756 !important;
-}
-
-[data-theme="white"] .nav-tab-btn:hover,
-[data-theme="light"] .nav-tab-btn:hover {
-  background-color: rgba(21, 70, 217, 0.08) !important;
-  color: #1546D9 !important;
-}
-
-[data-theme="white"] .nav-tab-btn.active,
-[data-theme="light"] .nav-tab-btn.active {
-  background-color: #1546D9 !important;
-  color: #FFFFFF !important;
-  border-color: #1546D9 !important;
-}
-
-[data-theme="white"] .nav-tab-btn.active *,
-[data-theme="light"] .nav-tab-btn.active * {
-  color: #FFFFFF !important;
-}
-
-[data-theme="white"] .sidebar-repo-card,
-[data-theme="light"] .sidebar-repo-card {
-  background-color: #FFFFFF !important;
-  border-color: #D8D7D0 !important;
-  color: #3F4756 !important;
-}
-
-[data-theme="white"] .sidebar-repo-card:hover,
-[data-theme="light"] .sidebar-repo-card:hover {
-  background-color: #EBEAE3 !important;
-  color: #111318 !important;
-  border-color: #1546D9 !important;
-}
-
-[data-theme="white"] .sidebar-repo-card.active,
-[data-theme="light"] .sidebar-repo-card.active {
-  background-color: #E6E5DE !important;
-  border-color: #1546D9 !important;
-  color: #111318 !important;
-  box-shadow: 0 0 0 1px #1546D9 !important;
-}
-
-/* Light Mode Borders */
-[data-theme="white"] [class*="border-[#577877]"],
-[data-theme="light"] [class*="border-[#577877]"] {
-  border-color: #D8D7D0 !important;
-}
-
-[data-theme="white"] [class*="border-white\/"],
-[data-theme="light"] [class*="border-white\/"] {
-  border-color: #D8D7D0 !important;
-}
-
-/* Text Selection / Highlighting (Mouse Cursor) */
-::selection {
-  background-color: #1546D9;
-  color: #FFFFFF;
-}
-
-[data-theme="white"] ::selection,
-[data-theme="light"] ::selection {
-  background-color: #1546D9;
-  color: #FFFFFF;
-}
-
-/* Inputs & Form Elements in Light Mode */
-[data-theme="white"] input,
-[data-theme="light"] input,
-[data-theme="white"] textarea,
-[data-theme="light"] textarea,
-[data-theme="white"] select,
-[data-theme="light"] select {
-  color: #111318 !important;
-  background-color: #FFFFFF !important;
-}
-
-[data-theme="white"] input::placeholder,
-[data-theme="light"] input::placeholder,
-[data-theme="white"] textarea::placeholder,
-[data-theme="light"] textarea::placeholder {
-  color: #767E90 !important;
-}
-
-/* Modal Backdrops */
-[data-theme="white"] .bg-black\/75,
-[data-theme="light"] .bg-black\/75,
-[data-theme="white"] .bg-black\/60,
-[data-theme="light"] .bg-black\/60 {
-  background-color: rgba(17, 19, 24, 0.6) !important;
-}
-
-/* Light Mode Scrollbars */
-[data-theme="white"] ::-webkit-scrollbar-track,
-[data-theme="light"] ::-webkit-scrollbar-track {
-  background: #E2E1DA !important;
-}
-
-[data-theme="white"] ::-webkit-scrollbar-thumb,
-[data-theme="light"] ::-webkit-scrollbar-thumb {
-  background: #C4C2B8 !important;
-}
-
-[data-theme="white"] ::-webkit-scrollbar-thumb:hover,
-[data-theme="light"] ::-webkit-scrollbar-thumb:hover {
-  background: #1546D9 !important;
-}
-
-/* Respect Reduced Motion Preferences */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
+.theme-white .text-\[\#6DBE9B\],
+.theme-light .text-\[\#6DBE9B\] {
+  color: #D4A373 !important;
 }

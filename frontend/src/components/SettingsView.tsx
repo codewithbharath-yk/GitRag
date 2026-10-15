@@ -39,7 +39,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
   const [enableAnimations, setEnableAnimations] = useState(true);
   const [reduceMotion, setReduceMotion] = useState(false);
   const [compactSidebar, setCompactSidebar] = useState(false);
-  const [activeAccent, setActiveAccent] = useState('#1546D9');
+  const [activeAccent, setActiveAccent] = useState('#D4A373');
   const [isSaved, setIsSaved] = useState(false);
 
   const handleSave = () => {
@@ -75,7 +75,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
               onClick={() => setActiveSettingsTab(tab.id as any)}
               className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition-all shrink-0 cursor-pointer ${
                 activeSettingsTab === tab.id
-                  ? 'bg-[#1546D9] text-white shadow-sm'
+                  ? 'bg-[#D4A373] text-[#1F3B2C] font-bold shadow-sm'
                   : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card)]'
               }`}
             >
@@ -95,52 +95,52 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
               </p>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                {/* Dark Ink Card */}
+                {/* Dark Mode Card (Emerald Night) */}
                 <Tilt maxAngle={5} scale={1.02}>
                   <div
                     onClick={() => setTheme('dark')}
                     className={`p-4 rounded-2xl border cursor-pointer transition-all ${
                       theme === 'dark' || (theme === 'system' && actualTheme === 'dark')
-                        ? 'bg-[var(--bg-card)] border-[#1546D9] ring-1 ring-[#1546D9]/40 shadow-lg'
+                        ? 'bg-[var(--bg-card)] border-[#D4A373] ring-1 ring-[#D4A373]/40 shadow-lg'
                         : 'bg-[var(--bg-card)] border-[var(--border-subtle)] hover:border-[var(--border-default)]'
                     }`}
                   >
                     <div className="flex items-center justify-between mb-3">
-                      <div className="p-2 rounded-xl bg-[var(--bg-well)] border border-[var(--border-subtle)] text-[#1546D9]">
-                        <Moon className="w-5 h-5 text-[#1546D9]" />
+                      <div className="p-2 rounded-xl bg-[var(--bg-well)] border border-[var(--border-subtle)] text-[#D4A373]">
+                        <Moon className="w-5 h-5 text-[#D4A373]" />
                       </div>
                       {(theme === 'dark' || (theme === 'system' && actualTheme === 'dark')) && (
-                        <Check className="w-4 h-4 text-[#F9B318]" />
+                        <Check className="w-4 h-4 text-[#D4A373]" />
                       )}
                     </div>
-                    <div className="font-bold text-sm text-[var(--text-primary)]">Dark Ink</div>
+                    <div className="font-bold text-sm text-[var(--text-primary)]">Dark Mode</div>
                     <div className="text-[11px] text-[var(--text-muted)] mt-0.5">
-                      Dark Ink (#111318) high-contrast canvas
+                      Emerald Night (#1F3B2C) primary brand background
                     </div>
                   </div>
                 </Tilt>
 
-                {/* Light Mode Card */}
+                {/* Light Mode Card (Silk Beige) */}
                 <Tilt maxAngle={5} scale={1.02}>
                   <div
                     onClick={() => setTheme('light')}
                     className={`p-4 rounded-2xl border cursor-pointer transition-all ${
                       theme === 'light' || (theme === 'system' && actualTheme === 'light')
-                        ? 'bg-[var(--bg-card)] border-[#1546D9] ring-1 ring-[#1546D9]/40 shadow-lg'
+                        ? 'bg-[var(--bg-card)] border-[#D4A373] ring-1 ring-[#D4A373]/40 shadow-lg'
                         : 'bg-[var(--bg-card)] border-[var(--border-subtle)] hover:border-[var(--border-default)]'
                     }`}
                   >
                     <div className="flex items-center justify-between mb-3">
-                      <div className="p-2 rounded-xl bg-[#EDECE6] text-[#111318] border border-[var(--border-subtle)] shadow-xs">
-                        <Sun className="w-5 h-5 text-[#F9B318]" />
+                      <div className="p-2 rounded-xl bg-[#F1E3D3] text-[#1F3B2C] border border-[var(--border-subtle)] shadow-xs">
+                        <Sun className="w-5 h-5 text-[#D4A373]" />
                       </div>
                       {(theme === 'light' || (theme === 'system' && actualTheme === 'light')) && (
-                        <Check className="w-4 h-4 text-[#F9B318]" />
+                        <Check className="w-4 h-4 text-[#D4A373]" />
                       )}
                     </div>
                     <div className="font-bold text-sm text-[var(--text-primary)]">Light Mode</div>
                     <div className="text-[11px] text-[var(--text-muted)] mt-0.5">
-                      Warm Beige (#EDECE6) clean canvas
+                      Silk Beige (#F1E3D3) clean surface
                     </div>
                   </div>
                 </Tilt>
@@ -151,7 +151,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                     onClick={() => setTheme('system')}
                     className={`p-4 rounded-2xl border cursor-pointer transition-all ${
                       theme === 'system'
-                        ? 'bg-[var(--bg-card)] border-[#1546D9] ring-1 ring-[#1546D9]/40 shadow-lg'
+                        ? 'bg-[var(--bg-card)] border-[#D4A373] ring-1 ring-[#D4A373]/40 shadow-lg'
                         : 'bg-[var(--bg-card)] border-[var(--border-subtle)] hover:border-[var(--border-default)]'
                     }`}
                   >
@@ -159,7 +159,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                       <div className="p-2 rounded-xl bg-[var(--bg-well)] border border-[var(--border-subtle)] text-[var(--text-secondary)]">
                         <Laptop className="w-5 h-5" />
                       </div>
-                      {theme === 'system' && <Check className="w-4 h-4 text-[#F9B318]" />}
+                      {theme === 'system' && <Check className="w-4 h-4 text-[#D4A373]" />}
                     </div>
                     <div className="font-bold text-sm text-[var(--text-primary)]">System</div>
                     <div className="text-[11px] text-[var(--text-muted)] mt-0.5">
@@ -170,39 +170,39 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
               </div>
             </div>
 
-            {/* Accent Color Selection */}
+            {/* Official 3 Brand Colors */}
             <div>
-              <h2 className="text-sm font-bold text-[var(--text-primary)] mb-1">Accent Color</h2>
+              <h2 className="text-sm font-bold text-[var(--text-primary)] mb-1">Official Brand Palette</h2>
               <p className="text-xs text-[var(--text-muted)] mb-3">
-                Four official CodeRAG brand colors
+                Official CodeRAG 3-color palette
               </p>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 {[
-                  { name: 'Warm Beige', hex: '#EDECE6', textDark: true },
-                  { name: 'Cobalt Blue', hex: '#1546D9', textDark: false },
-                  { name: 'Sun Yellow', hex: '#F9B318', textDark: true },
-                  { name: 'Dark Ink', hex: '#111318', textDark: false },
+                  { name: 'Emerald Night', hex: '#1F3B2C', desc: 'Main navigation & dark surfaces', textDark: false },
+                  { name: 'Antique Gold', hex: '#D4A373', desc: 'Primary actions, active states & accents', textDark: true },
+                  { name: 'Silk Beige', hex: '#F1E3D3', desc: 'Light canvas & contrasting text', textDark: true },
                 ].map((color) => (
                   <button
                     key={color.hex}
                     onClick={() => setActiveAccent(color.hex)}
-                    className={`flex items-center gap-2.5 p-2.5 rounded-xl bg-[var(--bg-card)] border transition-all cursor-pointer ${
+                    className={`flex items-center gap-3 p-3 rounded-xl bg-[var(--bg-card)] border transition-all cursor-pointer ${
                       activeAccent === color.hex
-                        ? 'border-[#1546D9] ring-2 ring-[#1546D9]/40 shadow-sm'
+                        ? 'border-[#D4A373] ring-2 ring-[#D4A373]/40 shadow-sm'
                         : 'border-[var(--border-subtle)] hover:border-[var(--border-default)]'
                     }`}
                   >
                     <span
-                      className="w-6 h-6 rounded-full border border-black/20 flex items-center justify-center shrink-0 shadow-xs"
+                      className="w-7 h-7 rounded-full border border-black/20 flex items-center justify-center shrink-0 shadow-xs"
                       style={{ backgroundColor: color.hex }}
                     >
                       {activeAccent === color.hex && (
-                        <Check className={`w-3.5 h-3.5 ${color.textDark ? 'text-[#111318]' : 'text-white'}`} />
+                        <Check className={`w-4 h-4 ${color.textDark ? 'text-[#1F3B2C]' : 'text-white'}`} />
                       )}
                     </span>
-                    <div className="flex flex-col text-left">
-                      <span className="text-xs font-semibold text-[var(--text-primary)]">{color.name}</span>
-                      <span className="text-[10px] font-mono text-[var(--text-muted)]">{color.hex}</span>
+                    <div className="flex flex-col text-left min-w-0">
+                      <span className="text-xs font-bold text-[var(--text-primary)]">{color.name}</span>
+                      <span className="text-[10px] font-mono text-[#D4A373] font-semibold">{color.hex}</span>
+                      <span className="text-[10px] text-[var(--text-muted)] truncate">{color.desc}</span>
                     </div>
                   </button>
                 ))}
@@ -225,10 +225,10 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                   </div>
                   <button
                     onClick={() => setEnableAnimations((prev) => !prev)}
-                    className="text-[#1546D9] p-1 cursor-pointer"
+                    className="text-[#D4A373] p-1 cursor-pointer"
                   >
                     {enableAnimations ? (
-                      <ToggleRight className="w-7 h-7 text-[#1546D9]" />
+                      <ToggleRight className="w-7 h-7 text-[#D4A373]" />
                     ) : (
                       <ToggleLeft className="w-7 h-7 text-[var(--text-muted)]" />
                     )}
@@ -246,10 +246,10 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                   </div>
                   <button
                     onClick={() => setReduceMotion((prev) => !prev)}
-                    className="text-[#1546D9] p-1 cursor-pointer"
+                    className="text-[#D4A373] p-1 cursor-pointer"
                   >
                     {reduceMotion ? (
-                      <ToggleRight className="w-7 h-7 text-[#1546D9]" />
+                      <ToggleRight className="w-7 h-7 text-[#D4A373]" />
                     ) : (
                       <ToggleLeft className="w-7 h-7 text-[var(--text-muted)]" />
                     )}
@@ -267,10 +267,10 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                   </div>
                   <button
                     onClick={() => setCompactSidebar((prev) => !prev)}
-                    className="text-[#1546D9] p-1 cursor-pointer"
+                    className="text-[#D4A373] p-1 cursor-pointer"
                   >
                     {compactSidebar ? (
-                      <ToggleRight className="w-7 h-7 text-[#1546D9]" />
+                      <ToggleRight className="w-7 h-7 text-[#D4A373]" />
                     ) : (
                       <ToggleLeft className="w-7 h-7 text-[var(--text-muted)]" />
                     )}
@@ -294,7 +294,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                   />
                   <div>
                     <h3 className="text-base font-bold text-[var(--text-primary)]">{userProfile?.name || 'Bharath Kumar'}</h3>
-                    <p className="text-xs text-[#F9B318] font-mono font-semibold">{userProfile?.role || 'Full-Stack Developer'}</p>
+                    <p className="text-xs text-[#D4A373] font-mono font-semibold">{userProfile?.role || 'Full-Stack Developer'}</p>
                     <p className="text-xs text-[var(--text-muted)] font-mono">{userProfile?.email || 'bharath@coderag.ai'}</p>
                   </div>
                 </div>
@@ -339,7 +339,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
             <div className="p-4 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <Database className="w-5 h-5 text-[#1546D9]" />
+                  <Database className="w-5 h-5 text-[#D4A373]" />
                   <div>
                     <span className="text-xs font-bold text-[var(--text-primary)] block">Qdrant Vector Database</span>
                     <span className="text-[11px] text-[var(--text-muted)] font-mono">http://localhost:6333</span>
@@ -352,7 +352,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
 
               <div className="flex items-center justify-between border-t border-[var(--border-subtle)] pt-3">
                 <div className="flex items-center gap-3">
-                  <Cpu className="w-5 h-5 text-[#F9B318]" />
+                  <Cpu className="w-5 h-5 text-[#D4A373]" />
                   <div>
                     <span className="text-xs font-bold text-[var(--text-primary)] block">Local Embeddings Provider</span>
                     <span className="text-[11px] text-[var(--text-muted)] font-mono">BAAI/bge-small-en-v1.5</span>
@@ -372,7 +372,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
             <div className="p-4 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <Sparkles className="w-5 h-5 text-[#F9B318]" />
+                  <Sparkles className="w-5 h-5 text-[#D4A373]" />
                   <div>
                     <span className="text-xs font-bold text-[var(--text-primary)] block">Gemini Answer Model</span>
                     <span className="text-[11px] text-[var(--text-muted)] font-mono">gemini-flash-lite-latest</span>
@@ -402,9 +402,9 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
           <Magnetic>
             <button
               onClick={handleSave}
-              className="py-2.5 px-5 rounded-xl bg-[#1546D9] hover:bg-[#2255EB] text-white text-xs font-bold flex items-center gap-2 border border-[#1546D9] shadow-md transition-all active:scale-[0.98] cursor-pointer"
+              className="py-2.5 px-5 rounded-xl bg-[#D4A373] hover:bg-[#C5915F] text-[#1F3B2C] text-xs font-bold flex items-center gap-2 border border-[#D4A373] shadow-md transition-all active:scale-[0.98] cursor-pointer"
             >
-              <Save className="w-4 h-4 text-white" />
+              <Save className="w-4 h-4 text-[#1F3B2C]" />
               <span>{isSaved ? 'Settings Saved!' : 'Save Preferences'}</span>
             </button>
           </Magnetic>

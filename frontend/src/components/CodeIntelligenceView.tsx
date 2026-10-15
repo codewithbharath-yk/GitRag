@@ -2,16 +2,11 @@ import React, { useState, useEffect } from 'react';
 import {
   Code2,
   Search,
-  Box,
   Braces,
-  Layers,
-  ArrowRight,
   MessageSquare,
   FileCode,
   Sparkles,
   RefreshCw,
-  FolderTree,
-  ChevronRight,
   ChevronDown,
   ChevronUp,
   ArrowLeft,
@@ -152,16 +147,16 @@ export const CodeIntelligenceView: React.FC<CodeIntelligenceViewProps> = ({
     switch (type) {
       case 'class':
       case 'interface':
-        return 'bg-[#1546D9]/20 text-[#1546D9] dark:text-[#F9B318] border-[#1546D9]/40';
+        return 'bg-[#D4A373]/20 text-[#D4A373] border-[#D4A373]/40';
       case 'function':
-        return 'bg-[#1D212B] text-[#EDECE6] border-white/10';
+        return 'bg-[var(--bg-well)] text-[var(--text-primary)] border-[var(--border-subtle)]';
       case 'method':
-        return 'bg-[#1D212B] text-[#A8AFBD] border-white/10';
+        return 'bg-[var(--bg-well)] text-[var(--text-secondary)] border-[var(--border-subtle)]';
       case 'constant':
       case 'variable':
-        return 'bg-[#0B0D11] text-[#767E90] border-white/10';
+        return 'bg-[var(--bg-well)] text-[var(--text-muted)] border-[var(--border-subtle)]';
       default:
-        return 'bg-[#0B0D11] text-[#767E90] border-white/10';
+        return 'bg-[var(--bg-well)] text-[var(--text-muted)] border-[var(--border-subtle)]';
     }
   };
 
@@ -176,23 +171,23 @@ export const CodeIntelligenceView: React.FC<CodeIntelligenceViewProps> = ({
     : [];
 
   return (
-    <div className="flex-1 flex flex-col h-full overflow-hidden bg-[#111318] text-[#EDECE6] font-sans">
+    <div className="flex-1 flex flex-col h-full overflow-hidden bg-[var(--bg-base)] text-[var(--text-primary)] font-sans">
       {/* Top Header */}
-      <div className="p-4 px-6 border-b border-white/10 bg-[#181B22] flex flex-col sm:flex-row sm:items-center justify-between gap-3 shrink-0">
+      <div className="p-4 px-6 border-b border-[var(--border-subtle)] bg-[var(--bg-surface)] flex flex-col sm:flex-row sm:items-center justify-between gap-3 shrink-0">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-[#1546D9] border border-white/15 flex items-center justify-center text-white shadow-sm shrink-0">
-            <Code2 className="w-5 h-5" />
+          <div className="w-9 h-9 rounded-xl bg-[#D4A373] border border-[#D4A373]/40 flex items-center justify-center text-[#1F3B2C] shadow-sm shrink-0">
+            <Code2 className="w-5 h-5 text-[#1F3B2C]" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-base font-bold text-[#EDECE6] tracking-tight">
+              <h1 className="text-base font-bold text-[var(--text-primary)] tracking-tight">
                 <TextEffect as="span">Code Intelligence & AST Structure</TextEffect>
               </h1>
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-mono bg-[#111318] text-[#A8AFBD] border border-white/10">
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-mono bg-[var(--bg-well)] text-[var(--text-muted)] border border-[var(--border-subtle)]">
                 Tree-Sitter AST
               </span>
             </div>
-            <p className="text-xs text-[#767E90] font-mono">
+            <p className="text-xs text-[var(--text-muted)] font-mono">
               {repository.fullName} • branch: {repository.branch} • {symbols.length} symbol{symbols.length === 1 ? '' : 's'} extracted
             </p>
           </div>
@@ -200,14 +195,14 @@ export const CodeIntelligenceView: React.FC<CodeIntelligenceViewProps> = ({
 
         <div className="flex items-center gap-2">
           {/* Mode Switcher */}
-          <div className="p-1 rounded-xl bg-[#0B0D11] border border-white/10 flex items-center gap-1 text-xs">
+          <div className="p-1 rounded-xl bg-[var(--bg-well)] border border-[var(--border-subtle)] flex items-center gap-1 text-xs">
             <Magnetic pullStrength={0.12}>
               <button
                 onClick={() => setViewMode('symbols')}
                 className={`px-3 py-1.5 rounded-lg font-medium flex items-center gap-1.5 transition-all cursor-pointer ${
                   viewMode === 'symbols'
-                    ? 'bg-[#1546D9] text-white shadow-sm font-semibold'
-                    : 'text-[#A8AFBD] hover:text-[#EDECE6] hover:bg-[#1D212B]'
+                    ? 'bg-[#D4A373] text-[#1F3B2C] shadow-sm font-bold'
+                    : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card-hover)]'
                 }`}
               >
                 <Braces className="w-3.5 h-3.5" />
@@ -224,8 +219,8 @@ export const CodeIntelligenceView: React.FC<CodeIntelligenceViewProps> = ({
                 }}
                 className={`px-3 py-1.5 rounded-lg font-medium flex items-center gap-1.5 transition-all cursor-pointer ${
                   viewMode === 'files'
-                    ? 'bg-[#1546D9] text-white shadow-sm font-semibold'
-                    : 'text-[#A8AFBD] hover:text-[#EDECE6] hover:bg-[#1D212B]'
+                    ? 'bg-[#D4A373] text-[#1F3B2C] shadow-sm font-bold'
+                    : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card-hover)]'
                 }`}
               >
                 <Layers className="w-3.5 h-3.5" />
@@ -238,7 +233,7 @@ export const CodeIntelligenceView: React.FC<CodeIntelligenceViewProps> = ({
             onClick={() => loadSymbols()}
             disabled={loading}
             title="Refresh symbols"
-            className="p-2 rounded-xl bg-[#0B0D11] hover:bg-[#1D212B] border border-white/10 text-[#A8AFBD] hover:text-[#EDECE6] transition-colors"
+            className="p-2 rounded-xl bg-[var(--bg-well)] hover:bg-[var(--bg-card-hover)] border border-[var(--border-subtle)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
           </button>
@@ -249,17 +244,17 @@ export const CodeIntelligenceView: React.FC<CodeIntelligenceViewProps> = ({
       {viewMode === 'symbols' ? (
         <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
           {/* Left Panel: Search & Filter Symbols List */}
-          <div className={`md:w-5/12 flex flex-col border-r border-white/10 bg-[#181B22] overflow-hidden ${selectedSymbol ? 'hidden md:flex' : 'flex'}`}>
-            <div className="p-3 border-b border-white/10 space-y-2.5 bg-[#111318]">
+          <div className={`md:w-5/12 flex flex-col border-r border-[var(--border-subtle)] bg-[var(--bg-surface)] overflow-hidden ${selectedSymbol ? 'hidden md:flex' : 'flex'}`}>
+            <div className="p-3 border-b border-[var(--border-subtle)] space-y-2.5 bg-[var(--bg-well)]">
               {/* Search Bar */}
               <div className="relative">
-                <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-[#767E90]" />
+                <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-[var(--text-muted)]" />
                 <input
                   type="text"
                   placeholder="Filter symbols by identifier, class, or path..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-9 pr-3 py-1.5 bg-[#0B0D11] border border-white/10 rounded-xl text-xs text-[#EDECE6] placeholder-[#767E90] focus:outline-none focus:border-[#1546D9] font-mono transition-colors"
+                  className="w-full pl-9 pr-3 py-1.5 bg-[var(--bg-card)] border border-[var(--border-subtle)] rounded-xl text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[#D4A373] font-mono transition-colors"
                 />
               </div>
 
@@ -271,8 +266,8 @@ export const CodeIntelligenceView: React.FC<CodeIntelligenceViewProps> = ({
                     onClick={() => setSelectedType(type)}
                     className={`px-2.5 py-0.5 rounded-lg border transition-all uppercase tracking-wider shrink-0 cursor-pointer ${
                       selectedType === type
-                        ? 'bg-[#1546D9] text-white border-[#1546D9] font-semibold'
-                        : 'bg-[#0B0D11] text-[#767E90] border-white/10 hover:text-[#EDECE6]'
+                        ? 'bg-[#D4A373] text-[#1F3B2C] border-[#D4A373] font-bold'
+                        : 'bg-[var(--bg-card)] text-[var(--text-muted)] border-[var(--border-subtle)] hover:text-[var(--text-primary)]'
                     }`}
                   >
                     {type}
@@ -282,13 +277,13 @@ export const CodeIntelligenceView: React.FC<CodeIntelligenceViewProps> = ({
             </div>
 
             {/* Symbols List */}
-            <div className="flex-1 overflow-y-auto divide-y divide-white/5">
+            <div className="flex-1 overflow-y-auto divide-y divide-[var(--border-subtle)]">
               {loading && symbols.length === 0 ? (
-                <div className="p-8 text-center text-xs text-[#767E90]">
+                <div className="p-8 text-center text-xs text-[var(--text-muted)]">
                   Analyzing syntax trees with Tree-Sitter...
                 </div>
               ) : filteredSymbols.length === 0 ? (
-                <div className="p-8 text-center text-xs text-[#767E90]">
+                <div className="p-8 text-center text-xs text-[var(--text-muted)]">
                   No code symbols matched the criteria.
                 </div>
               ) : (
@@ -303,13 +298,13 @@ export const CodeIntelligenceView: React.FC<CodeIntelligenceViewProps> = ({
                       }}
                       className={`p-3 px-4 cursor-pointer transition-colors relative flex items-start justify-between gap-3 ${
                         isSelected
-                          ? 'bg-[#1546D9]/15 border-l-4 border-[#1546D9]'
-                          : 'hover:bg-[#1D212B] border-l-4 border-transparent'
+                          ? 'bg-[#D4A373]/15 border-l-4 border-[#D4A373]'
+                          : 'hover:bg-[var(--bg-card-hover)] border-l-4 border-transparent'
                       }`}
                     >
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2">
-                          <span className="font-mono text-xs font-bold text-[#EDECE6] truncate">
+                          <span className="font-mono text-xs font-bold text-[var(--text-primary)] truncate">
                             {sym.name}
                           </span>
                           <span
@@ -320,17 +315,17 @@ export const CodeIntelligenceView: React.FC<CodeIntelligenceViewProps> = ({
                             {sym.symbol_type}
                           </span>
                         </div>
-                        <p className="text-[11px] text-[#767E90] font-mono truncate mt-1">
+                        <p className="text-[11px] text-[var(--text-muted)] font-mono truncate mt-1">
                           {sym.file_path}
                         </p>
                       </div>
 
                       <div className="text-right shrink-0">
-                        <span className="text-[10px] text-[#767E90] font-mono block">
+                        <span className="text-[10px] text-[var(--text-muted)] font-mono block">
                           L{sym.start_line}–{sym.end_line}
                         </span>
                         {sym.parameters && sym.parameters.length > 0 && (
-                          <span className="text-[9px] px-1 rounded bg-[#0B0D11] text-[#A8AFBD] font-mono mt-1 inline-block">
+                          <span className="text-[9px] px-1 rounded bg-[var(--bg-well)] text-[var(--text-secondary)] font-mono mt-1 inline-block">
                             ({sym.parameters.length} args)
                           </span>
                         )}
@@ -363,15 +358,15 @@ export const CodeIntelligenceView: React.FC<CodeIntelligenceViewProps> = ({
                       {selectedSymbol.symbol_type}: {selectedSymbol.name}
                     </span>
                   </div>
-                  <span className="text-[11px] font-mono px-2 py-0.5 rounded-full bg-[var(--bg-well)] text-[#1546D9] dark:text-[#F9B318] border border-[var(--border-subtle)] font-semibold">
+                  <span className="text-[11px] font-mono px-2 py-0.5 rounded-full bg-[var(--bg-well)] text-[#D4A373] border border-[var(--border-subtle)] font-semibold">
                     Line {selectedSymbol.start_line}
                   </span>
                 </div>
 
                 {/* Identity Card */}
                 <Tilt maxAngle={3}>
-                  <Spotlight variant="cobalt" className="rounded-2xl">
-                    <div className="p-5 rounded-2xl bg-[#181B22] border border-white/10 shadow-sm space-y-3">
+                  <Spotlight variant="subtle" className="rounded-2xl">
+                    <div className="p-5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] shadow-sm space-y-3">
                       <div className="flex items-start justify-between gap-4">
                         <div>
                           <div className="flex items-center gap-2 mb-1.5 flex-wrap">
@@ -383,52 +378,52 @@ export const CodeIntelligenceView: React.FC<CodeIntelligenceViewProps> = ({
                               {selectedSymbol.symbol_type}
                             </span>
                             {selectedSymbol.container_name && (
-                              <span className="text-xs font-mono text-[#F9B318]">
+                              <span className="text-xs font-mono text-[#D4A373]">
                                 in {selectedSymbol.container_name}
                               </span>
                             )}
-                            <span className="px-2 py-0.5 rounded text-[11px] bg-[#0B0D11] text-[#A8AFBD] border border-white/10 font-mono">
+                            <span className="px-2 py-0.5 rounded text-[11px] bg-[var(--bg-well)] text-[var(--text-secondary)] border border-[var(--border-subtle)] font-mono">
                               {selectedSymbol.language}
                             </span>
                           </div>
-                          <TextEffect as="h2" className="text-xl font-bold font-mono text-[#EDECE6] tracking-tight">
+                          <TextEffect as="h2" className="text-xl font-bold font-mono text-[var(--text-primary)] tracking-tight">
                             {selectedSymbol.name}
                           </TextEffect>
                         </div>
 
-                        {/* Ask in Chat Action Button in Cobalt Blue */}
+                        {/* Ask in Chat Action Button in Antique Gold */}
                         <Magnetic>
                           <button
                             onClick={() => handleAskAboutSymbol(selectedSymbol)}
-                            className="py-2 px-3.5 rounded-xl bg-[#1546D9] hover:bg-[#2255EB] text-white font-medium text-xs flex items-center gap-1.5 border border-[#1546D9]/40 shadow-sm transition-all active:scale-[0.98] cursor-pointer"
+                            className="py-2 px-3.5 rounded-xl bg-[#D4A373] hover:bg-[#c29263] text-[#1F3B2C] font-bold text-xs flex items-center gap-1.5 border border-[#D4A373]/40 shadow-sm transition-all active:scale-[0.98] cursor-pointer"
                           >
-                            <MessageSquare className="w-3.5 h-3.5 text-white" />
+                            <MessageSquare className="w-3.5 h-3.5 text-[#1F3B2C]" />
                             <span>Ask in Chat</span>
                           </button>
                         </Magnetic>
                       </div>
 
                       {/* Metadata Row */}
-                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-3 border-t border-white/10 text-xs font-mono">
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-3 border-t border-[var(--border-subtle)] text-xs font-mono">
                         <div>
-                          <span className="text-[#767E90] block text-[11px]">Location</span>
-                          <span className="text-[#A8AFBD] truncate block">{selectedSymbol.file_path}</span>
+                          <span className="text-[var(--text-muted)] block text-[11px]">Location</span>
+                          <span className="text-[var(--text-secondary)] truncate block">{selectedSymbol.file_path}</span>
                         </div>
                         <div>
-                          <span className="text-[#767E90] block text-[11px]">Lines</span>
-                          <span className="text-[#EDECE6] font-semibold">
+                          <span className="text-[var(--text-muted)] block text-[11px]">Lines</span>
+                          <span className="text-[var(--text-primary)] font-semibold">
                             L{selectedSymbol.start_line} – L{selectedSymbol.end_line}
                           </span>
                         </div>
                         <div>
-                          <span className="text-[#767E90] block text-[11px]">Parameters</span>
-                          <span className="text-[#A8AFBD]">
+                          <span className="text-[var(--text-muted)] block text-[11px]">Parameters</span>
+                          <span className="text-[var(--text-secondary)]">
                             {selectedSymbol.parameters?.length ? selectedSymbol.parameters.join(', ') : 'none'}
                           </span>
                         </div>
                         <div>
-                          <span className="text-[#767E90] block text-[11px]">Return Type</span>
-                          <span className="text-[#A8AFBD]">{selectedSymbol.return_type || 'unspecified'}</span>
+                          <span className="text-[var(--text-muted)] block text-[11px]">Return Type</span>
+                          <span className="text-[var(--text-secondary)]">{selectedSymbol.return_type || 'unspecified'}</span>
                         </div>
                       </div>
                     </div>
@@ -437,20 +432,20 @@ export const CodeIntelligenceView: React.FC<CodeIntelligenceViewProps> = ({
 
                 {/* Docstring Accordion */}
                 {selectedSymbol.docstring && (
-                  <div className="rounded-2xl border border-white/10 bg-[#181B22] overflow-hidden">
+                  <div className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-card)] overflow-hidden">
                     <button
                       onClick={() => setShowDocstring(!showDocstring)}
-                      className="w-full p-4 flex items-center justify-between hover:bg-[#1D212B] transition-colors text-xs font-semibold text-[#EDECE6] uppercase tracking-wider"
+                      className="w-full p-4 flex items-center justify-between hover:bg-[var(--bg-card-hover)] transition-colors text-xs font-semibold text-[var(--text-primary)] uppercase tracking-wider"
                     >
                       <div className="flex items-center gap-2">
-                        <Sparkles className="w-3.5 h-3.5 text-[#F9B318]" />
+                        <Sparkles className="w-3.5 h-3.5 text-[#D4A373]" />
                         <span>Documentation & Docstring</span>
                       </div>
-                      {showDocstring ? <ChevronUp className="w-4 h-4 text-[#767E90]" /> : <ChevronDown className="w-4 h-4 text-[#767E90]" />}
+                      {showDocstring ? <ChevronUp className="w-4 h-4 text-[var(--text-muted)]" /> : <ChevronDown className="w-4 h-4 text-[var(--text-muted)]" />}
                     </button>
                     {showDocstring && (
-                      <div className="p-4 pt-0 border-t border-white/10 bg-[#0B0D11]/40">
-                        <p className="text-xs text-[#A8AFBD] font-sans leading-relaxed whitespace-pre-wrap mt-3">
+                      <div className="p-4 pt-0 border-t border-[var(--border-subtle)] bg-[var(--bg-well)]/40">
+                        <p className="text-xs text-[var(--text-secondary)] font-sans leading-relaxed whitespace-pre-wrap mt-3">
                           {selectedSymbol.docstring}
                         </p>
                       </div>
@@ -460,16 +455,16 @@ export const CodeIntelligenceView: React.FC<CodeIntelligenceViewProps> = ({
 
                 {/* Source Snippet Accordion */}
                 {selectedSymbol.source_snippet && (
-                  <div className="rounded-2xl border border-white/10 bg-[#181B22] overflow-hidden shadow-sm">
+                  <div className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-card)] overflow-hidden shadow-sm">
                     <button
                       onClick={() => setShowCodeSnippet(!showCodeSnippet)}
-                      className="w-full px-4 py-3 bg-[#0B0D11] border-b border-white/10 flex items-center justify-between text-xs font-mono text-[#767E90] hover:text-[#EDECE6] transition-colors"
+                      className="w-full px-4 py-3 bg-[var(--bg-well)] border-b border-[var(--border-subtle)] flex items-center justify-between text-xs font-mono text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
                     >
                       <span>Source Code Snippet (lines {selectedSymbol.start_line}–{selectedSymbol.end_line})</span>
-                      {showCodeSnippet ? <ChevronUp className="w-4 h-4 text-[#767E90]" /> : <ChevronDown className="w-4 h-4 text-[#767E90]" />}
+                      {showCodeSnippet ? <ChevronUp className="w-4 h-4 text-[var(--text-muted)]" /> : <ChevronDown className="w-4 h-4 text-[var(--text-muted)]" />}
                     </button>
                     {showCodeSnippet && (
-                      <pre className="p-4 text-xs font-mono text-[#EDECE6] overflow-x-auto leading-relaxed bg-[#0B0D11]">
+                      <pre className="p-4 text-xs font-mono text-[var(--text-primary)] overflow-x-auto leading-relaxed bg-[var(--bg-well)]">
                         <code>{selectedSymbol.source_snippet}</code>
                       </pre>
                     )}
@@ -477,28 +472,28 @@ export const CodeIntelligenceView: React.FC<CodeIntelligenceViewProps> = ({
                 )}
 
                 {/* Progressive Disclosure: Advanced AST Parser Internals */}
-                <div className="rounded-2xl border border-white/10 bg-[#181B22] overflow-hidden">
+                <div className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-card)] overflow-hidden">
                   <button
                     onClick={() => setShowAstDetails(!showAstDetails)}
-                    className="w-full p-3.5 px-4 flex items-center justify-between text-xs font-mono text-[#767E90] hover:text-[#EDECE6] transition-colors"
+                    className="w-full p-3.5 px-4 flex items-center justify-between text-xs font-mono text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
                   >
                     <span>Parser & AST Internal Boundaries</span>
-                    {showAstDetails ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+                    {showAstDetails ? <ChevronUp className="w-4 h-4 text-[var(--text-muted)]" /> : <ChevronDown className="w-4 h-4 text-[var(--text-muted)]" />}
                   </button>
                   {showAstDetails && (
-                    <div className="p-4 border-t border-white/10 bg-[#0B0D11] text-[11px] font-mono space-y-1.5 text-[#767E90]">
-                      <div>Symbol SHA: <span className="text-[#A8AFBD]">{selectedSymbol.file_path}::{selectedSymbol.name}</span></div>
-                      <div>Byte Range: <span className="text-[#A8AFBD]">Start line {selectedSymbol.start_line}, End line {selectedSymbol.end_line}</span></div>
-                      <div>AST Provider: <span className="text-[#F9B318]">Tree-Sitter Multi-Language Engine</span></div>
+                    <div className="p-4 border-t border-[var(--border-subtle)] bg-[var(--bg-well)] text-[11px] font-mono space-y-1.5 text-[var(--text-muted)]">
+                      <div>Symbol SHA: <span className="text-[var(--text-secondary)]">{selectedSymbol.file_path}::{selectedSymbol.name}</span></div>
+                      <div>Byte Range: <span className="text-[var(--text-secondary)]">Start line {selectedSymbol.start_line}, End line {selectedSymbol.end_line}</span></div>
+                      <div>AST Provider: <span className="text-[#D4A373]">Tree-Sitter Multi-Language Engine</span></div>
                     </div>
                   )}
                 </div>
               </div>
             ) : (
-              <div className="flex-1 flex flex-col items-center justify-center p-8 text-center text-[#767E90]">
-                <Braces className="w-10 h-10 text-[#1546D9] mb-3" />
-                <p className="text-sm font-semibold text-[#EDECE6]">Select a code symbol to inspect</p>
-                <p className="text-xs text-[#767E90] mt-1 max-w-sm">
+              <div className="flex-1 flex flex-col items-center justify-center p-8 text-center text-[var(--text-muted)]">
+                <Braces className="w-10 h-10 text-[#D4A373] mb-3" />
+                <p className="text-sm font-semibold text-[var(--text-primary)]">Select a code symbol to inspect</p>
+                <p className="text-xs text-[var(--text-muted)] mt-1 max-w-sm">
                   Click any function, class, or method on the left to see its parameters, docstrings, source lines, and AST hierarchy.
                 </p>
               </div>
@@ -509,13 +504,13 @@ export const CodeIntelligenceView: React.FC<CodeIntelligenceViewProps> = ({
         /* Architecture / File Dependency Mode */
         <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
           {/* Left: Indexed Files List */}
-          <div className="md:w-5/12 flex flex-col border-r border-white/10 bg-[#181B22] overflow-hidden">
-            <div className="p-3 border-b border-white/10 bg-[#111318] flex items-center justify-between text-xs">
-              <span className="font-semibold text-[#EDECE6]">Indexed Files Architecture</span>
-              <span className="text-[11px] font-mono text-[#767E90]">{allIndexedFiles.length} files</span>
+          <div className="md:w-5/12 flex flex-col border-r border-[var(--border-subtle)] bg-[var(--bg-surface)] overflow-hidden">
+            <div className="p-3 border-b border-[var(--border-subtle)] bg-[var(--bg-well)] flex items-center justify-between text-xs">
+              <span className="font-semibold text-[var(--text-primary)]">Indexed Files Architecture</span>
+              <span className="text-[11px] font-mono text-[var(--text-muted)]">{allIndexedFiles.length} files</span>
             </div>
 
-            <div className="flex-1 overflow-y-auto divide-y divide-white/5">
+            <div className="flex-1 overflow-y-auto divide-y divide-[var(--border-subtle)]">
               {allIndexedFiles.map((filePath) => {
                 const isSelected = selectedFile === filePath;
                 const deps = relationshipsData?.file_dependencies?.[filePath] || [];
@@ -525,18 +520,18 @@ export const CodeIntelligenceView: React.FC<CodeIntelligenceViewProps> = ({
                     onClick={() => setSelectedFile(filePath)}
                     className={`p-3 px-4 cursor-pointer transition-colors relative flex items-center justify-between gap-3 ${
                       isSelected
-                        ? 'bg-[#1546D9]/15 border-l-4 border-[#1546D9]'
-                        : 'hover:bg-[#1D212B] border-l-4 border-transparent'
+                        ? 'bg-[#D4A373]/15 border-l-4 border-[#D4A373]'
+                        : 'hover:bg-[var(--bg-card-hover)] border-l-4 border-transparent'
                     }`}
                   >
                     <div className="min-w-0 flex items-center gap-2 truncate">
-                      <FileCode className="w-3.5 h-3.5 text-[#F9B318] shrink-0" />
-                      <span className="font-mono text-xs font-medium text-[#EDECE6] truncate">
+                      <FileCode className="w-3.5 h-3.5 text-[#D4A373] shrink-0" />
+                      <span className="font-mono text-xs font-medium text-[var(--text-primary)] truncate">
                         {filePath}
                       </span>
                     </div>
 
-                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#0B0D11] border border-white/10 text-[#767E90] font-mono shrink-0">
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-[var(--bg-well)] border border-[var(--border-subtle)] text-[var(--text-muted)] font-mono shrink-0">
                       {deps.length} deps
                     </span>
                   </div>
@@ -547,7 +542,12 @@ export const CodeIntelligenceView: React.FC<CodeIntelligenceViewProps> = ({
 
           {/* Right: File Architecture Inspector */}
           <div className="md:w-7/12 flex-1 flex flex-col bg-[var(--bg-base)] overflow-y-auto p-6 space-y-5">
-            {selectedFile ? (
+            {loadingFile ? (
+              <div className="flex flex-col items-center justify-center p-12 space-y-3">
+                <RefreshCw className="w-6 h-6 animate-spin text-[#D4A373]" />
+                <span className="text-xs font-mono text-[var(--text-muted)]">Analyzing file architecture...</span>
+              </div>
+            ) : selectedFile ? (
               <>
                 <div className="flex items-center justify-between pb-2 border-b border-[var(--border-subtle)]">
                   <div className="flex items-center gap-2">
@@ -564,32 +564,32 @@ export const CodeIntelligenceView: React.FC<CodeIntelligenceViewProps> = ({
                   </div>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-[#181B22] border border-white/10 space-y-3">
+                <div className="p-4 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] space-y-3">
                   <div className="flex items-center gap-2">
-                    <FileCode className="w-4 h-4 text-[#1546D9]" />
-                    <span className="font-mono font-bold text-sm text-[#EDECE6]">{selectedFile}</span>
+                    <FileCode className="w-4 h-4 text-[#D4A373]" />
+                    <span className="font-mono font-bold text-sm text-[var(--text-primary)]">{selectedFile}</span>
                   </div>
-                  <div className="flex items-center gap-4 text-xs font-mono text-[#767E90]">
-                    <span>Language: <strong className="text-[#A8AFBD]">{fileIntelligence?.language || 'Unknown'}</strong></span>
-                    <span>Symbols: <strong className="text-[#EDECE6]">{fileIntelligence?.symbols?.length || 0}</strong></span>
-                    <span>Imports: <strong className="text-[#EDECE6]">{fileIntelligence?.imports?.length || 0}</strong></span>
+                  <div className="flex items-center gap-4 text-xs font-mono text-[var(--text-muted)]">
+                    <span>Language: <strong className="text-[var(--text-secondary)]">{fileIntelligence?.language || 'Unknown'}</strong></span>
+                    <span>Symbols: <strong className="text-[var(--text-primary)]">{fileIntelligence?.symbols?.length || 0}</strong></span>
+                    <span>Imports: <strong className="text-[var(--text-primary)]">{fileIntelligence?.imports?.length || 0}</strong></span>
                   </div>
                 </div>
 
                 {/* Direct File Dependencies */}
                 <div className="space-y-2">
-                  <h3 className="text-xs font-bold text-[#767E90] uppercase tracking-wider">
+                  <h3 className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider">
                     Import Dependencies ({fileIntelligence?.imports?.length || 0})
                   </h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     {fileIntelligence?.imports?.map((imp, idx) => (
                       <div
                         key={idx}
-                        className="p-2.5 rounded-xl bg-[#181B22] border border-white/10 text-xs font-mono text-[#A8AFBD] flex items-center justify-between"
+                        className="p-2.5 rounded-xl bg-[var(--bg-card)] border border-[var(--border-subtle)] text-xs font-mono text-[var(--text-secondary)] flex items-center justify-between"
                       >
                         <span className="truncate">{imp.module}</span>
                         {imp.names && imp.names.length > 0 && (
-                          <span className="text-[10px] text-[#F9B318]">({imp.names.join(', ')})</span>
+                          <span className="text-[10px] text-[#D4A373]">({imp.names.join(', ')})</span>
                         )}
                       </div>
                     ))}
@@ -597,9 +597,9 @@ export const CodeIntelligenceView: React.FC<CodeIntelligenceViewProps> = ({
                 </div>
               </>
             ) : (
-              <div className="flex-1 flex flex-col items-center justify-center text-center text-[#767E90]">
-                <Layers className="w-10 h-10 text-[#1546D9] mb-3" />
-                <p className="text-sm font-semibold text-[#EDECE6]">Select a file to inspect its architectural graph</p>
+              <div className="flex-1 flex flex-col items-center justify-center text-center text-[var(--text-muted)]">
+                <Layers className="w-10 h-10 text-[#D4A373] mb-3" />
+                <p className="text-sm font-semibold text-[var(--text-primary)]">Select a file to inspect its architectural graph</p>
               </div>
             )}
           </div>

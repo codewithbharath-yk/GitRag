@@ -1,107 +1,29 @@
 import React, { useState } from 'react';
 import {
   FolderGit2,
-  Search,
   Plus,
   GitBranch,
   Star,
-  Layers,
-  FileCode,
+  Search,
   ArrowRight,
   Settings,
   Lock,
   Globe,
-  Sparkles,
-  ExternalLink,
 } from 'lucide-react';
 import type { StoredRepository } from '../types/api';
+import { TextEffect } from './motion/TextEffect';
 import { Spotlight } from './motion/Spotlight';
 import { Tilt } from './motion/Tilt';
 import { Magnetic } from './motion/Magnetic';
-import { TextEffect } from './motion/TextEffect';
 
 interface RepositoriesViewProps {
   repositories: StoredRepository[];
   activeRepoId: string | null;
   onSelectRepo: (id: string) => void;
-  onNavigateToExplorer: (repoId?: string) => void;
+  onNavigateToExplorer: (id?: string) => void;
   onOpenConnectModal: () => void;
   onOpenSettingsModal: (repoId: string) => void;
 }
-
-// Preset demonstration repos
-const PRESET_MOCKUP_REPOS = [
-  {
-    id: 'codeswithbharath-yk__kumar',
-    fullName: 'codeswithbharath-yk/kumar',
-    owner: 'codeswithbharath-yk',
-    name: 'kumar',
-    branch: 'main',
-    stars: 34,
-    language: 'Python',
-    filesCount: 18,
-    chunksCount: 64,
-    lastIndexedAt: new Date(Date.now() - 2 * 24 * 3600 * 1000).toISOString(),
-    isPrivate: true,
-    description: 'Personal project • Full-stack auth & intelligence service',
-  },
-  {
-    id: 'octocat__spoon-knife',
-    fullName: 'octocat/Spoon-Knife',
-    owner: 'octocat',
-    name: 'Spoon-Knife',
-    branch: 'main',
-    stars: 14089,
-    language: 'HTML',
-    filesCount: 3,
-    chunksCount: 3,
-    lastIndexedAt: new Date(Date.now() - 7 * 24 * 3600 * 1000).toISOString(),
-    isPrivate: false,
-    description: 'Forked repository • Classic GitHub test repo',
-  },
-  {
-    id: 'vercel__next-js',
-    fullName: 'vercel/next.js',
-    owner: 'vercel',
-    name: 'next.js',
-    branch: 'canary',
-    stars: 122400,
-    language: 'TypeScript',
-    filesCount: 240,
-    chunksCount: 840,
-    lastIndexedAt: new Date(Date.now() - 21 * 24 * 3600 * 1000).toISOString(),
-    isPrivate: false,
-    description: 'Frontend framework • React server components & App Router',
-  },
-  {
-    id: 'facebook__react',
-    fullName: 'facebook/react',
-    owner: 'facebook',
-    name: 'react',
-    branch: 'main',
-    stars: 226000,
-    language: 'JavaScript',
-    filesCount: 310,
-    chunksCount: 1120,
-    lastIndexedAt: new Date(Date.now() - 21 * 24 * 3600 * 1000).toISOString(),
-    isPrivate: false,
-    description: 'UI library • Declarative component model',
-  },
-  {
-    id: 'microsoft__vscode',
-    fullName: 'microsoft/vscode',
-    owner: 'microsoft',
-    name: 'vscode',
-    branch: 'main',
-    stars: 161000,
-    language: 'TypeScript',
-    filesCount: 850,
-    chunksCount: 3200,
-    lastIndexedAt: new Date(Date.now() - 30 * 24 * 3600 * 1000).toISOString(),
-    isPrivate: false,
-    description: 'Code editor • Developer ecosystem and workbench',
-  },
-];
 
 export const RepositoriesView: React.FC<RepositoriesViewProps> = ({
   repositories,
@@ -111,29 +33,90 @@ export const RepositoriesView: React.FC<RepositoriesViewProps> = ({
   onOpenConnectModal,
   onOpenSettingsModal,
 }) => {
-  const [filter, setFilter] = useState<'all' | 'private' | 'public'>('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [filter, setFilter] = useState<'all' | 'public' | 'private'>('all');
 
-  // Combine real user repositories with catalog items
+  // Realistic mock repos to enrich the explorer if list is small
+  const defaultExtraRepos: Partial<StoredRepository>[] = [
+    {
+      id: 'codeswithbharath-yk__kumar',
+      fullName: 'codeswithbharath-yk/kumar',
+      owner: 'codeswithbharath-yk',
+      name: 'kumar',
+      branch: 'main',
+      stars: 34,
+      language: 'Python',
+      filesCount: 18,
+      chunksCount: 64,
+      lastIndexedAt: new Date(Date.now() - 2 * 24 * 3600 * 1000).toISOString(),
+    },
+    {
+      id: 'octocat__spoon-knife',
+      fullName: 'octocat/Spoon-Knife',
+      owner: 'octocat',
+      name: 'Spoon-Knife',
+      branch: 'main',
+      stars: 14089,
+      language: 'HTML',
+      filesCount: 3,
+      chunksCount: 3,
+      lastIndexedAt: new Date(Date.now() - 7 * 24 * 3600 * 1000).toISOString(),
+    },
+    {
+      id: 'vercel__next-js',
+      fullName: 'vercel/next.js',
+      owner: 'vercel',
+      name: 'next.js',
+      branch: 'canary',
+      stars: 122400,
+      language: 'TypeScript',
+      filesCount: 240,
+      chunksCount: 840,
+      lastIndexedAt: new Date(Date.now() - 21 * 24 * 3600 * 1000).toISOString(),
+    },
+    {
+      id: 'facebook__react',
+      fullName: 'facebook/react',
+      owner: 'facebook',
+      name: 'react',
+      branch: 'main',
+      stars: 226000,
+      language: 'JavaScript',
+      filesCount: 310,
+      chunksCount: 1120,
+      lastIndexedAt: new Date(Date.now() - 21 * 24 * 3600 * 1000).toISOString(),
+    },
+    {
+      id: 'microsoft__vscode',
+      fullName: 'microsoft/vscode',
+      owner: 'microsoft',
+      name: 'vscode',
+      branch: 'main',
+      stars: 161000,
+      language: 'TypeScript',
+      filesCount: 850,
+      chunksCount: 3200,
+      lastIndexedAt: new Date(Date.now() - 30 * 24 * 3600 * 1000).toISOString(),
+    },
+  ];
+
+  // Merge unique
   const combinedList = [...repositories];
-  PRESET_MOCKUP_REPOS.forEach((preset) => {
-    if (!combinedList.some((r) => r.fullName.toLowerCase() === preset.fullName.toLowerCase())) {
-      combinedList.push(preset);
+  for (const extra of defaultExtraRepos) {
+    if (!combinedList.some((r) => r.id === extra.id)) {
+      combinedList.push(extra as StoredRepository);
     }
-  });
+  }
 
   const filtered = combinedList.filter((repo) => {
-    const isPrivate = (repo as any).isPrivate ?? false;
-    if (filter === 'private' && !isPrivate) return false;
-    if (filter === 'public' && isPrivate) return false;
+    const matchesSearch =
+      repo.fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      repo.owner.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (repo.language && repo.language.toLowerCase().includes(searchQuery.toLowerCase()));
 
-    if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase();
-      return (
-        repo.fullName.toLowerCase().includes(q) ||
-        (repo.language && repo.language.toLowerCase().includes(q))
-      );
-    }
+    if (!matchesSearch) return false;
+    if (filter === 'private') return (repo as any).isPrivate;
+    if (filter === 'public') return !(repo as any).isPrivate;
     return true;
   });
 
@@ -157,9 +140,9 @@ export const RepositoriesView: React.FC<RepositoriesViewProps> = ({
           <Magnetic>
             <button
               onClick={onOpenConnectModal}
-              className="py-2.5 px-4 rounded-xl bg-[#1546D9] hover:bg-[#0E38B6] dark:hover:bg-[#2255EB] text-white text-xs font-bold flex items-center gap-2 shadow-md transition-all active:scale-[0.98] cursor-pointer"
+              className="py-2.5 px-4 rounded-xl bg-[#D4A373] hover:bg-[#C5915F] text-[#1F3B2C] text-xs font-bold flex items-center gap-2 border border-[#D4A373] shadow-md transition-all active:scale-[0.98] cursor-pointer"
             >
-              <Plus className="w-4 h-4 text-white" />
+              <Plus className="w-4 h-4 text-[#1F3B2C]" />
               <span>Connect GitHub</span>
             </button>
           </Magnetic>
@@ -173,7 +156,7 @@ export const RepositoriesView: React.FC<RepositoriesViewProps> = ({
               onClick={() => setFilter('all')}
               className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
                 filter === 'all'
-                  ? 'bg-[#1546D9] text-white shadow-xs font-semibold'
+                  ? 'bg-[#D4A373] text-[#1F3B2C] shadow-xs font-bold'
                   : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'
               }`}
             >
@@ -183,18 +166,18 @@ export const RepositoriesView: React.FC<RepositoriesViewProps> = ({
               onClick={() => setFilter('private')}
               className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5 cursor-pointer ${
                 filter === 'private'
-                  ? 'bg-[#1546D9] text-white shadow-xs font-semibold'
+                  ? 'bg-[#D4A373] text-[#1F3B2C] shadow-xs font-bold'
                   : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'
               }`}
             >
-              <Lock className="w-3 h-3 text-[#1546D9] dark:text-[#F9B318]" />
+              <Lock className="w-3 h-3 text-[#D4A373]" />
               <span>Private ({privateCount})</span>
             </button>
             <button
               onClick={() => setFilter('public')}
               className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5 cursor-pointer ${
                 filter === 'public'
-                  ? 'bg-[#1546D9] text-white shadow-xs font-semibold'
+                  ? 'bg-[#D4A373] text-[#1F3B2C] shadow-xs font-bold'
                   : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'
               }`}
             >
@@ -211,7 +194,7 @@ export const RepositoriesView: React.FC<RepositoriesViewProps> = ({
               placeholder="Search repositories..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-3 py-2 bg-[var(--bg-card)] border border-[var(--border-subtle)] rounded-xl text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[#1546D9] font-mono transition-colors"
+              className="w-full pl-9 pr-3 py-2 bg-[var(--bg-card)] border border-[var(--border-subtle)] rounded-xl text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[#D4A373] font-mono transition-colors"
             />
           </div>
         </div>
@@ -228,13 +211,13 @@ export const RepositoriesView: React.FC<RepositoriesViewProps> = ({
             return (
               <Tilt key={repo.id} maxAngle={6} scale={1.01}>
                 <Spotlight
-                  variant={isSelected ? 'cobalt' : 'subtle'}
+                  variant={isSelected ? 'gold' : 'subtle'}
                   size={280}
                   strength={0.15}
                   className={`p-5 rounded-2xl border transition-all flex flex-col justify-between h-full bg-[var(--bg-card)] ${
                     isSelected
-                      ? 'border-[#1546D9] shadow-lg ring-2 ring-[#1546D9]/25'
-                      : 'border-[var(--border-subtle)] hover:border-[#1546D9]/40'
+                      ? 'border-[#D4A373] shadow-lg ring-2 ring-[#D4A373]/30'
+                      : 'border-[var(--border-subtle)] hover:border-[#D4A373]/50'
                   }`}
                 >
                   <div>
@@ -246,14 +229,14 @@ export const RepositoriesView: React.FC<RepositoriesViewProps> = ({
                             {repo.fullName}
                           </span>
                           {isSelected && (
-                            <span className="px-1.5 py-0.5 rounded text-[9px] font-mono bg-[#F9B318] text-[#111318] font-bold border border-[#F9B318]">
+                            <span className="px-1.5 py-0.5 rounded text-[9px] font-mono bg-[#D4A373] text-[#1F3B2C] font-bold border border-[#D4A373]">
                               ACTIVE
                             </span>
                           )}
                           <span
                             className="px-1.5 py-0.5 rounded text-[10px] font-mono flex items-center gap-1 border bg-[var(--bg-well)] text-[var(--text-secondary)] border-[var(--border-subtle)]"
                           >
-                            {isPrivate ? <Lock className="w-2.5 h-2.5 text-[#1546D9] dark:text-[#F9B318]" /> : <Globe className="w-2.5 h-2.5" />}
+                            {isPrivate ? <Lock className="w-2.5 h-2.5 text-[#D4A373]" /> : <Globe className="w-2.5 h-2.5" />}
                             <span>{isPrivate ? 'Private' : 'Public'}</span>
                           </span>
                         </div>
@@ -262,14 +245,14 @@ export const RepositoriesView: React.FC<RepositoriesViewProps> = ({
 
                       <div className="flex items-center gap-1 shrink-0">
                         {repo.stars > 0 && (
-                          <span className="flex items-center gap-1 text-xs text-[#1546D9] dark:text-[#F9B318] font-mono font-semibold">
-                            <Star className="w-3.5 h-3.5 fill-current text-[#F9B318]" />
+                          <span className="flex items-center gap-1 text-xs text-[#D4A373] font-mono font-bold">
+                            <Star className="w-3.5 h-3.5 fill-current text-[#D4A373]" />
                             {repo.stars.toLocaleString()}
                           </span>
                         )}
                         <button
                           onClick={() => onOpenSettingsModal(repo.id)}
-                          className="p-1.5 rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card-hover)] transition-colors"
+                          className="p-1.5 rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card-hover)] transition-colors cursor-pointer"
                           title="Repository Settings"
                         >
                           <Settings className="w-3.5 h-3.5" />
@@ -282,7 +265,7 @@ export const RepositoriesView: React.FC<RepositoriesViewProps> = ({
                       <div>
                         <span className="text-[10px] block">Branch</span>
                         <span className="text-[var(--text-primary)] truncate flex items-center gap-1 mt-0.5 font-semibold">
-                          <GitBranch className="w-3 h-3 text-[#1546D9] dark:text-[#F9B318]" />
+                          <GitBranch className="w-3 h-3 text-[#D4A373]" />
                           {repo.branch}
                         </span>
                       </div>
@@ -310,10 +293,10 @@ export const RepositoriesView: React.FC<RepositoriesViewProps> = ({
                             onSelectRepo(repo.id);
                             onNavigateToExplorer(repo.id);
                           }}
-                          className="px-3 py-1.5 rounded-xl bg-[#1546D9] hover:bg-[#0E38B6] dark:hover:bg-[#2255EB] text-white text-xs font-semibold flex items-center gap-1.5 shadow-xs transition-colors"
+                          className="px-3 py-1.5 rounded-xl bg-[#D4A373] hover:bg-[#C5915F] text-[#1F3B2C] text-xs font-bold flex items-center gap-1.5 border border-[#D4A373] shadow-xs transition-colors cursor-pointer"
                         >
                           <span>Open in Explorer</span>
-                          <ArrowRight className="w-3 h-3" />
+                          <ArrowRight className="w-3 h-3 text-[#1F3B2C]" />
                         </button>
                       </Magnetic>
                     </div>

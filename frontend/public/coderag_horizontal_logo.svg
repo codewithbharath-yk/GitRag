@@ -1,51 +1,53 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 540 140" width="100%" height="100%">
   <defs>
-    <radialGradient id="horizHalo" cx="50%" cy="50%" r="50%">
-      <stop offset="0%" stop-color="#6DBE9B" stop-opacity="0.5" />
-      <stop offset="80%" stop-color="#295255" stop-opacity="0.2" />
-      <stop offset="100%" stop-color="#162623" stop-opacity="0" />
+    <radialGradient id="hHalo" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#D4A373" stop-opacity="0.3" />
+      <stop offset="70%" stop-color="#1F3B2C" stop-opacity="0.1" />
+      <stop offset="100%" stop-color="#1F3B2C" stop-opacity="0" />
     </radialGradient>
-    <linearGradient id="textGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#F0F5F7" />
-      <stop offset="45%" stop-color="#FFFFFF" />
-      <stop offset="70%" stop-color="#6DBE9B" />
-      <stop offset="100%" stop-color="#295255" />
+    <linearGradient id="hGold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E8BE92" />
+      <stop offset="100%" stop-color="#D4A373" />
     </linearGradient>
   </defs>
 
   <!-- Left Mascot Group -->
-  <g transform="translate(10, 5)">
+  <g transform="translate(15, 8)">
     <!-- Halo -->
-    <circle cx="65" cy="65" r="58" fill="url(#horizHalo)" />
+    <circle cx="62" cy="62" r="56" fill="url(#hHalo)" />
     <!-- Outer Orbit -->
-    <circle cx="65" cy="55" r="42" fill="none" stroke="#6DBE9B" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.7" />
+    <circle cx="62" cy="54" r="42" fill="none" stroke="#D4A373" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.65" />
 
     <!-- Cat Ears -->
-    <path d="M46 48 L38 30 C45 32 52 38 54 44 Z" fill="#111E1C" stroke="#6DBE9B" stroke-width="2" stroke-linejoin="round" />
-    <path d="M84 48 L92 30 C85 32 78 38 76 44 Z" fill="#111E1C" stroke="#6DBE9B" stroke-width="2" stroke-linejoin="round" />
+    <path d="M44 48 L36 30 C43 32 50 38 52 44 Z" fill="#1F3B2C" stroke="#D4A373" stroke-width="2" stroke-linejoin="round" />
+    <path d="M80 48 L88 30 C81 32 74 38 72 44 Z" fill="#1F3B2C" stroke="#D4A373" stroke-width="2" stroke-linejoin="round" />
 
-    <!-- Head -->
-    <ellipse cx="65" cy="55" rx="25" ry="21" fill="#162623" stroke="#6DBE9B" stroke-width="2.5" />
+    <!-- Head Shell -->
+    <ellipse cx="62" cy="54" rx="25" ry="21" fill="#1F3B2C" stroke="#D4A373" stroke-width="2.2" />
+    <!-- Faceplate -->
+    <ellipse cx="62" cy="56" rx="18" ry="13" fill="#F1E3D3" />
 
-    <!-- Eyes -->
-    <path d="M54 53 Q58 48 62 53" fill="none" stroke="#6DBE9B" stroke-width="2.5" stroke-linecap="round" />
-    <path d="M68 53 Q72 48 76 53" fill="none" stroke="#6DBE9B" stroke-width="2.5" stroke-linecap="round" />
+    <!-- Cheerful Eyes -->
+    <path d="M52 54 Q56 49 60 54" fill="none" stroke="#1F3B2C" stroke-width="2.2" stroke-linecap="round" />
+    <path d="M64 54 Q68 49 72 54" fill="none" stroke="#1F3B2C" stroke-width="2.2" stroke-linecap="round" />
 
     <!-- Antenna -->
-    <path d="M76 38 L83 26" stroke="#6DBE9B" stroke-width="1.8" stroke-linecap="round" />
-    <circle cx="84" cy="24" r="2.5" fill="#F0F5F7" stroke="#6DBE9B" stroke-width="1" />
+    <path d="M72 38 L79 26" stroke="#D4A373" stroke-width="1.8" stroke-linecap="round" />
+    <circle cx="80" cy="24" r="3" fill="url(#hGold)" stroke="#1F3B2C" stroke-width="1" />
 
     <!-- Laptop with Code -->
-    <path d="M55 77 L87 77 L80 98 L48 98 Z" fill="#162623" stroke="#6DBE9B" stroke-width="2" stroke-linejoin="round" />
-    <path d="M62 87 L58 90 L62 93" fill="none" stroke="#F0F5F7" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
-    <path d="M70 87 L74 90 L70 93" fill="none" stroke="#F0F5F7" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M51 76 L83 76 L76 96 L44 96 Z" fill="#15281E" stroke="#D4A373" stroke-width="2" stroke-linejoin="round" />
+    <polygon points="53,78 81,78 75,94 47,94" fill="#1F3B2C" />
+    <path d="M57 84 L54 87 L57 90" fill="none" stroke="#F1E3D3" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+    <line x1="64" y1="83" x2="61" y2="91" stroke="#D4A373" stroke-width="1.6" stroke-linecap="round" />
+    <path d="M67 84 L70 87 L67 90" fill="none" stroke="#F1E3D3" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
   </g>
 
   <!-- Typography Right -->
   <text x="145" y="78" font-family="'Inter', -apple-system, sans-serif" font-weight="900" font-size="62" letter-spacing="-1.5">
-    <tspan fill="#F0F5F7">Code</tspan><tspan fill="#6DBE9B">RAG</tspan>
+    <tspan fill="#F1E3D3">Code</tspan><tspan fill="#D4A373">RAG</tspan>
   </text>
-  <text x="148" y="106" font-family="'JetBrains Mono', monospace" font-weight="700" font-size="13" letter-spacing="4.2" fill="#577877">
-    YOUR CODEBASE AI ASSISTANT
+  <text x="148" y="106" font-family="'JetBrains Mono', monospace" font-weight="700" font-size="12" letter-spacing="4.5" fill="#D4A373" opacity="0.9">
+    GITHUB CODEBASE AI ASSISTANT
   </text>
 </svg>

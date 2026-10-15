@@ -10,7 +10,7 @@ export interface NavigationState {
   symbolName?: string | null;
   settingsSection?: string;
   landingStep?: 'landing' | 'showcase' | 'auth';
-  modalOpen?: string | null; // e.g. 'connect', 'settings', 'files', 'mobile'
+  modalOpen?: string | null;
   timestamp?: number;
 }
 
@@ -23,6 +23,7 @@ interface NavigationContextType {
   settingsSection: string;
   landingStep: 'landing' | 'showcase' | 'auth';
   canGoBack: boolean;
+  canGoForward: boolean;
   historyLength: number;
   
   // Navigation actions
@@ -38,6 +39,7 @@ interface NavigationContextType {
     }
   ) => void;
   goBack: (fallback?: Partial<NavigationState>) => void;
+  goForward: () => void;
   setSubTab: (subTab: ExplorerSubTab) => void;
   setCommitSha: (sha: string | null) => void;
   setSymbolName: (name: string | null) => void;
@@ -99,11 +101,18 @@ export const NavigationProvider: React.FC<{
   onRepoChange?: (id: string) => void;
 }> = ({ children, defaultRepoId = null, onRepoChange }) => {
   const [navState, setNavState] = useState<NavigationState>(() => parseUrlState(defaultRepoId));
+  
+  // History stacks for bidirectional navigation
   const historyStackRef = useRef<NavigationState[]>([parseUrlState(defaultRepoId)]);
+  const forwardStackRef = useRef<NavigationState[]>([]);
+  
+  const [forwardStackLength, setForwardStackLength] = useState<number>(0);
+  const [historyStackLength, setHistoryStackLength] = useState<number>(1);
+  
   const overlaysRef = useRef<Map<string, () => void>>(new Map());
   const isNavigatingRef = useRef(false);
 
-  // Register an active overlay (drawer, modal) so browser back closes it first
+  // Register an active overlay (drawer, modal) so back closes it first
   const registerOverlay = useCallback((id: string, onClose: () => void) => {
     overlaysRef.current.set(id, onClose);
     return () => {
@@ -112,10 +121,10 @@ export const NavigationProvider: React.FC<{
   }, []);
 
   // Sync state to URL and history stack
-  const pushState = useCallback((nextState: NavigationState, replace = false) => {
+  const pushState = useCallback((nextState: NavigationState, replace = false, isBidirectional = false) => {
     const currentState = historyStackRef.current[historyStackRef.current.length - 1];
     
-    // Skip duplicate entries
+    // Skip duplicate identical entries
     if (
       currentState &&
       currentState.tab === nextState.tab &&
@@ -143,11 +152,17 @@ export const NavigationProvider: React.FC<{
       } else {
         window.history.pushState(stampedState, '', url);
         historyStackRef.current.push(stampedState);
+        // Regular forward navigation clears forward stack
+        if (!isBidirectional) {
+          forwardStackRef.current = [];
+          setForwardStackLength(0);
+        }
       }
     } catch {
       // ignore history API errors
     }
 
+    setHistoryStackLength(historyStackRef.current.length);
     setNavState(stampedState);
     if (stampedState.repoId && stampedState.repoId !== currentState?.repoId) {
       onRepoChange?.(stampedState.repoId);
@@ -157,12 +172,11 @@ export const NavigationProvider: React.FC<{
   // Handle browser back/forward buttons (popstate)
   useEffect(() => {
     const handlePopState = (event: PopStateEvent) => {
-      // 1. If any overlay (modal, drawer) is currently open, close the most recent overlay first
+      // 1. If any overlay is open, close it first
       if (overlaysRef.current.size > 0) {
         const entries = Array.from(overlaysRef.current.entries());
         const [, closeLatest] = entries[entries.length - 1];
         closeLatest();
-        // Prevent navigating the page away while closing overlay
         try {
           const currentUrl = stateToUrl(navState);
           window.history.pushState(navState, '', currentUrl);
@@ -170,16 +184,21 @@ export const NavigationProvider: React.FC<{
         return;
       }
 
-      // 2. Otherwise restore state from popstate event or parse URL
+      // 2. Restore state from popstate or parse URL
       const targetState: NavigationState = event.state || parseUrlState(defaultRepoId);
-      
-      // Update history stack
+
+      // Push current to forward stack if moving backward
       if (historyStackRef.current.length > 1) {
-        historyStackRef.current.pop();
+        const prev = historyStackRef.current.pop();
+        if (prev) {
+          forwardStackRef.current.push(prev);
+          setForwardStackLength(forwardStackRef.current.length);
+        }
       }
 
       isNavigatingRef.current = true;
       setNavState(targetState);
+      setHistoryStackLength(historyStackRef.current.length);
       if (targetState.repoId) {
         onRepoChange?.(targetState.repoId);
       }
@@ -214,12 +233,12 @@ export const NavigationProvider: React.FC<{
         settingsSection: options?.settingsSection || navState.settingsSection || 'appearance',
         landingStep: navState.landingStep,
       };
-      pushState(next, options?.replace ?? false);
+      pushState(next, options?.replace ?? false, false);
     },
     [navState, pushState]
   );
 
-  // Intelligent Contextual Back Navigation
+  // Contextual & Stack-based Back Navigation
   const goBack = useCallback(
     (fallback?: Partial<NavigationState>) => {
       // 1. If an overlay is open, close it
@@ -230,31 +249,47 @@ export const NavigationProvider: React.FC<{
         return;
       }
 
-      // 2. If inspecting a commit in git diffs -> close commit detail
+      // Save current state into forward stack before moving back
+      forwardStackRef.current.push({ ...navState, timestamp: Date.now() });
+      setForwardStackLength(forwardStackRef.current.length);
+
+      // 2. Commit detail view -> return to Git Diffs overview
       if (navState.commitSha) {
         navigate('explorer', { subTab: 'diffs', commitSha: null });
         return;
       }
 
-      // 3. If inspecting an AST symbol -> close symbol detail
+      // 3. AST symbol detail -> return to AST overview
       if (navState.symbolName) {
         navigate('explorer', { subTab: 'ast', symbolName: null });
         return;
       }
 
-      // 4. If in a specific subtab of explorer other than 'chat' -> return to chat or repositories
+      // 4. Explorer subtab (diffs, ast, files) -> return to Chat
       if (navState.tab === 'explorer' && navState.subTab && navState.subTab !== 'chat') {
         navigate('explorer', { subTab: 'chat' });
         return;
       }
 
-      // 5. If we have multiple entries in internal history stack, use browser history.back()
+      // 5. Internal history stack navigation
       if (historyStackRef.current.length > 1) {
-        window.history.back();
-        return;
+        historyStackRef.current.pop(); // pop current
+        const targetState = historyStackRef.current[historyStackRef.current.length - 1];
+        if (targetState) {
+          const url = stateToUrl(targetState);
+          try {
+            window.history.pushState(targetState, '', url);
+          } catch {}
+          setNavState(targetState);
+          setHistoryStackLength(historyStackRef.current.length);
+          if (targetState.repoId) {
+            onRepoChange?.(targetState.repoId);
+          }
+          return;
+        }
       }
 
-      // 6. Sensible contextual fallbacks when opened directly or no history
+      // 6. Direct entry contextual fallback
       if (fallback) {
         navigate(fallback.tab || 'dashboard', {
           subTab: fallback.subTab,
@@ -280,8 +315,29 @@ export const NavigationProvider: React.FC<{
           break;
       }
     },
-    [navState, navigate]
+    [navState, navigate, onRepoChange]
   );
+
+  // Forward Navigation
+  const goForward = useCallback(() => {
+    if (forwardStackRef.current.length === 0) return;
+
+    const nextState = forwardStackRef.current.pop();
+    setForwardStackLength(forwardStackRef.current.length);
+
+    if (nextState) {
+      historyStackRef.current.push(nextState);
+      setHistoryStackLength(historyStackRef.current.length);
+      const url = stateToUrl(nextState);
+      try {
+        window.history.pushState(nextState, '', url);
+      } catch {}
+      setNavState(nextState);
+      if (nextState.repoId) {
+        onRepoChange?.(nextState.repoId);
+      }
+    }
+  }, [onRepoChange]);
 
   const setSubTab = useCallback(
     (subTab: ExplorerSubTab) => {
@@ -325,12 +381,14 @@ export const NavigationProvider: React.FC<{
   );
 
   const canGoBack =
-    historyStackRef.current.length > 1 ||
+    historyStackLength > 1 ||
     Boolean(navState.commitSha) ||
     Boolean(navState.symbolName) ||
     (navState.tab === 'explorer' && navState.subTab !== 'chat') ||
     navState.tab === 'settings' ||
     navState.tab === 'repositories';
+
+  const canGoForward = forwardStackLength > 0;
 
   return (
     <NavigationContext.Provider
@@ -343,9 +401,11 @@ export const NavigationProvider: React.FC<{
         settingsSection: navState.settingsSection || 'appearance',
         landingStep: navState.landingStep || 'landing',
         canGoBack,
-        historyLength: historyStackRef.current.length,
+        canGoForward,
+        historyLength: historyStackLength,
         navigate,
         goBack,
+        goForward,
         setSubTab,
         setCommitSha,
         setSymbolName,

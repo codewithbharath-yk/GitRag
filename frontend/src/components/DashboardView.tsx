@@ -60,7 +60,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
       {/* Welcome & Overview Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-[var(--border-subtle)]">
         <div>
-          <span className="text-xs font-mono uppercase tracking-wider text-[#F9B318] font-semibold">
+          <span className="text-xs font-mono uppercase tracking-wider text-[#D4A373] font-semibold">
             Workspace Dashboard
           </span>
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[var(--text-primary)] mt-0.5">
@@ -85,9 +85,9 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           <Magnetic>
             <button
               onClick={onOpenConnectModal}
-              className="px-4 py-2.5 rounded-xl bg-[#1546D9] hover:bg-[#2255EB] text-white font-semibold text-xs flex items-center gap-2 border border-[#1546D9] shadow-md transition-all active:scale-[0.98] cursor-pointer"
+              className="px-4 py-2.5 rounded-xl bg-[#D4A373] hover:bg-[#C5915F] text-[#1F3B2C] font-bold text-xs flex items-center gap-2 border border-[#D4A373] shadow-md transition-all active:scale-[0.98] cursor-pointer"
             >
-              <Plus className="w-4 h-4 text-white" />
+              <Plus className="w-4 h-4 text-[#1F3B2C]" />
               <span>Connect Repository</span>
             </button>
           </Magnetic>
@@ -98,11 +98,11 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {/* Metric 1: Repositories */}
         <Tilt maxAngle={5} scale={1.02}>
-          <Spotlight color="#1546D9" size={240} strength={0.15} className="h-full rounded-2xl">
+          <Spotlight color="#D4A373" size={240} strength={0.15} className="h-full rounded-2xl">
             <div className="p-4 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] shadow-sm flex flex-col justify-between h-full">
               <div className="flex items-center justify-between text-[var(--text-muted)]">
                 <span className="text-xs font-medium text-[var(--text-secondary)]">Repositories</span>
-                <FolderGit2 className="w-4 h-4 text-[#1546D9]" />
+                <FolderGit2 className="w-4 h-4 text-[#D4A373]" />
               </div>
               <div className="mt-3">
                 <span className="text-2xl sm:text-3xl font-extrabold font-mono text-[var(--text-primary)]">
@@ -116,11 +116,11 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
         {/* Metric 2: Total Analyses */}
         <Tilt maxAngle={5} scale={1.02}>
-          <Spotlight color="#1546D9" size={240} strength={0.15} className="h-full rounded-2xl">
+          <Spotlight color="#D4A373" size={240} strength={0.15} className="h-full rounded-2xl">
             <div className="p-4 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] shadow-sm flex flex-col justify-between h-full">
               <div className="flex items-center justify-between text-[var(--text-muted)]">
                 <span className="text-xs font-medium text-[var(--text-secondary)]">Total Analyses</span>
-                <Code2 className="w-4 h-4 text-[#1546D9]" />
+                <Code2 className="w-4 h-4 text-[#D4A373]" />
               </div>
               <div className="mt-3">
                 <span className="text-2xl sm:text-3xl font-extrabold font-mono text-[var(--text-primary)]">
@@ -134,11 +134,11 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
         {/* Metric 3: Queries */}
         <Tilt maxAngle={5} scale={1.02}>
-          <Spotlight color="#1546D9" size={240} strength={0.15} className="h-full rounded-2xl">
+          <Spotlight color="#D4A373" size={240} strength={0.15} className="h-full rounded-2xl">
             <div className="p-4 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] shadow-sm flex flex-col justify-between h-full">
               <div className="flex items-center justify-between text-[var(--text-muted)]">
                 <span className="text-xs font-medium text-[var(--text-secondary)]">Queries</span>
-                <MessageSquare className="w-4 h-4 text-[#F9B318]" />
+                <MessageSquare className="w-4 h-4 text-[#D4A373]" />
               </div>
               <div className="mt-3">
                 <span className="text-2xl sm:text-3xl font-extrabold font-mono text-[var(--text-primary)]">
@@ -152,7 +152,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
         {/* Metric 4: Success Rate */}
         <Tilt maxAngle={5} scale={1.02}>
-          <Spotlight color="#1546D9" size={240} strength={0.15} className="h-full rounded-2xl">
+          <Spotlight color="#D4A373" size={240} strength={0.15} className="h-full rounded-2xl">
             <div className="p-4 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] shadow-sm flex flex-col justify-between h-full">
               <div className="flex items-center justify-between text-[var(--text-muted)]">
                 <span className="text-xs font-medium text-[var(--text-secondary)]">Success Rate</span>
@@ -174,10 +174,10 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
       {/* Two Column Section: Recent Activity & Quick Actions */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Recent Activity Panel */}
-        <Spotlight color="#1546D9" className="p-5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] shadow-md space-y-4">
+        <Spotlight color="#D4A373" className="p-5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] shadow-md space-y-4">
           <div className="flex items-center justify-between pb-2 border-b border-[var(--border-subtle)]">
             <span className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
-              <Clock className="w-4 h-4 text-[#F9B318]" />
+              <Clock className="w-4 h-4 text-[#D4A373]" />
               Recent Activity
             </span>
             <span className="text-[10px] font-mono text-[var(--text-muted)]">Timeline</span>
@@ -185,48 +185,48 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
           <div className="space-y-3 text-xs">
             <div className="flex items-start gap-3 p-2 rounded-xl bg-[var(--bg-well)] border border-[var(--border-subtle)]">
-              <div className="p-1.5 rounded-lg bg-[#1546D9] text-white shrink-0 mt-0.5">
+              <div className="p-1.5 rounded-lg bg-[#D4A373] text-[#1F3B2C] shrink-0 mt-0.5">
                 <FolderGit2 className="w-3.5 h-3.5" />
               </div>
               <div className="flex-1 min-w-0">
                 <span className="text-[var(--text-primary)] font-semibold block truncate">
-                  Analyzed <code className="font-mono text-[#F9B318]">codeswithbharath-yk/kumar</code>
+                  Analyzed <code className="font-mono text-[#D4A373]">codeswithbharath-yk/kumar</code>
                 </span>
                 <span className="text-[11px] text-[var(--text-muted)]">2 minutes ago • Codebase indexed</span>
               </div>
             </div>
 
             <div className="flex items-start gap-3 p-2 rounded-xl bg-[var(--bg-well)] border border-[var(--border-subtle)]">
-              <div className="p-1.5 rounded-lg bg-[#1546D9] text-white shrink-0 mt-0.5">
+              <div className="p-1.5 rounded-lg bg-[#D4A373] text-[#1F3B2C] shrink-0 mt-0.5">
                 <Search className="w-3.5 h-3.5" />
               </div>
               <div className="flex-1 min-w-0">
                 <span className="text-[var(--text-primary)] font-semibold block truncate">
-                  Searched for <span className="text-[#F9B318]">"authentication"</span>
+                  Searched for <span className="text-[#D4A373]">"authentication"</span>
                 </span>
                 <span className="text-[11px] text-[var(--text-muted)]">10 minutes ago • 3 semantic matches found</span>
               </div>
             </div>
 
             <div className="flex items-start gap-3 p-2 rounded-xl bg-[var(--bg-well)] border border-[var(--border-subtle)]">
-              <div className="p-1.5 rounded-lg bg-[#1546D9] text-white shrink-0 mt-0.5">
+              <div className="p-1.5 rounded-lg bg-[#D4A373] text-[#1F3B2C] shrink-0 mt-0.5">
                 <GitCommit className="w-3.5 h-3.5" />
               </div>
               <div className="flex-1 min-w-0">
                 <span className="text-[var(--text-primary)] font-semibold block truncate">
-                  Viewed Git diff for commit <code className="font-mono text-[#F9B318]">d0dd1f6</code>
+                  Viewed Git diff for commit <code className="font-mono text-[#D4A373]">d0dd1f6</code>
                 </span>
                 <span className="text-[11px] text-[var(--text-muted)]">1 hour ago • Unified patch inspected</span>
               </div>
             </div>
 
             <div className="flex items-start gap-3 p-2 rounded-xl bg-[var(--bg-well)] border border-[var(--border-subtle)]">
-              <div className="p-1.5 rounded-lg bg-[#1546D9] text-white shrink-0 mt-0.5">
+              <div className="p-1.5 rounded-lg bg-[#D4A373] text-[#1F3B2C] shrink-0 mt-0.5">
                 <Code2 className="w-3.5 h-3.5" />
               </div>
               <div className="flex-1 min-w-0">
                 <span className="text-[var(--text-primary)] font-semibold block truncate">
-                  Explored AST for <code className="font-mono text-[#F9B318]">auth.py</code>
+                  Explored AST for <code className="font-mono text-[#D4A373]">auth.py</code>
                 </span>
                 <span className="text-[11px] text-[var(--text-muted)]">2 hours ago • 8 functions extracted</span>
               </div>
@@ -235,10 +235,10 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         </Spotlight>
 
         {/* Quick Actions Panel */}
-        <Spotlight color="#1546D9" className="p-5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] shadow-md space-y-4">
+        <Spotlight color="#D4A373" className="p-5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] shadow-md space-y-4">
           <div className="flex items-center justify-between pb-2 border-b border-[var(--border-subtle)]">
             <span className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-[#F9B318]" />
+              <Sparkles className="w-4 h-4 text-[#D4A373]" />
               Quick Actions
             </span>
             <span className="text-[10px] font-mono text-[var(--text-muted)]">Shortcuts</span>
@@ -249,7 +249,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               onClick={onOpenConnectModal}
               className="p-3.5 rounded-xl bg-[var(--bg-well)] hover:bg-[var(--bg-card-hover)] border border-[var(--border-subtle)] text-left transition-all group flex items-start gap-3 cursor-pointer"
             >
-              <div className="p-2 rounded-lg bg-[#1546D9] text-white shrink-0 group-hover:scale-105 transition-transform">
+              <div className="p-2 rounded-lg bg-[#D4A373] text-[#1F3B2C] shrink-0 group-hover:scale-105 transition-transform">
                 <Plus className="w-4 h-4" />
               </div>
               <div>
@@ -262,7 +262,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               onClick={() => onNavigateTab('explorer')}
               className="p-3.5 rounded-xl bg-[var(--bg-well)] hover:bg-[var(--bg-card-hover)] border border-[var(--border-subtle)] text-left transition-all group flex items-start gap-3 cursor-pointer"
             >
-              <div className="p-2 rounded-lg bg-[#1546D9] text-white shrink-0 group-hover:scale-105 transition-transform">
+              <div className="p-2 rounded-lg bg-[#D4A373] text-[#1F3B2C] shrink-0 group-hover:scale-105 transition-transform">
                 <FolderGit2 className="w-4 h-4" />
               </div>
               <div>
@@ -275,7 +275,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               onClick={() => onNavigateTab('explorer', 'chat')}
               className="p-3.5 rounded-xl bg-[var(--bg-well)] hover:bg-[var(--bg-card-hover)] border border-[var(--border-subtle)] text-left transition-all group flex items-start gap-3 cursor-pointer"
             >
-              <div className="p-2 rounded-lg bg-[#1546D9] text-white shrink-0 group-hover:scale-105 transition-transform">
+              <div className="p-2 rounded-lg bg-[#D4A373] text-[#1F3B2C] shrink-0 group-hover:scale-105 transition-transform">
                 <MessageSquare className="w-4 h-4" />
               </div>
               <div>
@@ -288,7 +288,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               onClick={() => onNavigateTab('settings')}
               className="p-3.5 rounded-xl bg-[var(--bg-well)] hover:bg-[var(--bg-card-hover)] border border-[var(--border-subtle)] text-left transition-all group flex items-start gap-3 cursor-pointer"
             >
-              <div className="p-2 rounded-lg bg-[#1546D9] text-white shrink-0 group-hover:scale-105 transition-transform">
+              <div className="p-2 rounded-lg bg-[#D4A373] text-[#1F3B2C] shrink-0 group-hover:scale-105 transition-transform">
                 <BookOpen className="w-4 h-4" />
               </div>
               <div>
@@ -302,11 +302,11 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
       {/* Featured Active Repository Showcase */}
       {activeRepo && (
-        <Spotlight color="#1546D9" className="rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] p-6 shadow-xl">
+        <Spotlight color="#D4A373" className="rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] p-6 shadow-xl">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="space-y-2">
               <div className="flex items-center gap-2">
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#1546D9] text-white border border-[#1546D9] uppercase tracking-wider font-semibold">
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#D4A373] text-[#1F3B2C] border border-[#D4A373] uppercase tracking-wider font-bold">
                   ACTIVE WORKSPACE
                 </span>
                 <span className="text-xs font-mono text-[var(--text-muted)]">
@@ -325,9 +325,9 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               <Magnetic>
                 <button
                   onClick={() => onNavigateTab('explorer', 'chat')}
-                  className="px-4 py-2.5 rounded-xl bg-[#1546D9] hover:bg-[#2255EB] text-white text-xs font-bold flex items-center gap-2 border border-[#1546D9] shadow-md transition-all cursor-pointer"
+                  className="px-4 py-2.5 rounded-xl bg-[#D4A373] hover:bg-[#C5915F] text-[#1F3B2C] text-xs font-bold flex items-center gap-2 border border-[#D4A373] shadow-md transition-all cursor-pointer"
                 >
-                  <MessageSquare className="w-3.5 h-3.5 text-[#F9B318]" />
+                  <MessageSquare className="w-3.5 h-3.5 text-[#1F3B2C]" />
                   <span>Ask AI Chat</span>
                 </button>
               </Magnetic>
@@ -337,7 +337,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                   onClick={() => onNavigateTab('explorer', 'diffs')}
                   className="px-3.5 py-2.5 rounded-xl bg-[var(--bg-well)] hover:bg-[var(--bg-card-hover)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] text-xs font-medium flex items-center gap-1.5 border border-[var(--border-subtle)] transition-all cursor-pointer"
                 >
-                  <GitCommit className="w-3.5 h-3.5 text-[#1546D9]" />
+                  <GitCommit className="w-3.5 h-3.5 text-[#D4A373]" />
                   <span>Diffs</span>
                 </button>
               </Magnetic>
@@ -347,7 +347,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                   onClick={() => onNavigateTab('explorer', 'ast')}
                   className="px-3.5 py-2.5 rounded-xl bg-[var(--bg-well)] hover:bg-[var(--bg-card-hover)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] text-xs font-medium flex items-center gap-1.5 border border-[var(--border-subtle)] transition-all cursor-pointer"
                 >
-                  <Code2 className="w-3.5 h-3.5 text-[#1546D9]" />
+                  <Code2 className="w-3.5 h-3.5 text-[#D4A373]" />
                   <span>AST</span>
                 </button>
               </Magnetic>
@@ -364,7 +364,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           </TextEffect>
           <button
             onClick={() => onNavigateTab('repositories')}
-            className="text-xs text-[#1546D9] hover:underline font-mono flex items-center gap-1 cursor-pointer"
+            className="text-xs text-[#D4A373] hover:underline font-mono flex items-center gap-1 cursor-pointer font-semibold"
           >
             <span>View All</span>
             <ArrowRight className="w-3 h-3" />
@@ -378,12 +378,12 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
             return (
               <Tilt key={repo.id} maxAngle={6} scale={1.01}>
-                <Spotlight color="#1546D9" size={280} strength={0.12} className="h-full rounded-2xl">
+                <Spotlight color="#D4A373" size={280} strength={0.12} className="h-full rounded-2xl">
                   <div
                     onClick={() => onSelectRepo(repo.id)}
                     className={`p-5 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between h-full ${
                       isSelected
-                        ? 'bg-[var(--bg-card)] border-[#1546D9] shadow-lg ring-1 ring-[#1546D9]/40'
+                        ? 'bg-[var(--bg-card)] border-[#D4A373] shadow-lg ring-1 ring-[#D4A373]/40'
                         : 'bg-[var(--bg-card)] border-[var(--border-subtle)] hover:border-[var(--border-default)]'
                     }`}
                   >
@@ -396,7 +396,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                               {repo.fullName}
                             </span>
                             {isSelected && (
-                              <span className="px-1.5 py-0.5 rounded text-[9px] font-mono bg-[#1546D9] text-white border border-[#1546D9] font-bold">
+                              <span className="px-1.5 py-0.5 rounded text-[9px] font-mono bg-[#D4A373] text-[#1F3B2C] border border-[#D4A373] font-bold">
                                 ACTIVE
                               </span>
                             )}
@@ -408,8 +408,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
                         <div className="flex items-center gap-1.5 shrink-0">
                           {repo.stars > 0 && (
-                            <span className="flex items-center gap-1 text-xs text-[#F9B318] font-mono">
-                              <Star className="w-3.5 h-3.5 fill-[#F9B318]/20" />
+                            <span className="flex items-center gap-1 text-xs text-[#D4A373] font-mono font-bold">
+                              <Star className="w-3.5 h-3.5 fill-[#D4A373]/20" />
                               {repo.stars}
                             </span>
                           )}
@@ -464,10 +464,10 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                               onSelectRepo(repo.id);
                               onNavigateTab('explorer', 'chat');
                             }}
-                            className="px-3 py-1.5 rounded-lg bg-[#1546D9] hover:bg-[#2255EB] text-white text-xs font-semibold flex items-center gap-1 border border-[#1546D9] transition-colors cursor-pointer"
+                            className="px-3 py-1.5 rounded-lg bg-[#D4A373] hover:bg-[#C5915F] text-[#1F3B2C] text-xs font-bold flex items-center gap-1 border border-[#D4A373] transition-colors cursor-pointer"
                           >
                             <span>Open Explorer</span>
-                            <ArrowRight className="w-3 h-3 text-[#F9B318]" />
+                            <ArrowRight className="w-3 h-3 text-[#1F3B2C]" />
                           </button>
                         </Magnetic>
                       </div>
@@ -490,7 +490,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                         </div>
                         <div className="flex justify-between">
                           <span>Embedding Cache:</span>
-                          <span className="text-[#F9B318]">Lazy SQLite + Qdrant</span>
+                          <span className="text-[#D4A373]">Lazy SQLite + Qdrant</span>
                         </div>
                       </div>
                     )}

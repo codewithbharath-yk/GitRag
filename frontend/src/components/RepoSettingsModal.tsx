@@ -172,8 +172,8 @@ export const RepoSettingsModal: React.FC<RepoSettingsModalProps> = ({
 
         {/* Status / Error alerts */}
         {statusMessage && (
-          <div className="p-3 rounded-lg bg-[#1546D9]/15 border border-[#1546D9]/40 text-[#1546D9] text-xs flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 text-[#1546D9] shrink-0" />
+          <div className="p-3 rounded-lg bg-[#D4A373]/15 border border-[#D4A373]/40 text-[#D4A373] text-xs flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 text-[#D4A373] shrink-0" />
             <span>{statusMessage}</span>
           </div>
         )}
@@ -189,7 +189,7 @@ export const RepoSettingsModal: React.FC<RepoSettingsModalProps> = ({
         <div className="space-y-3 pt-2">
           {/* Re-index section */}
           {showReindexConfirm ? (
-            <div className="p-3.5 rounded-xl bg-[#F9B318]/15 border border-[#F9B318]/40 space-y-2.5">
+            <div className="p-3.5 rounded-xl bg-[#D4A373]/15 border border-[#D4A373]/40 space-y-2.5">
               <p className="text-xs text-[var(--text-primary)]">
                 Are you sure you want to re-index <strong>{repository.fullName}</strong>? This will clear existing vectors and re-embed all source code using the local BGE model.
               </p>
@@ -204,9 +204,9 @@ export const RepoSettingsModal: React.FC<RepoSettingsModalProps> = ({
                   <button
                     onClick={handleReindex}
                     disabled={isReindexing}
-                    className="px-3.5 py-1.5 rounded-md bg-[#1546D9] hover:bg-[#2255EB] text-xs text-white font-medium flex items-center gap-1.5 shadow-sm cursor-pointer"
+                    className="px-3.5 py-1.5 rounded-md bg-[#D4A373] hover:bg-[#c29263] text-xs text-[#1F3B2C] font-bold flex items-center gap-1.5 shadow-sm cursor-pointer"
                   >
-                    {isReindexing && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+                    {isReindexing && <Loader2 className="w-3.5 h-3.5 animate-spin text-[#1F3B2C]" />}
                     <span>Confirm Re-index</span>
                   </button>
                 </Magnetic>

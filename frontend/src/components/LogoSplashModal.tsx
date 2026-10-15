@@ -35,7 +35,7 @@ export const LogoSplashModal: React.FC<LogoSplashModalProps> = ({
         className="relative w-full max-w-lg rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] shadow-[0_20px_60px_rgba(0,0,0,0.6)] p-6 sm:p-8 space-y-6 text-[var(--text-primary)] overflow-hidden"
       >
         {/* Ambient Top Glow */}
-        <div className="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 w-80 h-40 bg-[#1546D9]/25 rounded-full blur-3xl" />
+        <div className="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 w-80 h-40 bg-[#D4A373]/20 rounded-full blur-3xl" />
 
         {/* Top Controls: Theme Toggle & Close */}
         <div className="absolute top-4 left-4 z-10">
@@ -55,8 +55,8 @@ export const LogoSplashModal: React.FC<LogoSplashModalProps> = ({
         <div className="flex flex-col items-center text-center space-y-3 pt-2">
           <Tilt maxAngle={12} scale={1.05} className="relative group">
             {/* Pulsing ring around logo */}
-            <div className="absolute -inset-1.5 rounded-3xl bg-gradient-to-r from-[#1546D9] to-[#F9B318] opacity-60 blur-md group-hover:opacity-100 transition duration-500 animate-pulse" />
-            <div className="relative w-20 h-20 rounded-2xl bg-[var(--bg-well)] border-2 border-[var(--color-cobalt-blue)]/50 p-2 shadow-2xl flex items-center justify-center">
+            <div className="absolute -inset-1.5 rounded-3xl bg-gradient-to-r from-[#D4A373] to-[#1F3B2C] opacity-60 blur-md group-hover:opacity-100 transition duration-500 animate-pulse" />
+            <div className="relative w-20 h-20 rounded-2xl bg-[var(--bg-well)] border-2 border-[#D4A373]/50 p-2 shadow-2xl flex items-center justify-center">
               <img
                 src="/coderag_logo.svg"
                 alt="CodeRAG Emblem"
@@ -66,8 +66,8 @@ export const LogoSplashModal: React.FC<LogoSplashModalProps> = ({
           </Tilt>
 
           <div className="space-y-1">
-            <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-[var(--bg-well)] border border-[var(--border-subtle)] text-[var(--color-cobalt-blue)] text-[11px] font-mono tracking-wide font-semibold">
-              <Sparkles className="w-3 h-3 text-[#F9B318]" />
+            <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-[var(--bg-well)] border border-[var(--border-subtle)] text-[#D4A373] text-[11px] font-mono tracking-wide font-semibold">
+              <Sparkles className="w-3 h-3 text-[#D4A373]" />
               <span>AI GitHub Code Assistant</span>
             </div>
             <TextEffect
@@ -87,14 +87,14 @@ export const LogoSplashModal: React.FC<LogoSplashModalProps> = ({
         <div className="p-3.5 rounded-xl bg-[var(--bg-well)] border border-[var(--border-subtle)] space-y-2.5 shadow-inner">
           {/* User message preview */}
           <div className="flex items-start justify-end gap-2 text-right">
-            <div className="max-w-[80%] bg-[#1546D9] text-white rounded-lg p-2 text-[11px] shadow-xs">
-              <span className="text-[9px] block text-white/80 font-mono mb-0.5 font-semibold">Developer (You)</span>
+            <div className="max-w-[80%] bg-[#D4A373] text-[#1F3B2C] font-medium rounded-lg p-2 text-[11px] shadow-xs">
+              <span className="text-[9px] block text-[#1F3B2C]/80 font-mono mb-0.5 font-bold">Developer (You)</span>
               Where is authentication handled in this repository?
             </div>
             <img
               src="/user_avatar.svg"
               alt="Developer Avatar"
-              className="w-7 h-7 rounded-lg border border-[#1546D9]/40 bg-[var(--bg-card)] p-0.5 shrink-0 shadow-xs"
+              className="w-7 h-7 rounded-lg border border-[#D4A373]/40 bg-[var(--bg-card)] p-0.5 shrink-0 shadow-xs"
             />
           </div>
 
@@ -104,13 +104,13 @@ export const LogoSplashModal: React.FC<LogoSplashModalProps> = ({
               <img
                 src="/ai_avatar.svg"
                 alt="CodeRAG AI"
-                className="w-7 h-7 rounded-lg border border-[#1546D9]/40 bg-[var(--bg-card)] p-0.5 shrink-0 shadow-xs"
+                className="w-7 h-7 rounded-lg border border-[#D4A373]/40 bg-[var(--bg-card)] p-0.5 shrink-0 shadow-xs"
               />
-              <span className="absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full bg-[#F9B318] border border-[var(--bg-well)]" />
+              <span className="absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full bg-[#D4A373] border border-[var(--bg-well)]" />
             </div>
             <div className="max-w-[85%] bg-[var(--bg-card)] border border-[var(--border-subtle)] rounded-lg p-2 text-[11px] text-[var(--text-primary)] shadow-xs">
-              <span className="text-[9px] block text-[var(--color-cobalt-blue)] font-mono mb-0.5 flex items-center gap-1 font-semibold">
-                <Sparkles className="w-2.5 h-2.5 text-[#F9B318]" /> CodeRAG AI
+              <span className="text-[9px] block text-[#D4A373] font-mono mb-0.5 flex items-center gap-1 font-semibold">
+                <Sparkles className="w-2.5 h-2.5 text-[#D4A373]" /> CodeRAG AI
               </span>
               Verified in <code className="text-[var(--text-primary)] font-mono bg-[var(--bg-well)] px-1 py-0.5 rounded border border-[var(--border-subtle)]">auth/jwt.py:14-48</code> with SHA-256 HMAC tokens.
             </div>
@@ -122,7 +122,7 @@ export const LogoSplashModal: React.FC<LogoSplashModalProps> = ({
           <Tilt maxAngle={8} scale={1.02} className="h-full">
             <div className="p-3 rounded-xl bg-[var(--bg-well)] border border-[var(--border-subtle)] space-y-1 h-full">
               <div className="flex items-center gap-2 text-[var(--text-primary)] font-semibold">
-                <Cpu className="w-4 h-4 text-[var(--color-cobalt-blue)]" />
+                <Cpu className="w-4 h-4 text-[#D4A373]" />
                 <span>Question RAG</span>
               </div>
               <p className="text-[11px] text-[var(--text-muted)] leading-tight">
@@ -134,7 +134,7 @@ export const LogoSplashModal: React.FC<LogoSplashModalProps> = ({
           <Tilt maxAngle={8} scale={1.02} className="h-full">
             <div className="p-3 rounded-xl bg-[var(--bg-well)] border border-[var(--border-subtle)] space-y-1 h-full">
               <div className="flex items-center gap-2 text-[var(--text-primary)] font-semibold">
-                <Code2 className="w-4 h-4 text-[var(--color-cobalt-blue)]" />
+                <Code2 className="w-4 h-4 text-[#D4A373]" />
                 <span>AST Tree & Diffs</span>
               </div>
               <p className="text-[11px] text-[var(--text-muted)] leading-tight">
@@ -146,7 +146,7 @@ export const LogoSplashModal: React.FC<LogoSplashModalProps> = ({
           <Tilt maxAngle={8} scale={1.02} className="h-full">
             <div className="p-3 rounded-xl bg-[var(--bg-well)] border border-[var(--border-subtle)] space-y-1 h-full">
               <div className="flex items-center gap-2 text-[var(--text-primary)] font-semibold">
-                <Layers className="w-4 h-4 text-[var(--color-cobalt-blue)]" />
+                <Layers className="w-4 h-4 text-[#D4A373]" />
                 <span>Real Citations</span>
               </div>
               <p className="text-[11px] text-[var(--text-muted)] leading-tight">
@@ -158,7 +158,7 @@ export const LogoSplashModal: React.FC<LogoSplashModalProps> = ({
           <Tilt maxAngle={8} scale={1.02} className="h-full">
             <div className="p-3 rounded-xl bg-[var(--bg-well)] border border-[var(--border-subtle)] space-y-1 h-full">
               <div className="flex items-center gap-2 text-[var(--text-primary)] font-semibold">
-                <ShieldCheck className="w-4 h-4 text-[var(--color-cobalt-blue)]" />
+                <ShieldCheck className="w-4 h-4 text-[#D4A373]" />
                 <span>Safe & Private</span>
               </div>
               <p className="text-[11px] text-[var(--text-muted)] leading-tight">
@@ -176,10 +176,10 @@ export const LogoSplashModal: React.FC<LogoSplashModalProps> = ({
                 onEnterWorkspace();
                 onClose();
               }}
-              className="w-full py-3.5 px-5 rounded-xl bg-[#1546D9] hover:bg-[#2255EB] text-white font-bold text-sm flex items-center justify-center gap-2.5 shadow-xl transition-all active:scale-[0.98] cursor-pointer"
+              className="w-full py-3.5 px-5 rounded-xl bg-[#D4A373] hover:bg-[#c29263] text-[#1F3B2C] font-bold text-sm flex items-center justify-center gap-2.5 shadow-xl transition-all active:scale-[0.98] cursor-pointer"
             >
               <span>Enter GitRAG Workspace</span>
-              <ArrowRight className="w-4 h-4 text-white" />
+              <ArrowRight className="w-4 h-4 text-[#1F3B2C]" />
             </button>
           </Magnetic>
         </div>

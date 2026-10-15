@@ -6,14 +6,15 @@ interface SpotlightProps {
   className?: string;
   size?: number;
   strength?: number;
-  variant?: 'cobalt' | 'yellow' | 'beige' | 'subtle' | 'teal' | 'white' | 'emerald';
+  variant?: 'gold' | 'cobalt' | 'yellow' | 'beige' | 'subtle' | 'teal' | 'white' | 'emerald';
   color?: string;
   onClick?: () => void;
 }
 
 /**
  * Spotlight — Cursor-following soft ambient glow on selected cards, panels, or hero surfaces.
- * - Derived from CodeRAG's four-colour palette (#EDECE6 Warm Beige, #1546D9 Cobalt Blue, #F9B318 Sun Yellow, #111318 Dark Ink).
+ * - Derived from CodeRAG's official 3-color brand palette:
+ *   #1F3B2C Emerald Night, #D4A373 Antique Gold, #F1E3D3 Silk Beige.
  * - pointer-events-none guarantees zero interference with click targets or text selection.
  * - Automatically disabled on touch screens and when prefers-reduced-motion is active.
  */
@@ -54,18 +55,19 @@ export const Spotlight: React.FC<SpotlightProps> = ({
       return `radial-gradient(${size}px circle at ${x}px ${y}px, ${color}, transparent 75%)`;
     }
     switch (variant) {
+      case 'gold':
       case 'yellow':
-      case 'emerald':
-        return `radial-gradient(${size}px circle at ${x}px ${y}px, rgba(249, 179, 24, ${strength * 1.5}), rgba(21, 70, 217, ${strength * 0.4}) 50%, transparent 75%)`;
-      case 'beige':
-      case 'white':
-        return `radial-gradient(${size}px circle at ${x}px ${y}px, rgba(237, 236, 230, ${strength * 1.2}), transparent 75%)`;
-      case 'subtle':
-        return `radial-gradient(${size}px circle at ${x}px ${y}px, rgba(21, 70, 217, ${strength * 0.8}), transparent 75%)`;
       case 'cobalt':
       case 'teal':
       default:
-        return `radial-gradient(${size}px circle at ${x}px ${y}px, rgba(21, 70, 217, ${strength * 1.5}), transparent 75%)`;
+        return `radial-gradient(${size}px circle at ${x}px ${y}px, rgba(212, 163, 115, ${strength * 1.4}), rgba(31, 59, 44, ${strength * 0.4}) 50%, transparent 75%)`;
+      case 'beige':
+      case 'white':
+        return `radial-gradient(${size}px circle at ${x}px ${y}px, rgba(241, 227, 211, ${strength * 1.2}), transparent 75%)`;
+      case 'emerald':
+        return `radial-gradient(${size}px circle at ${x}px ${y}px, rgba(31, 59, 44, ${strength * 1.5}), rgba(212, 163, 115, ${strength * 0.3}) 50%, transparent 75%)`;
+      case 'subtle':
+        return `radial-gradient(${size}px circle at ${x}px ${y}px, rgba(212, 163, 115, ${strength * 0.8}), transparent 75%)`;
     }
   };
 

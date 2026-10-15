@@ -119,7 +119,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full pl-9 pr-3 py-2 bg-[var(--bg-well)] border border-[var(--border-subtle)] rounded-lg text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[#1546D9] focus:ring-1 focus:ring-[#1546D9] font-mono transition-colors"
+                className="w-full pl-9 pr-3 py-2 bg-[var(--bg-well)] border border-[var(--border-subtle)] rounded-lg text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[#D4A373] focus:ring-1 focus:ring-[#D4A373] font-mono transition-colors"
                 placeholder="your@email.com"
               />
             </div>
@@ -132,7 +132,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({
               </label>
               <button
                 type="button"
-                className="text-[10px] text-[var(--color-cobalt-blue)] hover:underline cursor-pointer"
+                className="text-[10px] text-[#D4A373] hover:underline cursor-pointer"
               >
                 Forgot password?
               </button>
@@ -144,7 +144,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full pl-9 pr-3 py-2 bg-[var(--bg-well)] border border-[var(--border-subtle)] rounded-lg text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[#1546D9] focus:ring-1 focus:ring-[#1546D9] font-mono transition-colors"
+                className="w-full pl-9 pr-3 py-2 bg-[var(--bg-well)] border border-[var(--border-subtle)] rounded-lg text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[#D4A373] focus:ring-1 focus:ring-[#D4A373] font-mono transition-colors"
                 placeholder="••••••••••••"
               />
             </div>
@@ -155,11 +155,11 @@ export const LoginModal: React.FC<LoginModalProps> = ({
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full py-2.5 px-4 rounded-xl bg-[#1546D9] hover:bg-[#2255EB] text-white text-xs font-bold flex items-center justify-center gap-2 shadow-md transition-all active:scale-[0.98] cursor-pointer"
+                className="w-full py-2.5 px-4 rounded-xl bg-[#D4A373] hover:bg-[#c29263] text-[#1F3B2C] text-xs font-bold flex items-center justify-center gap-2 shadow-md transition-all active:scale-[0.98] cursor-pointer"
               >
                 {isSuccess ? (
                   <>
-                    <CheckCircle2 className="w-4 h-4 text-white" />
+                    <CheckCircle2 className="w-4 h-4 text-[#1F3B2C]" />
                     <span>Logged In!</span>
                   </>
                 ) : isSubmitting ? (
@@ -181,7 +181,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({
           <button
             type="button"
             onClick={handleSubmit}
-            className="text-[var(--color-cobalt-blue)] hover:underline font-semibold cursor-pointer"
+            className="text-[#D4A373] hover:underline font-semibold cursor-pointer"
           >
             Sign up
           </button>

@@ -7,9 +7,12 @@ import {
   Plus,
   Menu,
   Check,
+  ArrowLeft,
+  ArrowRight,
 } from 'lucide-react';
 import type { StoredRepository, UserProfile } from '../types/api';
 import { ThemeToggle } from './ThemeToggle';
+import { useNavigation } from '../context/NavigationContext';
 
 interface WorkspaceHeaderProps {
   repositories: StoredRepository[];
@@ -35,6 +38,8 @@ export const WorkspaceHeader: React.FC<WorkspaceHeaderProps> = ({
   const repoRef = useRef<HTMLDivElement>(null);
   const branchRef = useRef<HTMLDivElement>(null);
 
+  const { goBack, goForward, canGoBack, canGoForward } = useNavigation();
+
   // Close dropdowns on outside click
   useEffect(() => {
     const handleOutsideClick = (e: MouseEvent) => {
@@ -51,7 +56,7 @@ export const WorkspaceHeader: React.FC<WorkspaceHeaderProps> = ({
 
   return (
     <header className="sticky top-0 z-30 h-14 bg-[var(--bg-surface)] border-b border-[var(--border-subtle)] px-4 flex items-center justify-between text-[var(--text-primary)] select-none font-sans">
-      {/* Left Area: Mobile hamburger + Repo & Branch selectors */}
+      {/* Left Area: Navigation Controls + Mobile hamburger + Repo & Branch selectors */}
       <div className="flex items-center gap-2 sm:gap-2.5">
         {onToggleMobileMenu && (
           <button
@@ -63,14 +68,40 @@ export const WorkspaceHeader: React.FC<WorkspaceHeaderProps> = ({
           </button>
         )}
 
+        {/* Dedicated Back & Forward Arrow Controls */}
+        <div
+          className="flex items-center gap-0.5 bg-[var(--bg-card)] border border-[var(--border-subtle)] p-0.5 rounded-xl shadow-xs"
+          role="group"
+          aria-label="History navigation"
+        >
+          <button
+            onClick={() => goBack()}
+            disabled={!canGoBack}
+            className="p-1.5 rounded-lg text-[var(--text-secondary)] hover:text-[#1F3B2C] dark:hover:text-[#F1E3D3] hover:bg-[#D4A373]/25 active:scale-95 disabled:opacity-30 disabled:hover:bg-transparent disabled:cursor-not-allowed transition-all focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#D4A373]"
+            title={canGoBack ? "Go back" : "No previous history"}
+            aria-label="Go back"
+          >
+            <ArrowLeft className="w-3.5 h-3.5" />
+          </button>
+          <button
+            onClick={() => goForward()}
+            disabled={!canGoForward}
+            className="p-1.5 rounded-lg text-[var(--text-secondary)] hover:text-[#1F3B2C] dark:hover:text-[#F1E3D3] hover:bg-[#D4A373]/25 active:scale-95 disabled:opacity-30 disabled:hover:bg-transparent disabled:cursor-not-allowed transition-all focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#D4A373]"
+            title={canGoForward ? "Go forward" : "No forward history"}
+            aria-label="Go forward"
+          >
+            <ArrowRight className="w-3.5 h-3.5" />
+          </button>
+        </div>
+
         {/* Repository Selector Dropdown */}
         <div className="relative" ref={repoRef}>
           <button
             onClick={() => setIsRepoDropdownOpen((prev) => !prev)}
-            className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[var(--bg-card)] hover:bg-[var(--bg-card-hover)] border border-[var(--border-subtle)] text-xs font-mono transition-all cursor-pointer shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1546D9]"
+            className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[var(--bg-card)] hover:bg-[var(--bg-card-hover)] border border-[var(--border-subtle)] text-xs font-mono transition-all cursor-pointer shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4A373]"
             title="Switch repository"
           >
-            <FolderGit2 className="w-3.5 h-3.5 text-[#1546D9] dark:text-[#F9B318] shrink-0" />
+            <FolderGit2 className="w-3.5 h-3.5 text-[#D4A373] shrink-0" />
             <span className="font-semibold text-[var(--text-primary)] max-w-[130px] sm:max-w-[200px] truncate">
               {activeRepo ? activeRepo.fullName : 'Select Repository'}
             </span>
@@ -92,12 +123,12 @@ export const WorkspaceHeader: React.FC<WorkspaceHeaderProps> = ({
                     }}
                     className={`w-full text-left p-2 rounded-xl flex items-center justify-between font-mono transition-colors ${
                       activeRepo?.id === repo.id
-                        ? 'bg-[#1546D9] text-white font-semibold'
+                        ? 'bg-[#D4A373] text-[#1F3B2C] font-bold'
                         : 'text-[var(--text-secondary)] hover:bg-[var(--bg-card-hover)] hover:text-[var(--text-primary)]'
                     }`}
                   >
                     <span className="truncate pr-2">{repo.fullName}</span>
-                    {activeRepo?.id === repo.id && <Check className="w-3.5 h-3.5 text-white shrink-0" />}
+                    {activeRepo?.id === repo.id && <Check className="w-3.5 h-3.5 text-[#1F3B2C] shrink-0" />}
                   </button>
                 ))}
               </div>
@@ -107,7 +138,7 @@ export const WorkspaceHeader: React.FC<WorkspaceHeaderProps> = ({
                     setIsRepoDropdownOpen(false);
                     onOpenConnectModal();
                   }}
-                  className="w-full p-2 rounded-xl bg-[#1546D9]/10 hover:bg-[#1546D9] text-[#1546D9] hover:text-white flex items-center justify-center gap-1.5 text-[11px] font-semibold transition-colors"
+                  className="w-full p-2 rounded-xl bg-[#D4A373]/15 hover:bg-[#D4A373] text-[#1F3B2C] dark:text-[#F1E3D3] hover:text-[#1F3B2C] flex items-center justify-center gap-1.5 text-[11px] font-bold transition-colors"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>Connect New Repository</span>
@@ -124,7 +155,7 @@ export const WorkspaceHeader: React.FC<WorkspaceHeaderProps> = ({
             className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-[var(--bg-well)] hover:bg-[var(--bg-card)] border border-[var(--border-subtle)] text-xs font-mono text-[var(--text-secondary)] transition-colors cursor-pointer"
             title="Branch selection"
           >
-            <GitBranch className="w-3.5 h-3.5 text-[#1546D9] dark:text-[#F9B318]" />
+            <GitBranch className="w-3.5 h-3.5 text-[#D4A373]" />
             <span>{activeRepo?.branch || 'main'}</span>
             <ChevronDown className="w-3 h-3 text-[var(--text-muted)]" />
           </button>
@@ -140,13 +171,13 @@ export const WorkspaceHeader: React.FC<WorkspaceHeaderProps> = ({
                   onClick={() => setIsBranchDropdownOpen(false)}
                   className={`w-full text-left p-1.5 rounded-lg font-mono flex items-center justify-between transition-colors ${
                     (activeRepo?.branch || 'main') === branchName
-                      ? 'bg-[#1546D9] text-white font-semibold'
+                      ? 'bg-[#D4A373] text-[#1F3B2C] font-bold'
                       : 'text-[var(--text-secondary)] hover:bg-[var(--bg-card-hover)] hover:text-[var(--text-primary)]'
                   }`}
                 >
                   <span>{branchName}</span>
                   {(activeRepo?.branch || 'main') === branchName && (
-                    <Check className="w-3.5 h-3.5 text-white" />
+                    <Check className="w-3.5 h-3.5 text-[#1F3B2C]" />
                   )}
                 </button>
               ))}
@@ -159,10 +190,10 @@ export const WorkspaceHeader: React.FC<WorkspaceHeaderProps> = ({
       <div className="hidden md:flex flex-1 max-w-md mx-4">
         <button
           onClick={onOpenCommandBar}
-          className="w-full py-1.5 px-3 rounded-xl bg-[var(--bg-well)] hover:bg-[var(--bg-card)] border border-[var(--border-subtle)] text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)] flex items-center justify-between transition-all group cursor-pointer shadow-inner focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1546D9]"
+          className="w-full py-1.5 px-3 rounded-xl bg-[var(--bg-well)] hover:bg-[var(--bg-card)] border border-[var(--border-subtle)] text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)] flex items-center justify-between transition-all group cursor-pointer shadow-inner focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4A373]"
         >
           <div className="flex items-center gap-2 truncate">
-            <Search className="w-3.5 h-3.5 text-[var(--text-muted)] group-hover:text-[#1546D9] dark:group-hover:text-[#F9B318] transition-colors shrink-0" />
+            <Search className="w-3.5 h-3.5 text-[var(--text-muted)] group-hover:text-[#D4A373] transition-colors shrink-0" />
             <span className="truncate">Ask anything about your codebase...</span>
           </div>
           <kbd className="hidden lg:inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-md bg-[var(--bg-card)] border border-[var(--border-subtle)] text-[10px] font-mono text-[var(--text-muted)]">
@@ -192,13 +223,13 @@ export const WorkspaceHeader: React.FC<WorkspaceHeaderProps> = ({
                 alt={userProfile?.name || 'Developer'}
                 className="w-7 h-7 rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-card-hover)] p-0.5"
               />
-              <span className="absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full bg-[#F9B318] ring-1 ring-[var(--bg-surface)]" />
+              <span className="absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full bg-[#D4A373] ring-1 ring-[var(--bg-surface)]" />
             </div>
             <div className="hidden xl:block text-left">
               <span className="text-xs font-semibold text-[var(--text-primary)] block leading-none">
                 {userProfile?.name || 'Bharath Kumar'}
               </span>
-              <span className="text-[10px] text-[#1546D9] dark:text-[#F9B318] font-mono leading-none mt-0.5">
+              <span className="text-[10px] text-[#D4A373] font-mono leading-none mt-0.5">
                 {userProfile?.email || userProfile?.role || 'Online'}
               </span>
             </div>

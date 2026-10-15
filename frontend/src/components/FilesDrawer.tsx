@@ -68,14 +68,14 @@ export const FilesDrawer: React.FC<FilesDrawerProps> = ({
               placeholder="Filter by filename or language (e.g. .py, auth)..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-9 pr-3 py-1.5 bg-[var(--bg-well)] border border-[var(--border-subtle)] rounded-lg text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[#1546D9] focus:ring-1 focus:ring-[#1546D9] transition-colors font-mono"
+              className="w-full pl-9 pr-3 py-1.5 bg-[var(--bg-well)] border border-[var(--border-subtle)] rounded-lg text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[#D4A373] focus:ring-1 focus:ring-[#D4A373] transition-colors font-mono"
             />
           </div>
           <div className="flex items-center justify-between mt-2 px-1 text-[11px] text-[var(--text-muted)]">
             <span>
               Showing {filteredFiles.length} of {files.length} files
             </span>
-            <span className="font-mono text-[#F9B318] font-semibold">Vector index ready</span>
+            <span className="font-mono text-[#D4A373] font-semibold">Vector index ready</span>
           </div>
         </div>
 
@@ -95,17 +95,17 @@ export const FilesDrawer: React.FC<FilesDrawerProps> = ({
               return (
                 <div
                   key={idx}
-                  className="p-3 rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-card)] hover:border-[var(--color-cobalt-blue)]/50 hover:bg-[var(--bg-card-hover)] transition-all flex items-start justify-between gap-3 text-xs"
+                  className="p-3 rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-card)] hover:border-[#D4A373]/50 hover:bg-[var(--bg-card-hover)] transition-all flex items-start justify-between gap-3 text-xs"
                 >
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2 mb-1">
-                      <FileCode className="w-3.5 h-3.5 text-[var(--color-cobalt-blue)] shrink-0" />
+                      <FileCode className="w-3.5 h-3.5 text-[#D4A373] shrink-0" />
                       <span className="font-mono text-[var(--text-primary)] font-medium truncate block">
                         {file.path}
                       </span>
                     </div>
                     <div className="flex items-center gap-2 text-[11px] text-[var(--text-muted)] font-mono">
-                      <span className="px-1.5 py-0.5 rounded bg-[var(--bg-well)] text-[var(--color-cobalt-blue)] border border-[var(--border-subtle)] font-medium">
+                      <span className="px-1.5 py-0.5 rounded bg-[var(--bg-well)] text-[#D4A373] border border-[var(--border-subtle)] font-medium">
                         {file.language}
                       </span>
                       <span>•</span>

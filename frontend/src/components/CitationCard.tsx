@@ -35,10 +35,10 @@ export const CitationCard: React.FC<CitationCardProps> = ({
   };
 
   return (
-    <div className="group flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-2.5 rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-card)] hover:border-[var(--color-cobalt-blue)]/40 hover:bg-[var(--bg-card-hover)] transition-all text-xs">
+    <div className="group flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-2.5 rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-card)] hover:border-[#D4A373]/40 hover:bg-[var(--bg-card-hover)] transition-all text-xs">
       <div className="flex items-center gap-2 min-w-0">
-        <div className="p-1.5 rounded bg-[var(--bg-well)] border border-[var(--border-subtle)] text-[var(--color-cobalt-blue)] shrink-0">
-          <FileCode className="w-4 h-4 text-[var(--color-cobalt-blue)]" />
+        <div className="p-1.5 rounded bg-[var(--bg-well)] border border-[var(--border-subtle)] text-[#D4A373] shrink-0">
+          <FileCode className="w-4 h-4 text-[#D4A373]" />
         </div>
         <div className="min-w-0 truncate">
           <span className="font-mono text-[var(--text-primary)] font-medium truncate block">
@@ -62,9 +62,9 @@ export const CitationCard: React.FC<CitationCardProps> = ({
         <span
           className={`px-2 py-0.5 rounded text-[11px] font-mono font-medium ${
             scorePercent >= 70
-              ? 'bg-[#1546D9] text-white border border-[#1546D9]'
+              ? 'bg-[#D4A373] text-[#1F3B2C] font-bold border border-[#D4A373]'
               : scorePercent >= 45
-              ? 'bg-[#F9B318]/20 text-[#F9B318] border border-[#F9B318]/40'
+              ? 'bg-[#D4A373]/20 text-[#D4A373] border border-[#D4A373]/40'
               : 'bg-[var(--bg-well)] text-[var(--text-muted)] border border-[var(--border-subtle)]'
           }`}
           title={`Cosine similarity score: ${citation.score.toFixed(4)}`}
@@ -78,7 +78,7 @@ export const CitationCard: React.FC<CitationCardProps> = ({
           title="Copy file path and line reference"
           className="p-1.5 rounded text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-well)] transition-colors cursor-pointer"
         >
-          {copied ? <Check className="w-3.5 h-3.5 text-[#1546D9]" /> : <Copy className="w-3.5 h-3.5" />}
+          {copied ? <Check className="w-3.5 h-3.5 text-[#D4A373]" /> : <Copy className="w-3.5 h-3.5" />}
         </button>
 
         {/* GitHub External Anchor */}
@@ -89,10 +89,10 @@ export const CitationCard: React.FC<CitationCardProps> = ({
               target="_blank"
               rel="noopener noreferrer"
               title="Open actual source at GitHub line"
-              className="flex items-center gap-1 px-2.5 py-1 rounded bg-[#1546D9] hover:bg-[#2255EB] text-white transition-colors border border-white/20 font-sans text-xs font-medium cursor-pointer shadow-sm"
+              className="flex items-center gap-1 px-2.5 py-1 rounded bg-[#D4A373] hover:bg-[#c29263] text-[#1F3B2C] font-bold transition-colors border border-[#D4A373]/40 font-sans text-xs cursor-pointer shadow-sm"
             >
               <span>Open source</span>
-              <ExternalLink className="w-3 h-3 text-white/80" />
+              <ExternalLink className="w-3 h-3 text-[#1F3B2C]" />
             </a>
           </Magnetic>
         )}

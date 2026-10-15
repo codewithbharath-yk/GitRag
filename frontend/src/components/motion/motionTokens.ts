@@ -43,7 +43,7 @@ export const motionTokens = {
   // Transitions classes
   classes: {
     interactive: 'transition-all duration-200 ease-out hover:scale-[1.01] active:scale-[0.99]',
-    button: 'transition-all duration-180 ease-out active:scale-[0.97] focus-visible:ring-2 focus-visible:ring-[#1546D9]',
+    button: 'transition-all duration-180 ease-out active:scale-[0.97] focus-visible:ring-2 focus-visible:ring-[#D4A373]',
     card: 'transition-all duration-250 ease-out hover:shadow-lg',
   },
 } as const;

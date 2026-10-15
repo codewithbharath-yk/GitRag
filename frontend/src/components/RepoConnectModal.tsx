@@ -193,7 +193,7 @@ export const RepoConnectModal: React.FC<RepoConnectModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-xs animate-in fade-in duration-150 font-sans">
-      <Spotlight color="#1546D9" className="w-full max-w-xl rounded-xl">
+      <Spotlight color="#D4A373" className="w-full max-w-xl rounded-xl">
         <div className="w-full max-w-xl bg-[var(--bg-card)] border border-[var(--border-subtle)] rounded-xl shadow-2xl overflow-hidden flex flex-col text-[var(--text-primary)]">
           {/* Header */}
           <div className="p-5 border-b border-[var(--border-subtle)] flex items-center justify-between bg-[var(--bg-surface)]">
@@ -242,7 +242,7 @@ export const RepoConnectModal: React.FC<RepoConnectModalProps> = ({
                   onClick={() => handleQuickSample('https://github.com/octocat/Spoon-Knife')}
                   className="px-2.5 py-1 text-xs rounded-md bg-[var(--bg-well)] hover:bg-[var(--bg-surface)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] border border-[var(--border-subtle)] transition-colors flex items-center gap-1.5 cursor-pointer"
                 >
-                  <Star className="w-3 h-3 text-[#F9B318]" />
+                  <Star className="w-3 h-3 text-[#D4A373]" />
                   <span>octocat/Spoon-Knife (Demo)</span>
                 </button>
                 <button
@@ -282,7 +282,7 @@ export const RepoConnectModal: React.FC<RepoConnectModalProps> = ({
                   }
                 }}
                 disabled={stage === 'validating' || stage === 'indexing'}
-                className="w-full px-3.5 py-2.5 bg-[var(--bg-well)] border border-[var(--border-subtle)] rounded-lg text-xs font-mono text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[#1546D9] focus:ring-2 focus:ring-[#1546D9]/30 disabled:opacity-50 transition-colors"
+                className="w-full px-3.5 py-2.5 bg-[var(--bg-well)] border border-[var(--border-subtle)] rounded-lg text-xs font-mono text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[#D4A373] focus:ring-2 focus:ring-[#D4A373]/30 disabled:opacity-50 transition-colors"
               />
             </div>
           </div>
@@ -290,7 +290,7 @@ export const RepoConnectModal: React.FC<RepoConnectModalProps> = ({
           {/* Validated Metadata Preview */}
           {validationData && stage !== 'input' && stage !== 'validating' && stage !== 'error' && (
             <Tilt maxAngle={2}>
-              <Spotlight color="#1546D9" className="rounded-xl">
+              <Spotlight color="#D4A373" className="rounded-xl">
                 <div className="p-4 rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] space-y-3">
                   <div className="flex items-start justify-between">
                     <div>
@@ -310,7 +310,7 @@ export const RepoConnectModal: React.FC<RepoConnectModalProps> = ({
                     </div>
                     <div className="flex items-center gap-3 text-xs text-[var(--text-muted)] font-mono shrink-0">
                       <span className="flex items-center gap-1">
-                        <Star className="w-3.5 h-3.5 text-[#F9B318]" />
+                        <Star className="w-3.5 h-3.5 text-[#D4A373]" />
                         {validationData.stars_count}
                       </span>
                       <span className="flex items-center gap-1">
@@ -346,7 +346,7 @@ export const RepoConnectModal: React.FC<RepoConnectModalProps> = ({
                           checked={cleanExisting}
                           onChange={(e) => setCleanExisting(e.target.checked)}
                           disabled={stage === 'indexing'}
-                          className="rounded border-[var(--border-subtle)] bg-[var(--bg-well)] text-[#1546D9] focus:ring-0"
+                          className="rounded border-[var(--border-subtle)] bg-[var(--bg-well)] text-[#D4A373] focus:ring-0"
                         />
                         <span className="text-xs">Reset previous vector cache</span>
                       </label>
@@ -361,7 +361,7 @@ export const RepoConnectModal: React.FC<RepoConnectModalProps> = ({
           {stage === 'indexing' && (
             <div className="p-4 rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] space-y-4">
               <div className="flex items-center gap-3 text-[var(--text-primary)]">
-                <Loader2 className="w-5 h-5 animate-spin shrink-0 text-[#1546D9]" />
+                <Loader2 className="w-5 h-5 animate-spin shrink-0 text-[#D4A373]" />
                 <div>
                   <h4 className="text-sm font-semibold text-[var(--text-primary)]">
                     Connecting Repository...
@@ -404,9 +404,9 @@ export const RepoConnectModal: React.FC<RepoConnectModalProps> = ({
           {stage === 'error' && errorMessage && (
             <>
               {errorCode === 'EMPTY_REPOSITORY' ? (
-                <div className="p-4 rounded-xl border border-[#F9B318]/40 bg-[#F9B318]/10 text-xs space-y-3">
+                <div className="p-4 rounded-xl border border-[#D4A373]/40 bg-[#D4A373]/10 text-xs space-y-3">
                   <div className="flex items-start gap-2.5">
-                    <AlertTriangle className="w-5 h-5 text-[#F9B318] shrink-0 mt-0.5" />
+                    <AlertTriangle className="w-5 h-5 text-[#D4A373] shrink-0 mt-0.5" />
                     <div className="space-y-1">
                       <h4 className="font-semibold text-sm text-[var(--text-primary)]">⚠️ Repository is empty</h4>
                       <p className="text-[var(--text-secondary)]">
@@ -426,9 +426,9 @@ export const RepoConnectModal: React.FC<RepoConnectModalProps> = ({
                   </div>
                 </div>
               ) : errorCode === 'BRANCH_NOT_FOUND' ? (
-                <div className="p-4 rounded-xl border border-[#F9B318]/40 bg-[#F9B318]/10 text-xs space-y-3">
+                <div className="p-4 rounded-xl border border-[#D4A373]/40 bg-[#D4A373]/10 text-xs space-y-3">
                   <div className="flex items-start gap-2.5">
-                    <GitBranch className="w-5 h-5 text-[#F9B318] shrink-0 mt-0.5" />
+                    <GitBranch className="w-5 h-5 text-[#D4A373] shrink-0 mt-0.5" />
                     <div className="space-y-1 flex-1">
                       <h4 className="font-semibold text-sm text-[var(--text-primary)]">Branch Not Found</h4>
                       <p className="text-[var(--text-secondary)]">{errorMessage}</p>
@@ -444,7 +444,7 @@ export const RepoConnectModal: React.FC<RepoConnectModalProps> = ({
                           setBranch(defBranch);
                           handleValidateWithBranch(defBranch);
                         }}
-                        className="px-3 py-1.5 rounded-lg bg-[#1546D9] hover:bg-[#2255EB] text-white text-xs font-medium border border-[#1546D9] transition-colors flex items-center gap-1.5 cursor-pointer"
+                        className="px-3 py-1.5 rounded-lg bg-[#D4A373] hover:bg-[#C5915F] text-[#1F3B2C] font-bold text-xs font-medium border border-[#D4A373] transition-colors flex items-center gap-1.5 cursor-pointer"
                       >
                         <GitBranch className="w-3.5 h-3.5" />
                         <span>Switch to default branch "{String(errorDetails.default_branch)}"</span>
@@ -486,7 +486,7 @@ export const RepoConnectModal: React.FC<RepoConnectModalProps> = ({
 
           {/* Security & Safe Ingestion Notice */}
           <div className="flex items-center gap-2 text-[11px] text-[var(--text-muted)]">
-            <ShieldCheck className="w-3.5 h-3.5 text-[#F9B318] shrink-0" />
+            <ShieldCheck className="w-3.5 h-3.5 text-[#D4A373] shrink-0" />
             <span>Code is parsed statically. No repository scripts or binaries are ever executed.</span>
           </div>
         </div>
@@ -534,7 +534,7 @@ export const RepoConnectModal: React.FC<RepoConnectModalProps> = ({
                   type="button"
                   onClick={handleValidate}
                   disabled={stage === 'validating' || !url.trim()}
-                  className="px-4 py-2 rounded-lg text-xs font-medium bg-[#1546D9] hover:bg-[#2255EB] text-white border border-[#1546D9] shadow-sm disabled:opacity-50 flex items-center gap-2 transition-colors active:scale-[0.98] cursor-pointer"
+                  className="px-4 py-2 rounded-lg text-xs font-medium bg-[#D4A373] hover:bg-[#C5915F] text-[#1F3B2C] font-bold border border-[#D4A373] shadow-sm disabled:opacity-50 flex items-center gap-2 transition-colors active:scale-[0.98] cursor-pointer"
                 >
                   {stage === 'validating' ? (
                     <>
@@ -544,7 +544,7 @@ export const RepoConnectModal: React.FC<RepoConnectModalProps> = ({
                   ) : (
                     <>
                       <span>{stage === 'error' ? 'Try Again' : 'Analyze Repository'}</span>
-                      <ArrowRight className="w-3.5 h-3.5 text-[#F9B318]" />
+                      <ArrowRight className="w-3.5 h-3.5 text-[#D4A373]" />
                     </>
                   )}
                 </button>
@@ -554,9 +554,9 @@ export const RepoConnectModal: React.FC<RepoConnectModalProps> = ({
                 <button
                   type="button"
                   onClick={handleStartIndexing}
-                  className="px-5 py-2 rounded-lg text-xs font-medium bg-[#1546D9] hover:bg-[#2255EB] text-white border border-[#1546D9] shadow-sm flex items-center gap-2 transition-colors active:scale-[0.98] cursor-pointer"
+                  className="px-5 py-2 rounded-lg text-xs font-medium bg-[#D4A373] hover:bg-[#C5915F] text-[#1F3B2C] font-bold border border-[#D4A373] shadow-sm flex items-center gap-2 transition-colors active:scale-[0.98] cursor-pointer"
                 >
-                  <Database className="w-3.5 h-3.5 text-[#F9B318]" />
+                  <Database className="w-3.5 h-3.5 text-[#D4A373]" />
                   <span>Start Indexing</span>
                 </button>
               </Magnetic>

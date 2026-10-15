@@ -58,8 +58,8 @@ export const BackButton: React.FC<BackButtonProps> = ({
     variant === 'ghost'
       ? 'bg-transparent hover:bg-black/10 dark:hover:bg-white/10 text-current border border-transparent'
       : variant === 'subtle'
-      ? 'bg-black/5 dark:bg-white/5 hover:bg-[#1546D9] hover:text-white dark:hover:bg-[#1546D9] dark:hover:text-white border border-black/10 dark:border-white/10 hover:border-[#1546D9]'
-      : 'bg-white dark:bg-[#181B22] text-[#111318] dark:text-[#EDECE6] border border-[#111318]/15 dark:border-white/10 hover:bg-[#1546D9] hover:text-white dark:hover:bg-[#1546D9] dark:hover:text-white hover:border-[#1546D9] shadow-xs';
+      ? 'bg-[var(--bg-card)] hover:bg-[#D4A373] hover:text-[#1F3B2C] border border-[var(--border-subtle)] hover:border-[#D4A373]'
+      : 'bg-[var(--bg-card)] text-[var(--text-primary)] border border-[var(--border-default)] hover:bg-[#D4A373] hover:text-[#1F3B2C] hover:border-[#D4A373] shadow-xs';
 
   return (
     <button
@@ -69,7 +69,7 @@ export const BackButton: React.FC<BackButtonProps> = ({
       disabled={disabled}
       title={tooltip}
       aria-label={tooltip}
-      className={`inline-flex items-center font-medium rounded-xl transition-all duration-180 select-none cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F9B318] focus-visible:ring-offset-1 disabled:opacity-40 disabled:cursor-not-allowed active:scale-[0.98] ${sizeClasses} ${variantClasses} ${className}`}
+      className={`inline-flex items-center font-medium rounded-xl transition-all duration-180 select-none cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4A373] focus-visible:ring-offset-1 disabled:opacity-40 disabled:cursor-not-allowed active:scale-[0.98] ${sizeClasses} ${variantClasses} ${className}`}
     >
       <ArrowLeft className="w-3.5 h-3.5 shrink-0 transition-transform group-hover:-translate-x-0.5" />
       {label && <span>{label}</span>}

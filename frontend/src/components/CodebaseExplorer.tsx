@@ -140,9 +140,9 @@ export const CodebaseExplorer: React.FC<CodebaseExplorerProps> = ({
           <Magnetic>
             <button
               onClick={onOpenConnectModal}
-              className="px-5 py-2.5 rounded-xl bg-[#1546D9] hover:bg-[#2255EB] text-white font-medium text-sm inline-flex items-center gap-2 border border-white/20 shadow-md transition-all active:scale-[0.98] cursor-pointer"
+              className="px-5 py-2.5 rounded-xl bg-[#D4A373] hover:bg-[#C5915F] text-[#1F3B2C] font-bold text-sm inline-flex items-center gap-2 border border-[#D4A373] shadow-md transition-all active:scale-[0.98] cursor-pointer"
             >
-              <Plus className="w-4 h-4 text-white" />
+              <Plus className="w-4 h-4 text-[#1F3B2C]" />
               <span>Connect Repository</span>
             </button>
           </Magnetic>
@@ -351,7 +351,7 @@ export const CodebaseExplorer: React.FC<CodebaseExplorerProps> = ({
                       value={chatInput}
                       onChange={(e) => setChatInput(e.target.value)}
                       disabled={isQuerying}
-                      className="w-full pl-4 pr-10 py-3 bg-[var(--bg-well)] border border-[var(--border-subtle)] rounded-xl text-xs sm:text-sm text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[#1546D9] focus:ring-1 focus:ring-[#1546D9] font-mono transition-colors"
+                      className="w-full pl-4 pr-10 py-3 bg-[var(--bg-well)] border border-[var(--border-subtle)] rounded-xl text-xs sm:text-sm text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[#D4A373] focus:ring-1 focus:ring-[#D4A373] font-mono transition-colors"
                     />
                   </div>
 
@@ -359,14 +359,14 @@ export const CodebaseExplorer: React.FC<CodebaseExplorerProps> = ({
                     <button
                       type="submit"
                       disabled={!chatInput.trim() || isQuerying}
-                      className="py-3 px-5 rounded-xl bg-[#1546D9] hover:bg-[#2255EB] disabled:opacity-50 text-white font-bold text-xs sm:text-sm flex items-center gap-2 border border-white/20 shadow-md transition-all active:scale-[0.98] cursor-pointer"
+                      className="py-3 px-5 rounded-xl bg-[#D4A373] hover:bg-[#C5915F] disabled:opacity-50 text-[#1F3B2C] font-bold text-xs sm:text-sm flex items-center gap-2 border border-[#D4A373] shadow-md transition-all active:scale-[0.98] cursor-pointer"
                     >
                       {isQuerying ? (
-                        <Loader2 className="w-4 h-4 animate-spin text-white" />
+                        <Loader2 className="w-4 h-4 animate-spin text-[#1F3B2C]" />
                       ) : (
                         <>
                           <span>Search & Ask</span>
-                          <Send className="w-4 h-4 text-white" />
+                          <Send className="w-4 h-4 text-[#1F3B2C]" />
                         </>
                       )}
                     </button>
@@ -409,7 +409,7 @@ export const CodebaseExplorer: React.FC<CodebaseExplorerProps> = ({
                               Lines {s.start_line}-{s.end_line}
                             </span>
                           </div>
-                          <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-[#1546D9] text-white shrink-0 font-bold">
+                          <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-[#D4A373] text-[#1F3B2C] shrink-0 font-bold">
                             {score}%
                           </span>
                         </div>
@@ -432,7 +432,7 @@ export const CodebaseExplorer: React.FC<CodebaseExplorerProps> = ({
                               Chunks indexed
                             </span>
                           </div>
-                          <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-[#1546D9] text-white shrink-0 font-bold">
+                          <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-[#D4A373] text-[#1F3B2C] shrink-0 font-bold">
                             {score}%
                           </span>
                         </div>
@@ -459,7 +459,7 @@ export const CodebaseExplorer: React.FC<CodebaseExplorerProps> = ({
                             Evidence cited
                           </span>
                         </div>
-                        <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-[#1546D9] text-white shrink-0 font-bold">
+                        <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-[#D4A373] text-[#1F3B2C] shrink-0 font-bold">
                           {item.score}%
                         </span>
                       </div>

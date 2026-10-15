@@ -1,39 +1,31 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100%" height="100%">
-  <defs>
-    <radialGradient id="favHalo" cx="50%" cy="50%" r="50%">
-      <stop offset="0%" stop-color="#6DBE9B" stop-opacity="0.6" />
-      <stop offset="80%" stop-color="#295255" stop-opacity="0.3" />
-      <stop offset="100%" stop-color="#162623" stop-opacity="0" />
-    </radialGradient>
-    <linearGradient id="favBody" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#1E3430" />
-      <stop offset="100%" stop-color="#111E1C" />
-    </linearGradient>
-  </defs>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="100%" height="100%">
+  <!-- Squircle Base in Emerald Night -->
+  <rect width="64" height="64" rx="16" fill="#1F3B2C" />
+  <rect x="2" y="2" width="60" height="60" rx="14" fill="none" stroke="#D4A373" stroke-width="1.5" />
 
-  <rect width="200" height="200" rx="44" fill="#162623" />
-  <circle cx="100" cy="100" r="85" fill="url(#favHalo)" />
+  <!-- Orbit Ring -->
+  <circle cx="32" cy="28" r="22" fill="none" stroke="#D4A373" stroke-width="1" stroke-dasharray="3 2" opacity="0.6" />
 
-  <!-- Outer Orbit -->
-  <circle cx="100" cy="88" r="64" fill="none" stroke="#6DBE9B" stroke-width="2" stroke-dasharray="5 3" opacity="0.7" />
-
-  <!-- Cat Ears -->
-  <path d="M72 74 L60 48 C70 51 80 60 82 68 Z" fill="#111E1C" stroke="#6DBE9B" stroke-width="3" stroke-linejoin="round" />
-  <path d="M128 74 L140 48 C130 51 120 60 118 68 Z" fill="#111E1C" stroke="#6DBE9B" stroke-width="3" stroke-linejoin="round" />
+  <!-- Ears -->
+  <path d="M21 24 L16 12 C21 14 26 19 27 23 Z" fill="#15281E" stroke="#D4A373" stroke-width="1.5" stroke-linejoin="round" />
+  <path d="M43 24 L48 12 C43 14 38 19 37 23 Z" fill="#15281E" stroke="#D4A373" stroke-width="1.5" stroke-linejoin="round" />
 
   <!-- Head -->
-  <ellipse cx="100" cy="85" rx="36" ry="30" fill="url(#favBody)" stroke="#6DBE9B" stroke-width="3.5" />
+  <ellipse cx="32" cy="27" rx="14" ry="11" fill="#1F3B2C" stroke="#D4A373" stroke-width="1.8" />
+  <ellipse cx="32" cy="28" rx="9" ry="6.5" fill="#F1E3D3" />
 
-  <!-- Happy Cat Eyes -->
-  <path d="M84 83 Q90 76 96 83" fill="none" stroke="#6DBE9B" stroke-width="3.5" stroke-linecap="round" />
-  <path d="M104 83 Q110 76 116 83" fill="none" stroke="#6DBE9B" stroke-width="3.5" stroke-linecap="round" />
+  <!-- Eyes -->
+  <path d="M27 28 Q29 24 31 28" fill="none" stroke="#1F3B2C" stroke-width="1.8" stroke-linecap="round" />
+  <path d="M33 28 Q35 24 37 28" fill="none" stroke="#1F3B2C" stroke-width="1.8" stroke-linecap="round" />
 
-  <!-- Antenna -->
-  <path d="M116 60 L126 44" stroke="#6DBE9B" stroke-width="2" stroke-linecap="round" />
-  <circle cx="127" cy="42" r="3" fill="#F0F5F7" stroke="#6DBE9B" stroke-width="1.5" />
+  <!-- Antenna with Gold Orb -->
+  <path d="M37 17 L42 9" stroke="#D4A373" stroke-width="1.5" stroke-linecap="round" />
+  <circle cx="43" cy="8" r="2.2" fill="#D4A373" stroke="#F1E3D3" stroke-width="0.8" />
 
   <!-- Laptop with Code -->
-  <path d="M86 116 L134 116 L124 146 L76 146 Z" fill="#162623" stroke="#6DBE9B" stroke-width="2.5" stroke-linejoin="round" />
-  <path d="M96 131 L91 135 L96 139" fill="none" stroke="#F0F5F7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
-  <path d="M108 131 L113 135 L108 139" fill="none" stroke="#F0F5F7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+  <path d="M23 40 L43 40 L39 54 L19 54 Z" fill="#15281E" stroke="#D4A373" stroke-width="1.5" stroke-linejoin="round" />
+  <polygon points="24,41 42,41 38,53 20,53" fill="#1F3B2C" />
+  <path d="M27 45 L25 47 L27 49" fill="none" stroke="#F1E3D3" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" />
+  <line x1="32" y1="44" x2="30" y2="50" stroke="#D4A373" stroke-width="1.2" stroke-linecap="round" />
+  <path d="M35 45 L37 47 L35 49" fill="none" stroke="#F1E3D3" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" />
 </svg>
